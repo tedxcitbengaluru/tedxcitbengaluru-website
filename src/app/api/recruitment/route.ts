@@ -35,7 +35,7 @@ const TEAM_HEADERS: Record<string, string[]> = {
     'Phone',
     'Department',
     'Semester',
-    'otherClubs', 
+    'otherClubs',
     'Team',
     'Project Description',
     'Crazy Feature',
@@ -153,14 +153,14 @@ const TEAM_HEADERS: Record<string, string[]> = {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
-    const { 
-      basicDetails, 
-      technicalDetails, 
-      eventManagementDetails, 
-      sponsorshipDetails, 
-      curationDetails, 
-      designDetails, 
-      mediaDetails 
+    const {
+      basicDetails,
+      technicalDetails,
+      eventManagementDetails,
+      sponsorshipDetails,
+      curationDetails,
+      designDetails,
+      mediaDetails,
     } = data;
 
     if (!basicDetails || !basicDetails.team) {
@@ -203,10 +203,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Ensure the sheet exists with proper headers
+    // ✅ Ensure sheet exists with headers
     await ensureSheetExists(sheetName, teamSlug);
 
-    // Prepare the row data based on team
+    // ✅ Prepare row data
     const timestamp = new Date().toISOString();
     let rowData: any[] = [
       timestamp,
@@ -221,7 +221,7 @@ export async function POST(request: NextRequest) {
       basicDetails.team || '',
     ];
 
-    // Add team-specific data
+    // Add team-specific fields
     switch (teamSlug) {
       case 'technical':
         if (technicalDetails) {
@@ -237,7 +237,6 @@ export async function POST(request: NextRequest) {
           );
         }
         break;
-      
       case 'event-management':
         if (eventManagementDetails) {
           rowData.push(
@@ -255,7 +254,6 @@ export async function POST(request: NextRequest) {
           );
         }
         break;
-      
       case 'sponsorship':
         if (sponsorshipDetails) {
           rowData.push(
@@ -270,7 +268,6 @@ export async function POST(request: NextRequest) {
           );
         }
         break;
-      
       case 'curation':
         if (curationDetails) {
           rowData.push(
@@ -286,7 +283,6 @@ export async function POST(request: NextRequest) {
           );
         }
         break;
-      
       case 'design':
         if (designDetails) {
           rowData.push(
@@ -301,7 +297,6 @@ export async function POST(request: NextRequest) {
           );
         }
         break;
-      
       case 'media':
         if (mediaDetails) {
           rowData.push(
@@ -314,7 +309,6 @@ export async function POST(request: NextRequest) {
           );
         }
         break;
-      
       default:
         return NextResponse.json(
           { error: 'Unknown team type' },
@@ -322,15 +316,29 @@ export async function POST(request: NextRequest) {
         );
     }
 
-    // Append the data to the sheet
+    // ✅ USN uniqueness check before appending
+    const existingRows = await sheets.spreadsheets.values.get({
+      spreadsheetId: SPREADSHEET_ID,
+      range: `${sheetName}!C2:C`, // C = USN column
+    });
+
+    const usnList = existingRows.data.values?.flat().map((v) => v.trim().toUpperCase()) || [];
+    const newUSN = (basicDetails.usn || '').trim().toUpperCase();
+
+    if (usnList.includes(newUSN)) {
+      return NextResponse.json(
+        { error: 'USN already registered. Please verify your details.' },
+        { status: 400 }
+      );
+    }
+
+    // ✅ Append new data
     const range = `${sheetName}!A:Z`;
     await sheets.spreadsheets.values.append({
       spreadsheetId: SPREADSHEET_ID,
       range,
       valueInputOption: 'USER_ENTERED',
-      requestBody: {
-        values: [rowData],
-      },
+      requestBody: { values: [rowData] },
     });
 
     return NextResponse.json(
@@ -340,16 +348,16 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error saving to Google Sheets:', error);
     return NextResponse.json(
-      { 
-        error: 'Failed to submit application', 
-        details: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        error: 'Failed to submit application',
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );
   }
 }
 
-// Helper function to ensure sheet exists and has proper headers
+// ✅ Helper: Ensure the sheet exists and has headers
 async function ensureSheetExists(sheetName: string, teamSlug: string) {
   try {
     if (!SPREADSHEET_ID) return;
@@ -371,9 +379,7 @@ async function ensureSheetExists(sheetName: string, teamSlug: string) {
               addSheet: {
                 properties: {
                   title: sheetName,
-                  gridProperties: {
-                    frozenRowCount: 1,
-                  },
+                  gridProperties: { frozenRowCount: 1 },
                 },
               },
             },
@@ -388,9 +394,7 @@ async function ensureSheetExists(sheetName: string, teamSlug: string) {
           spreadsheetId: SPREADSHEET_ID,
           range: headerRange,
           valueInputOption: 'USER_ENTERED',
-          requestBody: {
-            values: [headers],
-          },
+          requestBody: { values: [headers] },
         });
 
         const sheetId = await getSheetId(sheetName);
@@ -401,21 +405,11 @@ async function ensureSheetExists(sheetName: string, teamSlug: string) {
               requests: [
                 {
                   repeatCell: {
-                    range: {
-                      sheetId: sheetId,
-                      startRowIndex: 0,
-                      endRowIndex: 1,
-                    },
+                    range: { sheetId, startRowIndex: 0, endRowIndex: 1 },
                     cell: {
                       userEnteredFormat: {
-                        backgroundColor: {
-                          red: 0.9,
-                          green: 0.9,
-                          blue: 0.9,
-                        },
-                        textFormat: {
-                          bold: true,
-                        },
+                        backgroundColor: { red: 0.9, green: 0.9, blue: 0.9 },
+                        textFormat: { bold: true },
                       },
                     },
                     fields: 'userEnteredFormat(backgroundColor,textFormat)',
@@ -433,6 +427,7 @@ async function ensureSheetExists(sheetName: string, teamSlug: string) {
   }
 }
 
+// ✅ Helper: Get Sheet ID
 async function getSheetId(sheetName: string): Promise<number | null> {
   try {
     if (!SPREADSHEET_ID) return null;
