@@ -3,65 +3,82 @@ import React from "react";
 import { useRouter } from "next/navigation";
 
 export default function Footer() {
-  const router = useRouter();
+    const router = useRouter();
 
-  return (
-    <footer className="relative bg-black text-white overflow-hidden">
-      {/* --- Gradient Accent on Top --- */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#E62B1E] via-red-600 to-[#8B1E15]" />
+    return (
+        <footer className="relative w-full bg-black text-white overflow-hidden">
+            
+            {/* Gradient accent on top */}
+            <div className="w-full h-1 bg-gradient-to-r from-[#E62B1E] via-red-600 to-[#8B1E15]" />
 
-      {/* --- Main Content Section --- */}
-      <div className="flex flex-col items-center justify-center text-center section px-6 sm:px-8">
-        <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-8 md:mb-10 leading-tight">
-          Join us as a part of the{" "}
-          <span className="text-[#E62B1E] font-extrabold">TEDxCITBengaluru</span> team
-        </h3>
+            {/* Main content section - full width container */}
+            <div className="w-full">
+                <div className="flex flex-col items-center justify-center text-center px-4 sm:px-6 md:px-8 py-16 sm:py-20 md:py-24">
+                    
+                    {/* Heading - responsive sizing and full width centered */}
+                    <h3 className="
+                        w-full max-w-5xl
+                        text-2xl sm:text-3xl md:text-4xl lg:text-5xl 
+                        font-extrabold tracking-tight leading-tight
+                        text-white mb-8 sm:mb-10 md:mb-12
+                        text-center
+                    ">
+                        Ready to spread ideas? Join the exclusive{" "}
+                        <span className="text-[#E62B1E]">TEDxCITBengaluru</span> team.
+                    </h3>
 
-        {/* --- Premium Button --- */}
-        <button
-          onClick={() => router.push("/joinus")}
-          className="
-            relative group inline-flex items-center justify-center
-            px-14 sm:px-16 py-5 sm:py-6 min-h-[3.25rem] sm:min-h-[3.5rem]
-            rounded-full text-base sm:text-lg font-semibold tracking-tight whitespace-nowrap leading-normal
-            text-white bg-gradient-to-r from-[#E62B1E] to-[#8B1E15]
-            shadow-[0_6px_16px_rgba(230,43,30,0.32)]
-            ring-1 ring-white/10
-            transition-all duration-200 ease-out
-            hover:shadow-[0_10px_20px_rgba(230,43,30,0.38)]
-            hover:ring-white/20 hover:translate-y-[-1px]
-            active:translate-y-0
-            focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E62B1E]/60
-          "
-        >
-          <span className="relative z-10 flex items-center gap-3 sm:gap-4 leading-normal">
-            Join Us
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="2.4"
-              stroke="currentColor"
-              className="w-6 h-6 sm:w-7 sm:h-7 transition-transform duration-200 group-hover:translate-x-1"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-          </span>
+                    {/* Button */}
+                    <button
+                        onClick={() => router.push("/joinus")}
+                        className="
+                            relative inline-flex items-center justify-center
+                            px-8 sm:px-12 md:px-14 py-3 sm:py-4
+                            rounded-full text-base sm:text-lg font-medium tracking-wide
+                            bg-black text-[#E62B1E] border border-[#E62B1E]
+                            transition-all duration-300 ease-in-out
+                            
+                            shadow-[0_0_10px_rgba(230,43,30,0.2)]
+                            hover:shadow-[0_0_25px_rgba(230,43,30,0.6)]
+                            hover:bg-[#E62B1E] hover:text-black hover:scale-105
+                            
+                            focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2
+                            focus-visible:ring-offset-black focus-visible:ring-[#E62B1E]
+                            
+                            active:scale-95
+                            group
+                        "
+                        aria-label="Join the TEDxCITBengaluru team"
+                    >
+                        <span className="flex items-center gap-2 sm:gap-3">
+                            Apply Now
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth="2.4"
+                                stroke="currentColor"
+                                className="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 group-hover:translate-x-1"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                        </span>
+                    </button>
+                </div>
+            </div>
+            
+            {/* Divider - full width */}
+            <div className="w-full border-t border-gray-800" />
 
-          {/* Subtle glossy reflection overlay */}
-          <span className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-transparent opacity-15 group-hover:opacity-25 transition-opacity duration-200" />
-        </button>
-      </div>
-
-      {/* --- Divider Line --- */}
-      <div className="w-4/5 mx-auto border-t border-gray-800" />
-
-      {/* --- Copyright --- */}
-      <div className="py-8 text-center text-gray-400 text-sm sm:text-base">
-        © 2025{" "}
-        <span className="font-semibold text-white">TEDxCITBengaluru</span>. This independent
-        TEDx event is operated under license from TED.
-      </div>
-    </footer>
-  );
+            {/* Copyright - full width centered */}
+            <div className="w-full">
+                <div className="flex items-center justify-center px-4 sm:px-6 md:px-8 py-6 sm:py-8">
+                    <div className="text-center text-gray-500 text-xs sm:text-sm md:text-base max-w-5xl">
+                        © {new Date().getFullYear()}{" "}
+                        <span className="font-semibold text-white">TEDxCITBengaluru</span>. This independent
+                        TEDx event is operated under license from TED.
+                    </div>
+                </div>
+            </div>
+        </footer>
+    );
 }

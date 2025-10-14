@@ -5,7 +5,7 @@ import Image from "next/image";
 export default function AboutPreview() {
   return (
     <section className="relative w-full bg-[#0B0B0B] text-white overflow-hidden section">
-      {/* Background Red X */}
+      {/* Background Red X with Bottom Fade Overlay */}
       <div className="absolute top-0 right-0 bottom-0 w-full md:w-1/2 pointer-events-none opacity-10 sm:opacity-15 md:opacity-25">
         <Image
           src="/images/X1.svg"
@@ -14,6 +14,8 @@ export default function AboutPreview() {
           className="object-cover object-right"
           priority
         />
+        {/* Black Fade Overlay - Bottom Up */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
       </div>
 
       {/* Content Wrapper */}

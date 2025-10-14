@@ -22,7 +22,6 @@ export default function JoinUsPage() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     }
 
-    // Form constants
     const semesters = ["1", "2", "3", "4", "5", "6", "7", "8"];
     const departments = [
         "CSE", "ISE", "ECE", "EEE", "MCA", "ME", "CE", "AIML", "DS", "BT", "MBA", "Other",
@@ -45,208 +44,116 @@ export default function JoinUsPage() {
         const chosen = event.target.value;
         const slug = teamSlugMap[chosen];
 
-        // 1. Update the local form data state with the chosen team
         const updatedFormData = { ...formData, team: chosen };
         setFormData(updatedFormData);
-        
-        // 2. IMPORTANT: Save the basic details to sessionStorage for the next page to retrieve
-        if (typeof window !== 'undefined') {
-            sessionStorage.setItem('basicRecruitmentData', JSON.stringify(updatedFormData));
+
+        if (typeof window !== "undefined") {
+            sessionStorage.setItem("basicRecruitmentData", JSON.stringify(updatedFormData));
         }
-        
-        // 3. Perform the redirection to the CORRECT dynamic route
+
         if (slug) {
-            // FIX APPLIED HERE: The path must include the static 'team' folder segment.
-            router.push(`/joinus/team/${slug}`); 
-            // This will correctly route to paths like /joinus/team/curation
+            router.push(`/joinus/team/${slug}`);
         }
     }
 
     return (
-        <main className="relative bg-black text-white min-h-screen">
-            <section className="section">
-                <div className="container">
-                    <div className="max-w-2xl mx-auto">
-                        <header className="mb-8 md:mb-10 text-center">
-                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
-                                Join <span className="text-[#E62B1E]">TEDxCITBengaluru</span>
-                            </h1>
-                            <p className="text-gray-400 mt-3 content-width mx-auto">
-                                Fill in your basic details below and select a team to continue with the team-specific questions.
-                            </p>
-                        </header>
+        <main className="bg-black text-white min-h-screen flex flex-col">
+            {/* Top Accent Line */}
+            <div className="w-full h-1 bg-red-600" />
 
-                        <form
-                            id="recruitment-form"
-                            className="p-2 sm:p-0"
-                        >
-                            <div className="grid grid-cols-1 gap-6 md:gap-7">
-                                
-                                {/* Full Name */}
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm text-gray-300 mb-2" htmlFor="name">
-                                        Full Name
-                                    </label>
-                                    <input
-                                        id="name"
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        required
-                                        className="w-full bg-transparent text-white border-b border-gray-800 focus:border-[#E62B1E] focus:outline-none px-1 py-3"
-                                        placeholder="Your full name"
-                                    />
-                                </div>
+            <section className="flex-1 flex items-center justify-center w-full px-6 sm:px-8 lg:px-12 py-16 sm:py-20 md:py-24">
+                <div className="w-full max-w-2xl">
+                    
+                    {/* Header */}
+                    <header className="text-center mb-16">
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-4">
+                            Join <span className="text-red-600">TEDxCITBenagluru</span>
+                        </h1>
+                        <p className="text-gray-400 text-base sm:text-lg">
+                            Fill in your details below and select your preferred team.
+                        </p>
+                    </header>
 
-                                {/* USN */}
-                                <div>
-                                    <label className="block text-sm text-gray-300 mb-2" htmlFor="usn">
-                                        USN
-                                    </label>
-                                    <input
-                                        id="usn"
-                                        name="usn"
-                                        value={formData.usn}
-                                        onChange={handleChange}
-                                        required
-                                        className="w-full bg-transparent text-white border-b border-gray-800 focus:border-[#E62B1E] focus:outline-none px-1 py-3"
-                                        placeholder="University Seat Number"
-                                    />
-                                </div>
-
-                                {/* College Email */}
-                                <div>
-                                    <label className="block text-sm text-gray-300 mb-2" htmlFor="collegeEmail">
-                                        College Email
-                                    </label>
-                                    <input
-                                        id="collegeEmail"
-                                        name="collegeEmail"
-                                        type="email"
-                                        value={formData.collegeEmail}
-                                        onChange={handleChange}
-                                        required
-                                        className="w-full bg-transparent text-white border-b border-gray-800 focus:border-[#E62B1E] focus:outline-none px-1 py-3"
-                                        placeholder="you@cit.edu"
-                                    />
-                                </div>
-
-                                {/* Personal Email */}
-                                <div>
-                                    <label className="block text-sm text-gray-300 mb-2" htmlFor="personalEmail">
-                                        Personal Email
-                                    </label>
-                                    <input
-                                        id="personalEmail"
-                                        name="personalEmail"
-                                        type="email"
-                                        value={formData.personalEmail}
-                                        onChange={handleChange}
-                                        required
-                                        className="w-full bg-transparent text-white border-b border-gray-800 focus:border-[#E62B1E] focus:outline-none px-1 py-3"
-                                        placeholder="you@example.com"
-                                    />
-                                </div>
-
-                                {/* Department */}
-                                <div>
-                                    <label className="block text-sm text-gray-300 mb-2" htmlFor="department">
-                                        Department
-                                    </label>
-                                    <select
-                                        id="department"
-                                        name="department"
-                                        value={formData.department}
-                                        onChange={handleChange}
-                                        required
-                                        className="w-full bg-black text-white border border-gray-800 focus:border-[#E62B1E] focus:outline-none rounded-xl px-4 py-3"
-                                    >
-                                        <option value="" disabled>
-                                            Select department
-                                        </option>
-                                        {departments.map((d) => (
-                                            <option key={d} value={d}>
-                                                {d}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                {/* Semester */}
-                                <div>
-                                    <label className="block text-sm text-gray-300 mb-2" htmlFor="semester">
-                                        Semester
-                                    </label>
-                                    <select
-                                        id="semester"
-                                        name="semester"
-                                        value={formData.semester}
-                                        onChange={handleChange}
-                                        required
-                                        className="w-full bg-black text-white border border-gray-800 focus:border-[#E62B1E] focus:outline-none rounded-xl px-4 py-3"
-                                    >
-                                        <option value="" disabled>
-                                            Select semester
-                                        </option>
-                                        {semesters.map((s) => (
-                                            <option key={s} value={s}>
-                                                {s}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                {/* Phone */}
-                                <div className="">
-                                    <label className="block text-sm text-gray-300 mb-2" htmlFor="phone">
-                                        Phone Number
-                                    </label>
-                                    <input
-                                        id="phone"
-                                        name="phone"
-                                        type="tel"
-                                        value={formData.phone}
-                                        onChange={handleChange}
-                                        required
-                                        className="w-full bg-transparent text-white border-b border-gray-800 focus:border-[#E62B1E] focus:outline-none px-1 py-3"
-                                        placeholder="Enter a reachable number"
-                                    />
-                                </div>
-
-                                {/* Team dropdown - **This triggers the redirect** */}
-                                <div className="">
-                                    <label className="block text-sm text-gray-300 mb-2" htmlFor="team">
-                                        Choose Your Team
-                                    </label>
-                                    <select
-                                        id="team"
-                                        name="team"
-                                        value={formData.team}
-                                        onChange={handleTeamSelectAndRedirect} 
-                                        required
-                                        className="w-full bg-black text-white border border-gray-800 focus:border-[#E62B1E] focus:outline-none rounded-xl px-4 py-3"
-                                    >
-                                        <option value="" disabled>
-                                            Select a team
-                                        </option>
-                                        {teams.map((t) => (
-                                            <option key={t} value={t}>
-                                                {t}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
+                    {/* Form */}
+                    <form className="space-y-8 sm:space-y-10">
+                        {[
+                            { name: "name", placeholder: "Full Name" },
+                            { name: "usn", placeholder: "USN" },
+                            { name: "collegeEmail", placeholder: "College Email", type: "email" },
+                            { name: "personalEmail", placeholder: "Personal Email", type: "email" },
+                            { name: "phone", placeholder: "Phone Number", type: "tel" },
+                        ].map((input) => (
+                            <div key={input.name} className="flex flex-col">
+                                <input
+                                    {...input}
+                                    value={(formData as any)[input.name]}
+                                    onChange={handleChange}
+                                    required
+                                    className="bg-black text-white border-b border-gray-700 focus:border-red-600 outline-none py-3 placeholder-gray-500 text-base sm:text-lg transition-all duration-300"
+                                />
                             </div>
-                            
-                            <div className="mt-8">
-                                <p className="text-sm text-gray-500">
-                                    Selecting a team above will take you immediately to the team-specific application page.
-                                </p>
-                            </div>
-                        </form>
-                    </div>
+                        ))}
+
+                        {/* Department */}
+                        <div className="flex flex-col">
+                            <select
+                                name="department"
+                                value={formData.department}
+                                onChange={handleChange}
+                                required
+                                className="bg-black text-white border-b border-gray-700 focus:border-red-600 outline-none py-3 text-base sm:text-lg transition-all duration-300 appearance-none cursor-pointer"
+                            >
+                                <option value="" disabled>Department</option>
+                                {departments.map((d) => (
+                                    <option key={d} value={d}>{d}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Semester */}
+                        <div className="flex flex-col">
+                            <select
+                                name="semester"
+                                value={formData.semester}
+                                onChange={handleChange}
+                                required
+                                className="bg-black text-white border-b border-gray-700 focus:border-red-600 outline-none py-3 text-base sm:text-lg transition-all duration-300 appearance-none cursor-pointer"
+                            >
+                                <option value="" disabled>Semester</option>
+                                {semesters.map((s) => (
+                                    <option key={s} value={s}>{s}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Team Selection */}
+                        <div className="pt-10">
+                            <label className="block text-center text-gray-400 mb-3 text-sm sm:text-base">
+                                Choose your preferred team
+                            </label>
+                            <select
+                                name="team"
+                                value={formData.team}
+                                onChange={handleTeamSelectAndRedirect}
+                                required
+                                className="w-full bg-red-600 text-black font-semibold rounded-lg py-4 px-4 text-base sm:text-lg text-center outline-none cursor-pointer transition-all duration-300 hover:bg-red-700 active:scale-[0.98]"
+                            >
+                                <option value="" disabled className="bg-black text-white">
+                                    Select Your Team
+                                </option>
+                                {teams.map((t) => (
+                                    <option key={t} value={t} className="bg-black text-white">
+                                        {t}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </form>
                 </div>
             </section>
+
+            {/* Bottom Accent Line */}
+            <div className="w-full h-1 bg-red-600" />
         </main>
     );
 }
