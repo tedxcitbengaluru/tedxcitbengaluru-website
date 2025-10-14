@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function AboutPreview() {
   return (
-    <section className="relative w-full bg-[#0B0B0B] text-white overflow-hidden section">
+    <section className="relative w-full bg-[#0B0B0B] text-white overflow-hidden section py-16 md:py-20">
       {/* Background Red X with Bottom Fade Overlay */}
       <div className="absolute top-0 right-0 bottom-0 w-full md:w-1/2 pointer-events-none opacity-10 sm:opacity-15 md:opacity-25">
         <Image
@@ -20,52 +20,34 @@ export default function AboutPreview() {
 
       {/* Content Wrapper */}
       <div className="relative z-10 w-full flex justify-center">
-        <div className="w-full max-w-5xl px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20">
+        <div className="w-full max-w-4xl px-4 sm:px-6 md:px-8 lg:px-12">
           {/* Headline */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight mb-12 md:mb-16 text-center">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight tracking-tight mb-20 md:mb-24 text-center">
             <span className="text-[#E62B1E]">EMPOWERING</span>{" "}
             <span className="text-gray-200">MINDS TO SHAPE TOMORROW</span>
           </h1>
 
-          {/* WHO WE ARE */}
-          <div className="text-center mb-8 md:mb-10">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 md:mb-3 tracking-tight">
-              WHO <span className="text-[#E62B1E]">WE</span> ARE?
-            </h2>
-            <div className="w-24 h-1 bg-[#E62B1E] mx-auto"></div>
+          {/* Description */}
+          <div className="text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed text-center mb-10 md:mb-12">
+            <p>
+              TED is a global platform devoted to sharing ideas that matter, through short, powerful talks that spark reflection and inspire change. TEDx, an initiative by TED, brings this spirit to local communities worldwide, where independently organized events create spaces for ideas to be shared, challenged, and celebrated.
+            </p>
+            <p className="mt-6 mb-10 md:mb-12">
+              At TEDxCITBengaluru, we bring this opportunity to our campus. Our goal is to uncover voices and ideas emerging from our community—stories that are original, thought-provoking, and capable of creating real impact.
+            </p>
           </div>
 
-          {/* Description */}
-          <p className="text-gray-300 text-base sm:text-lg md:text-lg leading-relaxed mb-10 md:mb-12 text-center content-width mx-auto">
-            We believe a TEDx Talk is a journey, with the Idea being the
-            destination. We find the most unique, thought-provoking, and impactful
-            ideas within our local community and provide a platform for them to
-            spread far and wide. Connect with like-minded individuals and build your
-            network.
-          </p>
-
           {/* Bullets */}
-          <div className="flex flex-col gap-6 md:gap-8">
-            <div className="border-l-4 border-[#E62B1E] pl-5 sm:pl-6 md:pl-8">
-              <p className="text-gray-200 text-base md:text-lg leading-relaxed">
-                We believe a TEDx Talk is a journey, with the idea being the
-                destination.
-              </p>
-            </div>
-
-            <div className="border-l-4 border-[#E62B1E] pl-5 sm:pl-6 md:pl-8">
-              <p className="text-gray-200 text-base md:text-lg leading-relaxed">
-                We find the most unique, thought-provoking, and impactful ideas
-                within our local community and provide a platform for them to
-                spread far and wide.
-              </p>
-            </div>
-
-            <div className="border-l-4 border-[#E62B1E] pl-5 sm:pl-6 md:pl-8">
-              <p className="text-gray-200 text-base md:text-lg leading-relaxed">
-                Connect with like-minded individuals and build your network.
-              </p>
-            </div>
+          <div className="flex flex-col gap-12 md:gap-14 justify-center text-center">
+            <p className="text-gray-200 text-sm md:text-base lg:text-lg leading-relaxed">
+              We uncover voices and ideas that emerge from within our own community, stories that are original, thought-provoking, and capable of creating real impact.
+            </p>
+            <p className="text-gray-200 text-sm md:text-base lg:text-lg leading-relaxed">
+              Through every event we host, we aim to ignite curiosity, start meaningful conversations, and connect people who believe in shaping a better tomorrow through the power of ideas.
+            </p>
+            <p className="text-gray-200 text-sm md:text-base lg:text-lg leading-relaxed">
+              Connect with like-minded individuals and build your network.
+            </p>
           </div>
         </div>
       </div>
