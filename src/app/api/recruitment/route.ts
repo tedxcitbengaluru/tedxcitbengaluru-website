@@ -206,6 +206,17 @@ export async function POST(request: NextRequest) {
     // ✅ Ensure sheet exists with headers
     await ensureSheetExists(sheetName, teamSlug);
 
+    // ✅ USN uniqueness check across all sheets
+    const newUSN = (basicDetails.usn || '').trim().toUpperCase();
+    const isUSNDuplicate = await checkUSNAcrossAllSheets(newUSN);
+
+    if (isUSNDuplicate) {
+      return NextResponse.json(
+        { error: 'USN already registered. Please verify your details.' },
+        { status: 400 }
+      );
+    }
+
     // ✅ Prepare row data
     const timestamp = new Date().toISOString();
     let rowData: any[] = [
@@ -316,22 +327,6 @@ export async function POST(request: NextRequest) {
         );
     }
 
-    // ✅ USN uniqueness check before appending
-    const existingRows = await sheets.spreadsheets.values.get({
-      spreadsheetId: SPREADSHEET_ID,
-      range: `${sheetName}!C2:C`, // C = USN column
-    });
-
-    const usnList = existingRows.data.values?.flat().map((v) => v.trim().toUpperCase()) || [];
-    const newUSN = (basicDetails.usn || '').trim().toUpperCase();
-
-    if (usnList.includes(newUSN)) {
-      return NextResponse.json(
-        { error: 'USN already registered. Please verify your details.' },
-        { status: 400 }
-      );
-    }
-
     // ✅ Append new data
     const range = `${sheetName}!A:Z`;
     await sheets.spreadsheets.values.append({
@@ -354,6 +349,34 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     );
+  }
+}
+
+// ✅ Helper: Check USN across all sheets
+async function checkUSNAcrossAllSheets(usn: string): Promise<boolean> {
+  try {
+    if (!SPREADSHEET_ID) return false;
+
+    const normalizedUSN = usn.trim().toUpperCase();
+
+    for (const teamSlug of Object.keys(SHEET_NAMES)) {
+      const sheetName = SHEET_NAMES[teamSlug];
+      const existingRows = await sheets.spreadsheets.values.get({
+        spreadsheetId: SPREADSHEET_ID,
+        range: `${sheetName}!C2:C`, // C = USN column
+      });
+
+      const usnList = existingRows.data.values?.flat().map((v) => v.trim().toUpperCase()) || [];
+
+      if (usnList.includes(normalizedUSN)) {
+        return true;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    console.error('Error checking USN across sheets:', error);
+    throw error;
   }
 }
 
