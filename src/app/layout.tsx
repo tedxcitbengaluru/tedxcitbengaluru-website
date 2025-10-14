@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Header from "@/components/layout/header";
+import { Sidebar } from "lucide-react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,7 +16,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "TEDxCIT Bengaluru - Empowering Minds to Shape Tomorrow",
-  description: "TEDxCIT Bengaluru brings together thought-provoking ideas and inspiring speakers to create meaningful conversations that shape tomorrow.",
+  description:
+    "TEDxCIT Bengaluru brings together thought-provoking ideas and inspiring speakers to create meaningful conversations that shape tomorrow.",
 };
 
 export default function RootLayout({
@@ -27,6 +30,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Header />
+        {/* <Sidebar /> */}
         {children}
       </body>
     </html>

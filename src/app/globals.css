@@ -67,6 +67,8 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* offset page content by header height when header is fixed */
+  padding-top: var(--header-h);
 }
 
 /* Typography Scale */
@@ -323,6 +325,21 @@ body {
 
 .grid-cols-1 {
   grid-template-columns: 1fr;
+}
+
+/* Glass / backdrop utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
 }
 
 @media (min-width: 768px) {
