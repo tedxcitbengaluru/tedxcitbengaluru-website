@@ -28,7 +28,7 @@ export default function JoinUsPage() {
 
     const semesters = ["1", "2", "3", "4", "5", "6", "7", "8"];
     const departments = [
-        "CSE", "ISE", "ECE", "EEE", "MCA", "ME", "CE", "AIML", "DS", "BT", "MBA", "Other",
+        "CSE", "CSE-IOT", "CSE-DS", "ISE", "ECE", "AIML", "EEE", "MECH", "CIVIL", "BBA", "BCA", "BCOM", "MCA", "MBA", "Other"
     ];
     const teams = [
         "Technical", "Event Management", "Sponsorship", "Curation", "Design", "Media",

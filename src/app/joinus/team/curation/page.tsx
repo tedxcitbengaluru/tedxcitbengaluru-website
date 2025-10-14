@@ -1,3 +1,4 @@
+
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -144,6 +145,22 @@ export default function CurationForm({ label = "Curation" }: CurationFormProps) 
                     </h1>
                 </header>
 
+                {/* YouTube Rickroll Embed with Autoplay */}
+                <div className="mb-8 sm:mb-12 w-full max-w-5xl mx-auto px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32">
+                    <div className="aspect-video">
+                        <iframe
+                            width="100%"
+                            height="100%"
+                            src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1"
+                            title="YouTube video player"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            className="rounded-xl shadow-lg"
+                        ></iframe>
+                    </div>
+                </div>
+
                 {error && (
                     <div className="mb-8 p-4 bg-red-600/20 border border-red-600 rounded-lg text-red-400 text-sm">
                         {error}
@@ -171,6 +188,25 @@ export default function CurationForm({ label = "Curation" }: CurationFormProps) 
                         <label className="block text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5" htmlFor="curation-captions">
                             2. Write 3 eye-catching captions related to the image.
                         </label>
+
+                        <div className="mb-8 sm:mb-12 w-full max-w-5xl mx-auto px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-8">
+        <div className="w-full sm:max-w-[48%] rounded-xl overflow-hidden border border-white/20 shadow-lg">
+            <img
+                src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760461420/Picture3_wtdno4.png"
+                alt="First image for captions"
+                className="w-full object-cover max-h-[400px] sm:max-h-[500px]"
+            />
+        </div>
+        <div className="w-full sm:max-w-[48%] rounded-xl overflow-hidden border border-white/20 shadow-lg">
+            <img
+                src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760461420/Picture2_yflw5y.png"
+                alt="Second image for captions"
+                className="w-full object-cover max-h-[400px] sm:max-h-[500px]"
+            />
+        </div>
+    </div>
+</div>
                         <textarea
                             id="curation-captions"
                             required
@@ -187,6 +223,21 @@ export default function CurationForm({ label = "Curation" }: CurationFormProps) 
                         <label className="block text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5" htmlFor="curation-themes">
                             3. Based on the video, suggest at least two theme ideas for the next TEDx event along with taglines.
                         </label>
+                        {/* YouTube TED Talk Embed with Autoplay */}
+                        <div className="mb-8 sm:mb-12 w-full max-w-5xl mx-auto px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32">
+                            <div className="aspect-video">
+                                <iframe
+                                    width="100%"
+                                    height="100%"
+                                    src="https://res.cloudinary.com/dkbvknwcu/video/upload/v1760460260/Dare_to_disagree___Margaret_Heffernan_gdjv2a.mp4"
+                                    title="Margaret Heffernan: Dare to Disagree"
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                    className="rounded-xl shadow-lg"
+                                ></iframe>
+                            </div>
+                        </div>
                         <textarea
                             id="curation-themes"
                             required
@@ -286,7 +337,7 @@ export default function CurationForm({ label = "Curation" }: CurationFormProps) 
                         <div className="mb-8 sm:mb-12">
                             <div className="relative w-full max-w-full rounded-2xl overflow-hidden border border-white/20 shadow-2xl">
                                 <img
-                                    src="https://images.unsplash.com/photo-1516321310763-3830f5b1e7f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                                    src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760461419/Picture1_oel361.png"
                                     alt="Inspiring TEDx stage with vibrant lighting and an engaged audience"
                                     className="w-full max-w-full object-cover max-h-[400px] sm:max-h-[500px]"
                                 />

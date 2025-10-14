@@ -29,7 +29,7 @@ export default function SuccessPage() {
                     Thank you for applying to <span className="text-[#E62B1E] font-semibold">TEDxCITBengaluru</span>
                 </p>
                 <p className="text-gray-400 mb-8">
-                    We've received your application and will review it shortly. You'll hear from us soon!
+                    We've received your application and will review it shortly. You'll hear from us soon. Do check your college mail for future updates!
                 </p>
                 <button
                     onClick={() => router.push('/')}
