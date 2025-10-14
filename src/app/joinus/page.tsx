@@ -4,6 +4,9 @@ import { useRouter } from "next/navigation";
 
 export default function JoinUsPage() {
     const router = useRouter();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState("");
+    
     const [formData, setFormData] = useState({
         name: "",
         collegeEmail: "",
@@ -20,6 +23,7 @@ export default function JoinUsPage() {
     ) {
         const { name, value } = event.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
+        setError(""); // Clear error on input change
     }
 
     const semesters = ["1", "2", "3", "4", "5", "6", "7", "8"];
@@ -38,7 +42,7 @@ export default function JoinUsPage() {
         "Media": "media",
     };
 
-    function handleTeamSelectAndRedirect(
+    async function handleTeamSelectAndRedirect(
         event: React.ChangeEvent<HTMLSelectElement>
     ) {
         const chosen = event.target.value;
@@ -47,12 +51,33 @@ export default function JoinUsPage() {
         const updatedFormData = { ...formData, team: chosen };
         setFormData(updatedFormData);
 
-        if (typeof window !== "undefined") {
-            sessionStorage.setItem("basicRecruitmentData", JSON.stringify(updatedFormData));
+        // Validate all required fields before proceeding
+        if (!updatedFormData.name || !updatedFormData.collegeEmail || 
+            !updatedFormData.personalEmail || !updatedFormData.usn || 
+            !updatedFormData.department || !updatedFormData.semester || 
+            !updatedFormData.phone) {
+            setError("Please fill in all required fields before selecting a team.");
+            return;
         }
 
-        if (slug) {
-            router.push(`/joinus/team/${slug}`);
+        setIsSubmitting(true);
+        setError("");
+
+        try {
+            // Store in sessionStorage for team-specific form
+            if (typeof window !== "undefined") {
+                sessionStorage.setItem("basicRecruitmentData", JSON.stringify(updatedFormData));
+            }
+
+            // Navigate to team-specific page
+            if (slug) {
+                router.push(`/joinus/team/${slug}`);
+            }
+        } catch (err) {
+            console.error("Error:", err);
+            setError("An error occurred. Please try again.");
+        } finally {
+            setIsSubmitting(false);
         }
     }
 
@@ -67,15 +92,22 @@ export default function JoinUsPage() {
                     {/* Header */}
                     <header className="text-center mb-16">
                         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-4">
-                            Join <span className="text-red-600">TEDxCITBenagluru</span>
+                            Join <span className="text-red-600">TEDxCITBengaluru</span>
                         </h1>
                         <p className="text-gray-400 text-base sm:text-lg">
                             Fill in your details below and select your preferred team.
                         </p>
                     </header>
 
+                    {/* Error Message */}
+                    {error && (
+                        <div className="mb-6 p-4 bg-red-600/20 border border-red-600 rounded-lg text-red-400 text-sm">
+                            {error}
+                        </div>
+                    )}
+
                     {/* Form */}
-                    <form className="space-y-8 sm:space-y-10">
+                    <form className="space-y-8 sm:space-y-10" onSubmit={(e) => e.preventDefault()}>
                         {[
                             { name: "name", placeholder: "Full Name" },
                             { name: "usn", placeholder: "USN" },
@@ -89,7 +121,8 @@ export default function JoinUsPage() {
                                     value={(formData as any)[input.name]}
                                     onChange={handleChange}
                                     required
-                                    className="bg-black text-white border-b border-gray-700 focus:border-red-600 outline-none py-3 placeholder-gray-500 text-base sm:text-lg transition-all duration-300"
+                                    disabled={isSubmitting}
+                                    className="bg-black text-white border-b border-gray-700 focus:border-red-600 outline-none py-3 placeholder-gray-500 text-base sm:text-lg transition-all duration-300 disabled:opacity-50"
                                 />
                             </div>
                         ))}
@@ -101,7 +134,8 @@ export default function JoinUsPage() {
                                 value={formData.department}
                                 onChange={handleChange}
                                 required
-                                className="bg-black text-white border-b border-gray-700 focus:border-red-600 outline-none py-3 text-base sm:text-lg transition-all duration-300 appearance-none cursor-pointer"
+                                disabled={isSubmitting}
+                                className="bg-black text-white border-b border-gray-700 focus:border-red-600 outline-none py-3 text-base sm:text-lg transition-all duration-300 appearance-none cursor-pointer disabled:opacity-50"
                             >
                                 <option value="" disabled>Department</option>
                                 {departments.map((d) => (
@@ -117,7 +151,8 @@ export default function JoinUsPage() {
                                 value={formData.semester}
                                 onChange={handleChange}
                                 required
-                                className="bg-black text-white border-b border-gray-700 focus:border-red-600 outline-none py-3 text-base sm:text-lg transition-all duration-300 appearance-none cursor-pointer"
+                                disabled={isSubmitting}
+                                className="bg-black text-white border-b border-gray-700 focus:border-red-600 outline-none py-3 text-base sm:text-lg transition-all duration-300 appearance-none cursor-pointer disabled:opacity-50"
                             >
                                 <option value="" disabled>Semester</option>
                                 {semesters.map((s) => (
@@ -136,10 +171,11 @@ export default function JoinUsPage() {
                                 value={formData.team}
                                 onChange={handleTeamSelectAndRedirect}
                                 required
-                                className="w-full bg-red-600 text-black font-semibold rounded-lg py-4 px-4 text-base sm:text-lg text-center outline-none cursor-pointer transition-all duration-300 hover:bg-red-700 active:scale-[0.98]"
+                                disabled={isSubmitting}
+                                className="w-full bg-red-600 text-black font-semibold rounded-lg py-4 px-4 text-base sm:text-lg text-center outline-none cursor-pointer transition-all duration-300 hover:bg-red-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <option value="" disabled className="bg-black text-white">
-                                    Select Your Team
+                                    {isSubmitting ? "Processing..." : "Select Your Team"}
                                 </option>
                                 {teams.map((t) => (
                                     <option key={t} value={t} className="bg-black text-white">

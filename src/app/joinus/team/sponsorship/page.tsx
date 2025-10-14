@@ -2,12 +2,10 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-// Define prop interface for consistency with TechnicalForm
 interface SponsorshipFormProps {
-    label?: string; // Defaults to "Sponsorship"
+    label?: string;
 }
 
-// Define the shape for form answers
 interface FormAnswers {
     outreach: string;
     pitch: string;
@@ -19,7 +17,17 @@ interface FormAnswers {
     availability: string;
 }
 
-// Map IDs to state keys for easy handling
+interface BasicFormData {
+    name: string;
+    team: string;
+    collegeEmail: string;
+    personalEmail: string;
+    usn: string;
+    department: string;
+    semester: string;
+    phone: string;
+}
+
 const formFieldMap: Record<string, string> = {
     'sp-outreach': 'outreach',
     'sp-pitch': 'pitch',
@@ -31,15 +39,15 @@ const formFieldMap: Record<string, string> = {
     'sp-availability': 'availability',
 };
 
-// --- Custom Button Classes for Polish (matching TechnicalForm) ---
 const backButtonClasses = `w-full sm:w-48 bg-black hover:bg-white/20 text-white font-semibold py-4 px-8 rounded-full transition duration-300 border border-white/30 disabled:opacity-50 tracking-wide shadow-lg`;
 const submitButtonClasses = `w-full sm:w-48 bg-[#E62B1E] hover:bg-red-600 text-white font-semibold py-4 px-8 rounded-full transition duration-300 shadow-lg shadow-red-900/40 disabled:opacity-50 tracking-wide`;
 
-// ----------------------------------------
 export default function SponsorshipForm({ label = "Sponsorship" }: SponsorshipFormProps) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isClient, setIsClient] = useState(false);
+    const [basicData, setBasicData] = useState<BasicFormData | null>(null);
+    const [error, setError] = useState("");
     const [answers, setAnswers] = useState<FormAnswers>({
         outreach: '',
         pitch: '',
@@ -51,12 +59,14 @@ export default function SponsorshipForm({ label = "Sponsorship" }: SponsorshipFo
         availability: '',
     });
 
-    // 1. Client Detection (for hydration safety)
     useEffect(() => {
-        setIsClient(true); // Mark as client-side after mount
+        setIsClient(true);
+        const data = sessionStorage.getItem('basicRecruitmentData');
+        if (data) {
+            setBasicData(JSON.parse(data));
+        }
     }, []);
 
-    // 2. Universal Change Handler
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { id, value } = e.target;
         const stateKey = formFieldMap[id];
@@ -64,26 +74,56 @@ export default function SponsorshipForm({ label = "Sponsorship" }: SponsorshipFo
         if (stateKey) {
             setAnswers(prev => ({ ...prev, [stateKey]: value }));
         }
+        setError("");
     };
 
-    // 3. Submission Handler
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setIsSubmitting(true);
+        setError("");
+
+        const finalSubmissionPayload = {
+            basicDetails: basicData,
+            sponsorshipDetails: answers,
+        };
+
         try {
-            console.log("Submitting Payload:", answers);
-            // Simulate API delay
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            alert(`${label} application submitted successfully!`);
-            router.push('/joinus/thank-you');
+            const response = await fetch('/api/recruitment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(finalSubmissionPayload),
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to submit application');
+            }
+
+            sessionStorage.removeItem('basicRecruitmentData');
+            router.push('/joinus/success');
         } catch (error) {
             console.error("Submission Error:", error);
-            alert("An error occurred during submission. Please try again.");
+            setError(error instanceof Error ? error.message : "An error occurred during submission. Please try again.");
             setIsSubmitting(false);
         }
     }
 
-    // 4. Render nothing during SSR to avoid hydration mismatch
+    if (!basicData && isClient) {
+        return (
+            <div className="flex justify-center min-h-screen bg-black py-16">
+                <div className="text-center p-10 bg-red-900/20 border border-red-700 rounded-2xl max-w-lg mx-auto my-16">
+                    <p className="text-2xl text-red-400 font-semibold">Application Session Lost</p>
+                    <p className="text-white mt-4">
+                        Please return to the <button onClick={() => router.push('/joinus')} className="text-[#E62B1E] underline hover:text-red-400 transition">basic details page</button> to start your application.
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
     if (!isClient) {
         return null;
     }
@@ -95,27 +135,18 @@ export default function SponsorshipForm({ label = "Sponsorship" }: SponsorshipFo
                 onSubmit={handleSubmit}
                 className="w-full max-w-5xl px-8 sm:px-16 md:px-24 lg:px-32"
             >
-                {/* Header Above YouTube Video */}
                 <header className="mb-12 text-center">
                     <h1 className="text-3xl font-bold text-white border-b-2 border-red-700 pb-4">
                         Please answer the following questions for the <span className="text-[#E62B1E]">{label}</span> recruitment round.
                     </h1>
                 </header>
 
-                {/* Responsive YouTube embed */}
-                <div className="mb-24">
-                    <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/20 shadow-2xl">
-                        <iframe
-                            className="absolute inset-0 w-full h-full"
-                            src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1"
-                            title={`${label} Team Intro`}
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            allowFullScreen
-                        />
+                {error && (
+                    <div className="mb-8 p-4 bg-red-600/20 border border-red-600 rounded-lg text-red-400 text-sm">
+                        {error}
                     </div>
-                </div>
+                )}
 
-                {/* Form Fields Grid - Increased vertical gap */}
                 <div className="grid grid-cols-1 gap-16">
                     <div>
                         <label className="block text-lg font-semibold text-white mb-5" htmlFor="sp-outreach">
@@ -127,14 +158,15 @@ export default function SponsorshipForm({ label = "Sponsorship" }: SponsorshipFo
                             rows={4}
                             value={answers.outreach}
                             onChange={handleChange}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200"
+                            disabled={isSubmitting}
+                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
                             placeholder="Outline your outreach approach"
                         />
                     </div>
 
                     <div>
                         <label className="block text-lg font-semibold text-white mb-5" htmlFor="sp-pitch">
-                            2. What will you say in a call or DM to grab a sponsor’s attention?
+                            2. What will you say in a call or DM to grab a sponsor's attention?
                         </label>
                         <textarea
                             id="sp-pitch"
@@ -142,7 +174,8 @@ export default function SponsorshipForm({ label = "Sponsorship" }: SponsorshipFo
                             rows={3}
                             value={answers.pitch}
                             onChange={handleChange}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200"
+                            disabled={isSubmitting}
+                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
                             placeholder="Write a short pitch script"
                         />
                     </div>
@@ -157,7 +190,8 @@ export default function SponsorshipForm({ label = "Sponsorship" }: SponsorshipFo
                             rows={3}
                             value={answers.channels}
                             onChange={handleChange}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200"
+                            disabled={isSubmitting}
+                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
                             placeholder="e.g., Instagram, LinkedIn, local directories, WhatsApp groups"
                         />
                     </div>
@@ -172,7 +206,8 @@ export default function SponsorshipForm({ label = "Sponsorship" }: SponsorshipFo
                             rows={3}
                             value={answers.selection}
                             onChange={handleChange}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200"
+                            disabled={isSubmitting}
+                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
                             placeholder="Selection criteria (relevance, audience fit, locality, etc.)"
                         />
                     </div>
@@ -187,7 +222,8 @@ export default function SponsorshipForm({ label = "Sponsorship" }: SponsorshipFo
                             rows={4}
                             value={answers.relationships}
                             onChange={handleChange}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200"
+                            disabled={isSubmitting}
+                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
                             placeholder="Follow-ups, deliverables, updates, hospitality, post-event reports"
                         />
                     </div>
@@ -202,7 +238,8 @@ export default function SponsorshipForm({ label = "Sponsorship" }: SponsorshipFo
                             rows={4}
                             value={answers.proposal}
                             onChange={handleChange}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200"
+                            disabled={isSubmitting}
+                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
                             placeholder="Benefits, audience, visibility, tiers, pricing, timelines"
                         />
                     </div>
@@ -217,7 +254,8 @@ export default function SponsorshipForm({ label = "Sponsorship" }: SponsorshipFo
                             rows={3}
                             value={answers.objections}
                             onChange={handleChange}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200"
+                            disabled={isSubmitting}
+                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
                             placeholder="Objection handling and re-engagement strategy"
                         />
                     </div>
@@ -232,13 +270,13 @@ export default function SponsorshipForm({ label = "Sponsorship" }: SponsorshipFo
                             rows={3}
                             value={answers.availability}
                             onChange={handleChange}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200"
+                            disabled={isSubmitting}
+                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
                             placeholder="Describe your plan to stay reachable"
                         />
                     </div>
                 </div>
 
-                {/* Submit/Back Bar (Centered with Increased Spacing) */}
                 <div className="mt-24 flex flex-col sm:flex-row items-center justify-center gap-12 py-10 border-t border-white/20">
                     <button
                         type="button"
