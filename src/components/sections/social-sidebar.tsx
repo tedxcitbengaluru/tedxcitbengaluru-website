@@ -47,7 +47,7 @@ export default function SocialSidebar() {
             <nav className="flex flex-col items-center gap-5 md:gap-6">
               {/* INSTAGRAM LINK */}
               <a
-                href="#instagram"
+                href="https://www.instagram.com/tedxcitbengaluru/"
                 className="text-gray-400 hover:text-red-600 hover:scale-110 transition-all duration-200 p-2 hover:bg-gray-900 rounded-lg"
                 aria-label="Instagram"
               >
@@ -56,7 +56,8 @@ export default function SocialSidebar() {
 
               {/* LINKEDIN LINK */}
               <a
-                href="#linkedin"
+
+                href="https://www.linkedin.com/company/tedxcitbengaluru/"
                 className="text-gray-400 hover:text-red-600 hover:scale-110 transition-all duration-200 p-2 hover:bg-gray-900 rounded-lg"
                 aria-label="LinkedIn"
               >
