@@ -280,14 +280,14 @@ body {
 /* Container System */
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 0 1rem;
 }
 
 @media (min-width: 640px) {
   .container {
-    padding: 0 1.5rem;
+    padding: 0 1.25rem;
   }
 }
 
@@ -295,6 +295,24 @@ body {
   .container {
     padding: 0 2rem;
   }
+}
+
+/* Section vertical rhythm */
+.section {
+  padding-top: var(--space-2xl);
+  padding-bottom: var(--space-2xl);
+}
+
+@media (min-width: 768px) {
+  .section {
+    padding-top: var(--space-3xl);
+    padding-bottom: var(--space-3xl);
+  }
+}
+
+/* Content width for readable text */
+.content-width {
+  max-width: 72ch;
 }
 
 /* Grid System */

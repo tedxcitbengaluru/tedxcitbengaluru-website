@@ -1,110 +1,67 @@
-// "use client";
-// import React from "react";
-
-// export default function FooterSection() {
-//   return (
-//     <footer className="relative w-full text-white overflow-hidden">
-//       {/* Background gradient + wave */}
-//       <div className="absolute inset-0 bg-gradient-to-b from-[#b30000] to-[#8b0000]" />
-//       <svg
-//         className="absolute top-0 left-0 w-full h-40 md:h-52"
-//         viewBox="0 0 1440 320"
-//         preserveAspectRatio="none"
-//       >
-//         <path
-//           fill="#111111"
-//           d="M0,160 C480,260 960,60 1440,160 L1440,0 L0,0 Z"
-//         ></path>
-//         <path
-//           fill="none"
-//           stroke="#111111"
-//           strokeWidth="8"
-//           d="M0,180 C480,280 960,80 1440,180"
-//         ></path>
-//         <path
-//           fill="none"
-//           stroke="#111111"
-//           strokeWidth="8"
-//           d="M0,200 C480,300 960,100 1440,200"
-//         ></path>
-//         <path
-//           fill="none"
-//           stroke="#111111"
-//           strokeWidth="8"
-//           d="M0,220 C480,320 960,120 1440,220"
-//         ></path>
-//       </svg>
-
-//       {/* Main Content */}
-//       <div className="relative z-10 flex flex-col items-center justify-center text-center py-24 md:py-32 px-6">
-//         <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-black max-w-3xl">
-//           Be a part of our upcoming event at{" "}
-//           <span className="text-[#111111] font-extrabold">TEDxCITBengaluru</span>
-//         </h2>
-
-//         <button className="mt-8 bg-[#111111] text-white text-lg font-semibold py-3 px-8 rounded-xl hover:bg-[#333333] transition-all duration-300">
-//           Register Now!
-//         </button>
-//       </div>
-
-//       {/* Footer Bottom */}
-//       <div className="relative z-10 bg-[#111111] text-gray-300 text-sm text-center py-3">
-//         Copyright ©2023 <span className="text-white font-semibold">TEDxCITBengaluru</span> — 
-//         This independent TEDx event is operated under license from TED
-//       </div>
-//     </footer>
-//   );
-// }
-
-
 "use client";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 export default function Footer() {
+  const router = useRouter();
+
   return (
-    <footer className="relative bg-[#212121] text-white overflow-hidden">
-      {/* Wave background */}
-      <div className="relative w-full">
-        <svg
-          className="w-full h-[220px] md:h-[280px]"
-          viewBox="0 0 1440 320"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
+    <footer className="relative bg-black text-white overflow-hidden">
+      {/* --- Gradient Accent on Top --- */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#E62B1E] via-red-600 to-[#8B1E15]" />
+
+      {/* --- Main Content Section --- */}
+      <div className="flex flex-col items-center justify-center text-center section px-6 sm:px-8">
+        <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-8 md:mb-10 leading-tight">
+          Join us as a part of the{" "}
+          <span className="text-[#E62B1E] font-extrabold">TEDxCITBengaluru</span> team
+        </h3>
+
+        {/* --- Premium Button --- */}
+        <button
+          onClick={() => router.push("/joinus")}
+          className="
+            relative group inline-flex items-center justify-center
+            px-14 sm:px-16 py-5 sm:py-6 min-h-[3.25rem] sm:min-h-[3.5rem]
+            rounded-full text-base sm:text-lg font-semibold tracking-tight whitespace-nowrap leading-normal
+            text-white bg-gradient-to-r from-[#E62B1E] to-[#8B1E15]
+            shadow-[0_6px_16px_rgba(230,43,30,0.32)]
+            ring-1 ring-white/10
+            transition-all duration-200 ease-out
+            hover:shadow-[0_10px_20px_rgba(230,43,30,0.38)]
+            hover:ring-white/20 hover:translate-y-[-1px]
+            active:translate-y-0
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E62B1E]/60
+          "
         >
-          <defs>
-            <linearGradient id="footerGradient" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#E62B1E" />
-              <stop offset="100%" stopColor="#A01212" />
-            </linearGradient>
-          </defs>
-          <path
-            fill="url(#footerGradient)"
-            d="M0,160 C480,260 960,60 1440,160 L1440,320 L0,320 Z"
-          />
-        </svg>
+          <span className="relative z-10 flex items-center gap-3 sm:gap-4 leading-normal">
+            Join Us
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="2.4"
+              stroke="currentColor"
+              className="w-6 h-6 sm:w-7 sm:h-7 transition-transform duration-200 group-hover:translate-x-1"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </span>
+
+          {/* Subtle glossy reflection overlay */}
+          <span className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-transparent opacity-15 group-hover:opacity-25 transition-opacity duration-200" />
+        </button>
       </div>
 
-      {/* CTA (Call to Action) Section */}
-      <div className="absolute inset-0 flex flex-col justify-center items-start px-6 md:px-12 lg:px-20 pointer-events-none">
-        <div className="pointer-events-auto max-w-7xl mx-auto w-full">
-          <h3 className="text-2xl md:text-3xl font-bold mb-6 leading-snug text-left">
-            Be a part of our upcoming event at{" "}
-            <span className="block md:inline text-white font-extrabold">
-              TEDxCITBengaluru
-            </span>
-          </h3>
+      {/* --- Divider Line --- */}
+      <div className="w-4/5 mx-auto border-t border-gray-800" />
 
-          <button className="bg-[#424242] hover:bg-[#555555] text-white font-semibold px-8 py-3 rounded-xl transition">
-            Register Now!
-          </button>
-        </div>
-      </div>
-
-      {/* Bottom Copyright */}
-      <div className="relative z-10 bg-[#212121] border-t border-[#1c1c1c] py-5 text-center text-sm text-[#BDBDBD]">
-        Copyright 2023©TEDxCITBengaluru This independent TEDx event is operated under license from TED
+      {/* --- Copyright --- */}
+      <div className="py-8 text-center text-gray-400 text-sm sm:text-base">
+        © 2025{" "}
+        <span className="font-semibold text-white">TEDxCITBengaluru</span>. This independent
+        TEDx event is operated under license from TED.
       </div>
     </footer>
   );
 }
-
