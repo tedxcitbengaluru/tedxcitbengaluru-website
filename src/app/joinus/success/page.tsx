@@ -1,43 +1,86 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export default function SuccessPage() {
     const router = useRouter();
 
-    useEffect(() => {
-        // Optional: Redirect to home after 5 seconds
-        const timeout = setTimeout(() => {
-            router.push('/');
-        }, 5000);
-
-        return () => clearTimeout(timeout);
-    }, [router]);
-
     return (
-        <div className="flex justify-center items-center min-h-screen bg-black">
-            <div className="text-center p-10 bg-green-900/20 border border-green-700 rounded-2xl max-w-2xl mx-auto">
-                <div className="mb-6">
-                    <svg className="mx-auto h-16 w-16 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+        <div className="min-h-screen bg-black flex flex-col">
+            <div className="w-full h-[2px]" style={{ background: 'var(--color-red)' }} />
+            
+            <div className="section flex-1 flex items-center justify-center">
+                <div className="container">
+                    <div className="max-w-3xl mx-auto w-full text-center">
+                        {/* Success Icon */}
+                        <div className="animate-fade-in-up mb-8">
+                            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full border-2 mb-6" style={{ backgroundColor: 'rgba(230, 43, 30, 0.1)', borderColor: 'var(--color-red)' }}>
+                                <svg 
+                                    className="w-12 h-12" 
+                                    fill="none" 
+                                    viewBox="0 0 24 24" 
+                                    stroke="currentColor"
+                                    style={{ color: 'var(--color-red)' }}
+                                >
+                                    <path 
+                                        strokeLinecap="round" 
+                                        strokeLinejoin="round" 
+                                        strokeWidth={2.5} 
+                                        d="M5 13l4 4L19 7" 
+                                    />
+                                </svg>
+                            </div>
+                        </div>
+
+                        {/* Main Content */}
+                        <div className="animate-fade-in-up" style={{ animationDelay: '0.2s', opacity: 0 }}>
+                            <h1 className="text-heading-1" style={{ marginBottom: 'var(--space-lg)', color: 'white' }}>
+                                Application Submitted <span className="text-red">Successfully!</span>
+                            </h1>
+                            
+                            <div className="text-body" style={{ marginBottom: 'var(--space-2xl)', color: '#d1d5db' }}>
+                                <p style={{ marginBottom: 'var(--space-md)' }}>
+                                    Thank you for applying to <span className="text-red font-semibold">TEDxCITBengaluru</span>.
+                                </p>
+                                <p style={{ marginBottom: 'var(--space-md)' }}>
+                                    We've received your application and our team will review it carefully. 
+                                    You'll hear from us soon regarding the next steps.
+                                </p>
+                                <p className="text-sm" style={{ color: '#9ca3af' }}>
+                                    <strong style={{ color: 'white' }}>Important:</strong> Please check your college email regularly for updates and further instructions.
+                                </p>
+                            </div>
+
+                            {/* Action Button */}
+                            <div className="flex items-center justify-center" style={{ marginBottom: 'var(--space-xl)' }}>
+                                <button
+                                    onClick={() => router.push('/')}
+                                    className="btn btn-primary"
+                                >
+                                    Return to Home
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Decorative Element */}
+                        <div 
+                            className="animate-fade-in-up mt-16 pt-8"
+                            style={{ animationDelay: '0.4s', opacity: 0, borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}
+                        >
+                            <p className="text-sm" style={{ color: '#6b7280' }}>
+                                Questions? Reach out to us at{' '}
+                                <a 
+                                    href="mailto:tedxcitbengaluru@cambridge.edu.in" 
+                                    className="text-red hover:underline transition"
+                                >
+                                    tedxcitbengaluru@cambridge.edu.in
+                                </a>
+                            </p>
+                        </div>
+                    </div>
                 </div>
-                <h1 className="text-4xl font-bold text-white mb-4">
-                    Application Submitted Successfully!
-                </h1>
-                <p className="text-xl text-gray-300 mb-6">
-                    Thank you for applying to <span className="text-[#E62B1E] font-semibold">TEDxCITBengaluru</span>
-                </p>
-                <p className="text-gray-400 mb-8">
-                    We've received your application and will review it shortly. You'll hear from us soon. Do check your college mail for future updates!
-                </p>
-                <button
-                    onClick={() => router.push('/')}
-                    className="bg-[#E62B1E] hover:bg-red-600 text-white font-semibold py-3 px-8 rounded-full transition duration-300"
-                >
-                    Return to Home
-                </button>
             </div>
+
+            <div className="w-full h-[2px]" style={{ background: 'var(--color-red)' }} />
         </div>
     );
 }
