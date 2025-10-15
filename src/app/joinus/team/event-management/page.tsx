@@ -2,22 +2,20 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-interface EventManagementFormProps {
+interface CurationFormProps {
     label?: string;
 }
 
 interface FormAnswers {
+    writingProficiency: string;
+    captions: string;
+    themes: string;
+    resonate: string;
+    philosophy: string;
     why: string;
-    meaning: string;
-    excites: string;
-    pressure: string;
-    teamwork: string;
-    experience: string;
-    prefer: string;
-    strategies: string;
-    tackle: string;
-    portfolio: string;
-    campaign: string;
+    ai: string;
+    enhance: string;
+    imageDesc: string;
 }
 
 interface BasicFormData {
@@ -32,40 +30,33 @@ interface BasicFormData {
 }
 
 const formFieldMap: Record<string, string> = {
-    'em-why': 'why',
-    'em-meaning': 'meaning',
-    'em-excites': 'excites',
-    'em-pressure': 'pressure',
-    'em-teamwork': 'teamwork',
-    'em-experience': 'experience',
-    'em-prefer': 'prefer',
-    'em-strategies': 'strategies',
-    'em-tackle': 'tackle',
-    'em-portfolio': 'portfolio',
-    'em-campaign': 'campaign',
+    'curation-writing-proficiency': 'writingProficiency',
+    'curation-captions': 'captions',
+    'curation-themes': 'themes',
+    'curation-resonate': 'resonate',
+    'curation-philosophy': 'philosophy',
+    'curation-why': 'why',
+    'curation-ai': 'ai',
+    'curation-enhance': 'enhance',
+    'curation-image-desc': 'imageDesc',
 };
 
-const backButtonClasses = `w-full sm:w-48 bg-black hover:bg-white/20 text-white font-semibold py-4 px-8 rounded-full transition duration-300 border border-white/30 disabled:opacity-50 tracking-wide shadow-lg`;
-const submitButtonClasses = `w-full sm:w-48 bg-[#E62B1E] hover:bg-red-600 text-white font-semibold py-4 px-8 rounded-full transition duration-300 shadow-lg shadow-red-900/40 disabled:opacity-50 tracking-wide`;
-
-export default function EventManagementForm({ label = "Event Management" }: EventManagementFormProps) {
+export default function CurationForm({ label = "Curation" }: CurationFormProps) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const [basicData, setBasicData] = useState<BasicFormData | null>(null);
     const [error, setError] = useState("");
     const [answers, setAnswers] = useState<FormAnswers>({
+        writingProficiency: '',
+        captions: '',
+        themes: '',
+        resonate: '',
+        philosophy: '',
         why: '',
-        meaning: '',
-        excites: '',
-        pressure: '',
-        teamwork: '',
-        experience: '',
-        prefer: '',
-        strategies: '',
-        tackle: '',
-        portfolio: '',
-        campaign: '',
+        ai: '',
+        enhance: '',
+        imageDesc: '',
     });
 
     useEffect(() => {
@@ -76,7 +67,7 @@ export default function EventManagementForm({ label = "Event Management" }: Even
         }
     }, []);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const { id, value } = e.target;
         const stateKey = formFieldMap[id];
        
@@ -93,7 +84,7 @@ export default function EventManagementForm({ label = "Event Management" }: Even
 
         const finalSubmissionPayload = {
             basicDetails: basicData,
-            eventManagementDetails: answers,
+            curationDetails: answers,
         };
 
         try {
@@ -122,12 +113,23 @@ export default function EventManagementForm({ label = "Event Management" }: Even
 
     if (!basicData && isClient) {
         return (
-            <div className="flex justify-center min-h-screen bg-black py-16">
-                <div className="text-center p-10 bg-red-900/20 border border-red-700 rounded-2xl max-w-lg mx-auto my-16">
-                    <p className="text-2xl text-red-400 font-semibold">Application Session Lost</p>
-                    <p className="text-white mt-4">
-                        Please return to the <button onClick={() => router.push('/joinus')} className="text-[#E62B1E] underline hover:text-red-400 transition">basic details page</button> to start your application.
-                    </p>
+            <div className="min-h-screen bg-black flex items-center justify-center section">
+                <div className="container">
+                    <div className="team-form-error-card animate-fade-in-up">
+                        <h2 className="text-heading-2" style={{ marginBottom: 'var(--space-md)', color: 'var(--color-red)' }}>
+                            Application Session Lost
+                        </h2>
+                        <p className="text-body text-gray-300">
+                            Please return to the{' '}
+                            <button 
+                                onClick={() => router.push('/joinus')} 
+                                className="text-red underline hover:no-underline transition"
+                            >
+                                basic details page
+                            </button>
+                            {' '}to start your application.
+                        </p>
+                    </div>
                 </div>
             </div>
         );
@@ -138,243 +140,258 @@ export default function EventManagementForm({ label = "Event Management" }: Even
     }
 
     return (
-        <div className="flex justify-center min-h-screen bg-black py-16">
-            <form
-                id="recruitment-form"
-                onSubmit={handleSubmit}
-                className="w-full max-w-5xl px-8 sm:px-16 md:px-24 lg:px-32"
-            >
-                <header className="mb-12 text-center">
-                    <h1 className="text-3xl font-bold text-white border-b-2 border-red-700 pb-4">
-                        Please answer the following questions for the <span className="text-[#E62B1E]">{label}</span> recruitment round.
-                    </h1>
-                </header>
+        <div className="min-h-screen bg-black flex flex-col">
+            <div className="w-full h-[2px] bg-red" style={{ background: 'var(--color-red)' }} />
+            
+            <div className="section flex-1 flex items-center justify-center">
+                <div className="container">
+                    <div className="max-w-4xl mx-auto w-full">
+                        <header className="text-center animate-fade-in-up" style={{ marginBottom: 'var(--space-3xl)' }}>
+                            <h1 className="text-heading-1" style={{ marginBottom: 'var(--space-lg)' }}>
+                                Please answer the following questions for the <span className="text-red">{label}</span> recruitment round.
+                            </h1>
+                        </header>
 
-                <div className="mb-8 sm:mb-12 w-full max-w-5xl mx-auto px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32">
-                    <div className="aspect-video">
-                        <iframe
-                            width="100%"
-                            height="100%"
-                            src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1"
-                            title="YouTube video player"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                            className="rounded-xl shadow-lg"
-                        ></iframe>
-                    </div>
-                </div>
+                        <div className="team-form-video-container animate-fade-in-up" style={{ animationDelay: '0.2s', opacity: 0, marginBottom: 'var(--space-3xl)' }}>
+                            <iframe
+                                width="100%"
+                                height="100%"
+                                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0"
+                                title="YouTube video player"
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                                className="rounded-xl"
+                            ></iframe>
+                        </div>
 
-                {error && (
-                    <div className="mb-8 p-4 bg-red-600/20 border border-red-600 rounded-lg text-red-400 text-sm">
-                        {error}
-                    </div>
-                )}
-
-                <div className="grid grid-cols-1 gap-16">
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-5" htmlFor="em-why">
-                            1. Why do you want to be part of TEDxCIT's Event Management team?
-                        </label>
-                        <textarea
-                            id="em-why"
-                            required
-                            rows={4}
-                            value={answers.why}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
-                            placeholder="Your motivation"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-5" htmlFor="em-meaning">
-                            2. What does "TEDx" mean to you?
-                        </label>
-                        <textarea
-                            id="em-meaning"
-                            required
-                            rows={3}
-                            value={answers.meaning}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
-                            placeholder="Your understanding of TEDx"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-5" htmlFor="em-excites">
-                            3. What excites you most about working in event management?
-                        </label>
-                        <textarea
-                            id="em-excites"
-                            required
-                            rows={3}
-                            value={answers.excites}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
-                            placeholder="What energizes you"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-5" htmlFor="em-pressure">
-                            4. How do you handle work under pressure or tight deadlines?
-                        </label>
-                        <textarea
-                            id="em-pressure"
-                            required
-                            rows={3}
-                            value={answers.pressure}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
-                            placeholder="Give examples if possible"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-5" htmlFor="em-teamwork">
-                            5. Describe a time when you successfully worked as part of a team.
-                        </label>
-                        <textarea
-                            id="em-teamwork"
-                            required
-                            rows={4}
-                            value={answers.teamwork}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
-                            placeholder="Your experience"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-5" htmlFor="em-experience">
-                            6. Do you have any prior experience in logistics, coordination, or event setup?
-                        </label>
-                        <textarea
-                            id="em-experience"
-                            required
-                            rows={3}
-                            value={answers.experience}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
-                            placeholder="Describe relevant experience"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-5" htmlFor="em-prefer">
-                            7. What kind of tasks would you prefer taking up?
-                        </label>
-                        <textarea
-                            id="em-prefer"
-                            required
-                            rows={3}
-                            value={answers.prefer}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
-                            placeholder="e.g., logistics, stage, hospitality, registrations, backstage"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-5" htmlFor="em-strategies">
-                            8. Enlist 3 niche strategies for managing the team well in event management.
-                        </label>
-                        <textarea
-                            id="em-strategies"
-                            required
-                            rows={4}
-                            value={answers.strategies}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
-                            placeholder="Bullet points or short sentences"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-5" htmlFor="em-tackle">
-                            9. Suppose you're the lead and some member(s) are not working, how will you tackle it?
-                        </label>
-                        <textarea
-                            id="em-tackle"
-                            required
-                            rows={3}
-                            value={answers.tackle}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
-                            placeholder="Conflict resolution and accountability"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-5" htmlFor="em-portfolio">
-                            10. Upload portfolio (if you have one)
-                        </label>
-                        <input
-                            id="em-portfolio"
-                            required
-                            type="url"
-                            value={answers.portfolio}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full bg-transparent text-white border-b border-white/20 focus:border-[#E62B1E] focus:outline-none px-2 py-4 transition duration-200 disabled:opacity-50"
-                            placeholder="Paste a portfolio link (Drive/Notion/Behance/etc.)"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-5" htmlFor="em-campaign">
-                            11. Mention a unique campaigning idea for the event.
-                        </label>
-                        <textarea
-                            id="em-campaign"
-                            required
-                            rows={3}
-                            value={answers.campaign}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
-                            placeholder="Your idea"
-                        />
-                    </div>
-                </div>
-
-                <div className="mt-24 flex flex-col sm:flex-row items-center justify-center gap-12 py-10 border-t border-white/20">
-                    <button
-                        type="button"
-                        onClick={() => router.back()}
-                        disabled={isSubmitting}
-                        className={backButtonClasses}
-                    >
-                        &larr; Back to Basic Details
-                    </button>
-                    <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className={submitButtonClasses}
-                    >
-                        {isSubmitting ? (
-                            <div className="flex items-center justify-center">
-                                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                SUBMITTING...
+                        {error && (
+                            <div className="form-error animate-fade-in-up" style={{ marginBottom: 'var(--space-xl)' }}>
+                                {error}
                             </div>
-                        ) : 'Submit Application'}
-                    </button>
+                        )}
+
+                        <div className="team-form-questions animate-fade-in-up" style={{ animationDelay: '0.4s', opacity: 0 }}>
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="curation-writing-proficiency">
+                                    1. How proficient are you with creative writing skills? Please describe your experience and self-assessed proficiency level.
+                                </label>
+                                <textarea
+                                    id="curation-writing-proficiency"
+                                    required
+                                    rows={3}
+                                    value={answers.writingProficiency}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="e.g., I have written short stories and blog posts for 2 years, self-assessed proficiency: 8/10"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="curation-captions">
+                                    2. Write 3 eye-catching captions related to the image.
+                                </label>
+
+                                <div className="curation-image-grid" style={{ marginBottom: 'var(--space-lg)' }}>
+                                    <div className="curation-image-wrapper">
+                                        <img
+                                            src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760461420/Picture3_wtdno4.png"
+                                            alt="First image for captions"
+                                            className="curation-image"
+                                        />
+                                    </div>
+                                    <div className="curation-image-wrapper">
+                                        <img
+                                            src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760461420/Picture2_yflw5y.png"
+                                            alt="Second image for captions"
+                                            className="curation-image"
+                                        />
+                                    </div>
+                                </div>
+
+                                <textarea
+                                    id="curation-captions"
+                                    required
+                                    rows={4}
+                                    value={answers.captions}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Write three options separated by new lines"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="curation-themes">
+                                    3. Based on the video, suggest at least two theme ideas for the next TEDx event along with taglines.
+                                </label>
+                                
+                                <div className="team-form-video-container" style={{ marginBottom: 'var(--space-lg)' }}>
+                                    <iframe
+                                        width="100%"
+                                        height="100%"
+                                        src="https://www.youtube.com/embed/PY_kd46RfVE"
+                                        title="Margaret Heffernan: Dare to Disagree"
+                                        frameBorder="0"
+                                        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                        className="rounded-xl"
+                                    ></iframe>
+                                </div>
+
+                                <textarea
+                                    id="curation-themes"
+                                    required
+                                    rows={4}
+                                    value={answers.themes}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Theme idea + short tagline for each"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="curation-resonate">
+                                    4. Which movie/book/music/series do you resonate with most and how did it impact you?
+                                </label>
+                                <textarea
+                                    id="curation-resonate"
+                                    required
+                                    rows={4}
+                                    value={answers.resonate}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Explain briefly"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="curation-philosophy">
+                                    5. Share a philosophical thought or an idea that you find particularly fascinating.
+                                </label>
+                                <textarea
+                                    id="curation-philosophy"
+                                    required
+                                    rows={3}
+                                    value={answers.philosophy}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Your idea"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="curation-why">
+                                    6. Why have you chosen curation?
+                                </label>
+                                <textarea
+                                    id="curation-why"
+                                    required
+                                    rows={3}
+                                    value={answers.why}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Your motivation"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="curation-ai">
+                                    7. When we have AI for content, why do you think we need a team of curators?
+                                </label>
+                                <textarea
+                                    id="curation-ai"
+                                    required
+                                    rows={3}
+                                    value={answers.ai}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Your perspective"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="curation-enhance">
+                                    8. In what aspects would you enhance a given content?
+                                </label>
+                                <textarea
+                                    id="curation-enhance"
+                                    required
+                                    rows={3}
+                                    value={answers.enhance}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Structure, tone, hooks, call-to-action, etc."
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="curation-image-desc">
+                                    9. For a given image, give us a description based on your creativity.
+                                </label>
+                                
+                                <div className="curation-single-image" style={{ marginBottom: 'var(--space-lg)' }}>
+                                    <img
+                                        src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760494758/WhatsApp_Image_2025-10-14_at_23.26.28_49506398_opln4e.jpg"
+                                        alt="Creative image for description"
+                                        className="curation-image"
+                                    />
+                                </div>
+
+                                <textarea
+                                    id="curation-image-desc"
+                                    required
+                                    rows={3}
+                                    value={answers.imageDesc}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Write an evocative description"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="team-form-submit-bar">
+                            <button
+                                type="button"
+                                onClick={() => router.back()}
+                                disabled={isSubmitting}
+                                className="btn btn-secondary"
+                            >
+                                ← Back to Basic Details
+                            </button>
+                            <button
+                                type="submit"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleSubmit(e as any);
+                                }}
+                                disabled={isSubmitting}
+                                className="btn btn-primary"
+                            >
+                                {isSubmitting ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                        <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        SUBMITTING...
+                                    </span>
+                                ) : 'Submit Application'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </form>
+            </div>
+
+            <div className="w-full h-[2px] bg-red" style={{ background: 'var(--color-red)' }} />
         </div>
     );
 }

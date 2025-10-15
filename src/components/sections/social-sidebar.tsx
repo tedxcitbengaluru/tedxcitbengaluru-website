@@ -66,7 +66,7 @@ export default function SocialSidebar() {
 
               {/* YOUTUBE LINK */}
               <a
-                href="#youtube"
+                href="https://youtube.com/@tedxcitbengaluru?si=-nGEuzBrCFst98i6"
                 className="text-gray-400 hover:text-red-600 hover:scale-110 transition-all duration-200 p-2 hover:bg-gray-900 rounded-lg"
                 aria-label="YouTube"
               >

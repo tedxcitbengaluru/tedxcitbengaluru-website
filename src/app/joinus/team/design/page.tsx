@@ -39,9 +39,6 @@ const formFieldMap: Record<string, string> = {
     'des-links': 'links',
 };
 
-const backButtonClasses = `w-full sm:w-48 bg-black hover:bg-white/20 text-white font-semibold px-6 py-3 sm:px-8 sm:py-4 rounded-full transition duration-300 border border-white/30 disabled:opacity-50 tracking-wide shadow-lg`;
-const submitButtonClasses = `w-full sm:w-48 bg-[#E62B1E] hover:bg-red-600 text-white font-semibold px-6 py-3 sm:px-8 sm:py-4 rounded-full transition duration-300 shadow-lg shadow-red-900/40 disabled:opacity-50 tracking-wide`;
-
 export default function DesignForm({ label = "Design" }: DesignFormProps) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -113,12 +110,23 @@ export default function DesignForm({ label = "Design" }: DesignFormProps) {
 
     if (!basicData && isClient) {
         return (
-            <div className="flex justify-center min-h-screen bg-black py-12 sm:py-16">
-                <div className="text-center p-8 sm:p-10 bg-red-900/20 border border-red-700 rounded-2xl max-w-md sm:max-w-lg mx-auto my-12 sm:my-16">
-                    <p className="text-xl sm:text-2xl text-red-400 font-semibold">Application Session Lost</p>
-                    <p className="text-white mt-4 text-sm sm:text-base">
-                        Please return to the <button onClick={() => router.push('/joinus')} className="text-[#E62B1E] underline hover:text-red-400 transition">basic details page</button> to start your application.
-                    </p>
+            <div className="min-h-screen bg-black flex items-center justify-center section">
+                <div className="container">
+                    <div className="team-form-error-card animate-fade-in-up">
+                        <h2 className="text-heading-2" style={{ marginBottom: 'var(--space-md)', color: 'var(--color-red)' }}>
+                            Application Session Lost
+                        </h2>
+                        <p className="text-body text-gray-300">
+                            Please return to the{' '}
+                            <button 
+                                onClick={() => router.push('/joinus')} 
+                                className="text-red underline hover:no-underline transition"
+                            >
+                                basic details page
+                            </button>
+                            {' '}to start your application.
+                        </p>
+                    </div>
                 </div>
             </div>
         );
@@ -129,196 +137,201 @@ export default function DesignForm({ label = "Design" }: DesignFormProps) {
     }
 
     return (
-        <div className="flex justify-center min-h-screen bg-black py-12 sm:py-16">
-            <form
-                id="recruitment-form"
-                onSubmit={handleSubmit}
-                className="w-full max-w-5xl mx-auto px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32"
-            >
-                <header className="mb-8 sm:mb-12 text-center">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-white border-b-2 border-red-700 pb-3 sm:pb-4">
-                        Please answer the following questions for the <span className="text-[#E62B1E]">{label}</span> recruitment round.
-                    </h1>
-                </header>
+        <div className="min-h-screen bg-black flex flex-col">
+            <div className="w-full h-[2px] bg-red" style={{ background: 'var(--color-red)' }} />
+            
+            <div className="section flex-1 flex items-center justify-center">
+                <div className="container">
+                    <div className="max-w-4xl mx-auto w-full">
+                        <header className="text-center animate-fade-in-up" style={{ marginBottom: 'var(--space-3xl)' }}>
+                            <h1 className="text-heading-1" style={{ marginBottom: 'var(--space-lg)' }}>
+                                Please answer the following questions for the <span className="text-red">{label}</span> recruitment round.
+                            </h1>
+                        </header>
 
-                <div className="mb-8 sm:mb-12 w-full max-w-5xl mx-auto px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32">
-                    <div className="aspect-video">
-                        <iframe
-                            width="100%"
-                            height="100%"
-                            src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1"
-                            title="YouTube video player"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                            className="rounded-xl shadow-lg"
-                        ></iframe>
-                    </div>
-                </div>
+                        <div className="team-form-video-container animate-fade-in-up" style={{ animationDelay: '0.2s', opacity: 0, marginBottom: 'var(--space-3xl)' }}>
+                            <iframe
+                                width="100%"
+                                height="100%"
+                                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0"
+                                title="YouTube video player"
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                                className="rounded-xl"
+                            ></iframe>
+                        </div>
 
-                {error && (
-                    <div className="mb-8 p-4 bg-red-600/20 border border-red-600 rounded-lg text-red-400 text-sm">
-                        {error}
-                    </div>
-                )}
-
-
-                <div className="grid grid-cols-1 gap-8 sm:gap-16">
-                    <div>
-                        <label className="block text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5" htmlFor="des-proficiency">
-                            1. How proficient are you with the following software: Figma, Adobe Photoshop, Adobe Illustrator, Canva, and any other tools? Please specify your proficiency level for each.
-                        </label>
-                        <textarea
-                            id="des-proficiency"
-                            required
-                            rows={4}
-                            value={answers.proficiency}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full max-w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-3 py-2 sm:px-5 sm:py-4 min-h-[120px] sm:min-h-[150px] resize-none transition duration-200 text-sm sm:text-base disabled:opacity-50"
-                            placeholder="e.g., Figma: Advanced, Adobe Photoshop: Intermediate, Adobe Illustrator: Beginner, Canva: Expert, Sketch: Intermediate"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5" htmlFor="des-new-tools">
-                            2. How comfortable are you with trying new tools or learning on the go?
-                        </label>
-                        <textarea
-                            id="des-new-tools"
-                            required
-                            rows={3}
-                            value={answers.newTools}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full max-w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-3 py-2 sm:px-5 sm:py-4 min-h-[120px] sm:min-h-[150px] resize-none transition duration-200 text-sm sm:text-base disabled:opacity-50"
-                            placeholder="Share your approach"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5" htmlFor="des-strategies">
-                            3. What strategies do you use to make an event visually and experientially engaging?
-                        </label>
-                        <textarea
-                            id="des-strategies"
-                            required
-                            rows={4}
-                            value={answers.strategies}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full max-w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-3 py-2 sm:px-5 sm:py-4 min-h-[120px] sm:min-h-[150px] resize-none transition duration-200 text-sm sm:text-base disabled:opacity-50"
-                            placeholder="Share ideas across visual design and experience"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5" htmlFor="des-project">
-                            4. Tell us about a design project you're proud of and how you made it.
-                        </label>
-                        <textarea
-                            id="des-project"
-                            required
-                            rows={4}
-                            value={answers.project}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full max-w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-3 py-2 sm:px-5 sm:py-4 min-h-[120px] sm:min-h-[150px] resize-none transition duration-200 text-sm sm:text-base disabled:opacity-50"
-                            placeholder="Process, tools, outcome"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5" htmlFor="des-trends">
-                            5. What latest trends in design and technology excite you, and how do you use them?
-                        </label>
-                        <textarea
-                            id="des-trends"
-                            required
-                            rows={3}
-                            value={answers.trends}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full max-w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-3 py-2 sm:px-5 sm:py-4 min-h-[120px] sm:min-h-[150px] resize-none transition duration-200 text-sm sm:text-base disabled:opacity-50"
-                            placeholder="Trends and applications"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5" htmlFor="des-inspiration">
-                            6. What inspires your creative work, and how do you translate it into tangible projects?
-                        </label>
-                        <textarea
-                            id="des-inspiration"
-                            required
-                            rows={3}
-                            value={answers.inspiration}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full max-w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-3 py-2 sm:px-5 sm:py-4 min-h-[120px] sm:min-h-[150px] resize-none transition duration-200 text-sm sm:text-base disabled:opacity-50"
-                            placeholder="Inspiration and execution"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5" htmlFor="des-communication">
-                            7. TEDx designs often need coordination with curation and tech — how do you communicate your ideas?
-                        </label>
-                        <textarea
-                            id="des-communication"
-                            required
-                            rows={3}
-                            value={answers.communication}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full max-w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-3 py-2 sm:px-5 sm:py-4 min-h-[120px] sm:min-h-[150px] resize-none transition duration-200 text-sm sm:text-base disabled:opacity-50"
-                            placeholder="Handoffs, feedback loops, tools"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5" htmlFor="des-links">
-                            8. Share past work links (Instagram/Behance/YouTube/Pinterest/Dribbble/Figma/Other)
-                        </label>
-                        <textarea
-                            id="des-links"
-                            required
-                            rows={3}
-                            value={answers.links}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full max-w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-3 py-2 sm:px-5 sm:py-4 min-h-[120px] sm:min-h-[150px] resize-none transition duration-200 text-sm sm:text-base disabled:opacity-50"
-                            placeholder="Paste links here"
-                        />
-                    </div>
-                </div>
-
-                <div className="mt-12 sm:mt-24 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12 py-8 sm:py-10 border-t border-white/20">
-                    <button
-                        type="button"
-                        onClick={() => router.back()}
-                        disabled={isSubmitting}
-                        className={backButtonClasses}
-                    >
-                        &larr; Back to Basic Details
-                    </button>
-                    <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className={submitButtonClasses}
-                    >
-                        {isSubmitting ? (
-                            <div className="flex items-center justify-center">
-                                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                SUBMITTING...
+                        {error && (
+                            <div className="form-error animate-fade-in-up" style={{ marginBottom: 'var(--space-xl)' }}>
+                                {error}
                             </div>
-                        ) : 'Submit Application'}
-                    </button>
+                        )}
+
+                        <div className="team-form-questions animate-fade-in-up" style={{ animationDelay: '0.4s', opacity: 0 }}>
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="des-proficiency">
+                                    1. How proficient are you with the following software: Figma, Adobe Photoshop, Adobe Illustrator, Canva, and any other tools? Please specify your proficiency level for each.
+                                </label>
+                                <textarea
+                                    id="des-proficiency"
+                                    required
+                                    rows={4}
+                                    value={answers.proficiency}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="e.g., Figma: Advanced, Adobe Photoshop: Intermediate, Adobe Illustrator: Beginner, Canva: Expert, Sketch: Intermediate"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="des-new-tools">
+                                    2. How comfortable are you with trying new tools or learning on the go?
+                                </label>
+                                <textarea
+                                    id="des-new-tools"
+                                    required
+                                    rows={3}
+                                    value={answers.newTools}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Share your approach"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="des-strategies">
+                                    3. What strategies do you use to make an event visually and experientially engaging?
+                                </label>
+                                <textarea
+                                    id="des-strategies"
+                                    required
+                                    rows={4}
+                                    value={answers.strategies}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Share ideas across visual design and experience"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="des-project">
+                                    4. Tell us about a design project you're proud of and how you made it.
+                                </label>
+                                <textarea
+                                    id="des-project"
+                                    required
+                                    rows={4}
+                                    value={answers.project}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Process, tools, outcome"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="des-trends">
+                                    5. What latest trends in design and technology excite you, and how do you use them?
+                                </label>
+                                <textarea
+                                    id="des-trends"
+                                    required
+                                    rows={3}
+                                    value={answers.trends}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Trends and applications"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="des-inspiration">
+                                    6. What inspires your creative work, and how do you translate it into tangible projects?
+                                </label>
+                                <textarea
+                                    id="des-inspiration"
+                                    required
+                                    rows={3}
+                                    value={answers.inspiration}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Inspiration and execution"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="des-communication">
+                                    7. TEDx designs often need coordination with curation and tech — how do you communicate your ideas?
+                                </label>
+                                <textarea
+                                    id="des-communication"
+                                    required
+                                    rows={3}
+                                    value={answers.communication}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Handoffs, feedback loops, tools"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="des-links">
+                                    8. Share past work links (Instagram/Behance/YouTube/Pinterest/Dribbble/Figma/Other)
+                                </label>
+                                <textarea
+                                    id="des-links"
+                                    required
+                                    rows={3}
+                                    value={answers.links}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Paste links here"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="team-form-submit-bar">
+                            <button
+                                type="button"
+                                onClick={() => router.back()}
+                                disabled={isSubmitting}
+                                className="btn btn-secondary"
+                            >
+                                ← Back to Basic Details
+                            </button>
+                            <button
+                                type="submit"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleSubmit(e as any);
+                                }}
+                                disabled={isSubmitting}
+                                className="btn btn-primary"
+                            >
+                                {isSubmitting ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                        <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        SUBMITTING...
+                                    </span>
+                                ) : 'Submit Application'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </form>
+            </div>
+
+            <div className="w-full h-[2px] bg-red" style={{ background: 'var(--color-red)' }} />
         </div>
     );
 }
