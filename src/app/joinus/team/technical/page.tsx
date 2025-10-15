@@ -24,9 +24,6 @@ const formFieldMap: Record<string, string> = {
     'tech-goals': 'goals',
 };
 
-const backButtonClasses = `w-full sm:w-48 bg-black hover:bg-white/20 text-white font-semibold py-4 px-8 rounded-full transition duration-300 border border-white/30 disabled:opacity-50 tracking-wide shadow-lg`;
-const submitButtonClasses = `w-full sm:w-48 bg-[#E62B1E] hover:bg-red-600 text-white font-semibold py-4 px-8 rounded-full transition duration-300 shadow-lg shadow-red-900/40 disabled:opacity-50 tracking-wide`;
-
 export default function TechnicalForm() {
     const router = useRouter();
     const [basicData, setBasicData] = useState<BasicFormData | null>(null);
@@ -59,7 +56,7 @@ export default function TechnicalForm() {
         if (stateKey) {
             setAnswers(prev => ({ ...prev, [stateKey]: value }));
         }
-        setError(""); // Clear error on change
+        setError("");
     };
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -87,10 +84,7 @@ export default function TechnicalForm() {
                 throw new Error(result.error || 'Failed to submit application');
             }
 
-            // Clear session storage
             sessionStorage.removeItem('basicRecruitmentData');
-            
-            // Redirect to success page
             router.push('/joinus/success');
         } catch (error) {
             console.error("Submission Error:", error);
@@ -101,12 +95,23 @@ export default function TechnicalForm() {
 
     if (!basicData && isClient) {
         return (
-            <div className="flex justify-center min-h-screen bg-black py-16">
-                <div className="text-center p-10 bg-red-900/20 border border-red-700 rounded-2xl max-w-lg mx-auto my-16">
-                    <p className="text-2xl text-red-400 font-semibold">Application Session Lost</p>
-                    <p className="text-white mt-4">
-                        Please return to the <button onClick={() => router.push('/joinus')} className="text-[#E62B1E] underline hover:text-red-400 transition">basic details page</button> to start your application.
-                    </p>
+            <div className="min-h-screen bg-black flex items-center justify-center section">
+                <div className="container">
+                    <div className="team-form-error-card animate-fade-in-up">
+                        <h2 className="text-heading-2" style={{ marginBottom: 'var(--space-md)', color: 'var(--color-red)' }}>
+                            Application Session Lost
+                        </h2>
+                        <p className="text-body text-gray-300">
+                            Please return to the{' '}
+                            <button 
+                                onClick={() => router.push('/joinus')} 
+                                className="text-red underline hover:no-underline transition"
+                            >
+                                basic details page
+                            </button>
+                            {' '}to start your application.
+                        </p>
+                    </div>
                 </div>
             </div>
         );
@@ -117,200 +122,222 @@ export default function TechnicalForm() {
     }
 
     return (
-        <div className="flex justify-center min-h-screen bg-black py-16">
-            <form
-                id="recruitment-form"
-                onSubmit={handleSubmit}
-                className="w-full max-w-5xl px-8 sm:px-16 md:px-24 lg:px-32"
-            >
-                {/* Header */}
-                <header className="mb-12 text-center">
-                    <h1 className="text-3xl font-bold text-white border-b-2 border-red-700 pb-4">
-                        Please answer the following questions for the <span className="text-[#E62B1E]">Technical</span> recruitment round.
-                    </h1>
-                </header>
+        <div className="min-h-screen bg-black flex flex-col">
+            <div className="w-full h-[2px] bg-red" style={{ background: 'var(--color-red)' }} />
+            
+            <div className="section flex-1 flex items-center justify-center">
+                <div className="container">
+                    <div className="max-w-4xl mx-auto w-full">
+                        {/* Header */}
+                        <header className="text-center animate-fade-in-up" style={{ marginBottom: 'var(--space-3xl)' }}>
+                            <h1 className="text-heading-1" style={{ marginBottom: 'var(--space-lg)' }}>
+                                Please answer the following questions for the{' '}
+                                <span className="text-red">Technical</span> recruitment round.
+                            </h1>
+                        </header>
 
-                <div className="mb-8 sm:mb-12 w-full max-w-5xl mx-auto px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32">
-                    <div className="aspect-video">
-                        <iframe
-                            width="100%"
-                            height="100%"
-                            src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1"
-                            title="YouTube video player"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                            className="rounded-xl shadow-lg"
-                        ></iframe>
-                    </div>
-                </div>
+                        {/* Video */}
+                        <div className="team-form-video-container animate-fade-in-up" style={{ animationDelay: '0.2s', opacity: 0, marginBottom: 'var(--space-3xl)' }}>
+                            <iframe
+                                width="100%"
+                                height="100%"
+                                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0"
+                                title="YouTube video player"
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                                className="rounded-xl"
+                            ></iframe>
+                        </div>
 
-                {/* Error Message */}
-                {error && (
-                    <div className="mb-8 p-4 bg-red-600/20 border border-red-600 rounded-lg text-red-400 text-sm">
-                        {error}
-                    </div>
-                )}
-               
-                {/* Form Fields Grid */}
-                <div className="grid grid-cols-1 gap-16">
-                    {/* 1. Project */}
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-5" htmlFor="tech-project">
-                            1. Share a tech project, website, or script you've built or contributed to. What problem did it solve?
-                        </label>
-                        <textarea
-                            id="tech-project"
-                            required
-                            rows={5}
-                            value={answers.project}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
-                            placeholder="Describe the project, stack, and impact"
-                        />
-                    </div>
-                    {/* 2. Crazy Feature */}
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-5" htmlFor="tech-crazy-feature">
-                            2. If you could build one crazy feature for TEDx — no budget limits — what would it be?
-                        </label>
-                        <textarea
-                            id="tech-crazy-feature"
-                            required
-                            rows={3}
-                            value={answers.crazyFeature}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
-                            placeholder="Dream big"
-                        />
-                    </div>
-                    {/* 3. Incident Response */}
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-5" htmlFor="tech-incident">
-                            3. A few hours before the event, the website backend for ticketing stops responding. What's your first move?
-                        </label>
-                        <textarea
-                            id="tech-incident"
-                            required
-                            rows={3}
-                            value={answers.incidentResponse}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
-                            placeholder="Triage steps, comms, rollback, observability"
-                        />
-                    </div>
-                    {/* 4. Portfolio Link */}
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-5" htmlFor="tech-portfolio">
-                            4. Portfolio / GitHub / Website Link (Required)
-                        </label>
-                        <input
-                            id="tech-portfolio"
-                            required
-                            type="url"
-                            value={answers.portfolioLink}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full bg-transparent text-white border-b border-white/20 focus:border-[#E62B1E] focus:outline-none px-2 py-4 transition duration-200 disabled:opacity-50"
-                            placeholder="Paste a link"
-                        />
-                    </div>
-                    {/* 5. Tools and Next Steps */}
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-5" htmlFor="tech-tools">
-                            5. What tools, languages, or frameworks do you vibe with right now — and what's on your "I want to learn this next" list?
-                        </label>
-                        <textarea
-                            id="tech-tools"
-                            required
-                            rows={3}
-                            value={answers.toolsAndNext}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
-                            placeholder="Stacks you love + next-to-learn"
-                        />
-                    </div>
-                    {/* 6. One Word */}
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-5" htmlFor="tech-one-word">
-                            6. In one word — what do you bring to the team?
-                        </label>
-                        <input
-                            id="tech-one-word"
-                            required
-                            value={answers.oneWord}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full bg-transparent text-white border-b border-white/20 focus:border-[#E62B1E] focus:outline-none px-2 py-4 transition duration-200 disabled:opacity-50"
-                            placeholder="One word"
-                            maxLength={20}
-                        />
-                    </div>
-                    {/* 7. Proof Link */}
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-5" htmlFor="tech-proof">
-                            7. Upload or link something that proves you build stuff — a repo, a design, a script, an automation, even a screenshot.
-                        </label>
-                        <textarea
-                            id="tech-proof"
-                            required
-                            rows={3}
-                            value={answers.proofLink}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
-                            placeholder="Link(s) and short context"
-                        />
-                    </div>
-                    {/* 8. Goals */}
-                    <div>
-                        <label className="block text-lg font-semibold text-white mb-5" htmlFor="tech-goals">
-                            8. What do you want to learn, build, or prove here?
-                        </label>
-                        <textarea
-                            id="tech-goals"
-                            required
-                            rows={3}
-                            value={answers.goals}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-5 py-4 resize-none transition duration-200 disabled:opacity-50"
-                            placeholder="Your goals"
-                        />
-                    </div>
-                </div>
-
-                {/* Submit/Back Bar */}
-                <div className="mt-24 flex flex-col sm:flex-row items-center justify-center gap-12 py-10 border-t border-white/20">
-                    <button
-                        type="button"
-                        onClick={() => router.back()}
-                        disabled={isSubmitting}
-                        className={backButtonClasses}
-                    >
-                        &larr; Back to Basic Details
-                    </button>
-                    <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className={submitButtonClasses}
-                    >
-                        {isSubmitting ? (
-                            <div className="flex items-center justify-center">
-                                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                SUBMITTING...
+                        {/* Error Message */}
+                        {error && (
+                            <div className="form-error animate-fade-in-up" style={{ marginBottom: 'var(--space-xl)' }}>
+                                {error}
                             </div>
-                        ) : 'Submit Application'}
-                    </button>
+                        )}
+                       
+                        {/* Form */}
+                        <div 
+                            id="recruitment-form"
+                            className="team-form-questions animate-fade-in-up"
+                            style={{ animationDelay: '0.4s', opacity: 0 }}
+                        >
+                            {/* Question 1 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="tech-project">
+                                    1. Share a tech project, website, or script you've built or contributed to. What problem did it solve?
+                                </label>
+                                <textarea
+                                    id="tech-project"
+                                    required
+                                    rows={5}
+                                    value={answers.project}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Describe the project, stack, and impact"
+                                />
+                            </div>
+
+                            {/* Question 2 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="tech-crazy-feature">
+                                    2. If you could build one crazy feature for TEDx — no budget limits — what would it be?
+                                </label>
+                                <textarea
+                                    id="tech-crazy-feature"
+                                    required
+                                    rows={3}
+                                    value={answers.crazyFeature}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Dream big"
+                                />
+                            </div>
+
+                            {/* Question 3 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="tech-incident">
+                                    3. A few hours before the event, the website backend for ticketing stops responding. What's your first move?
+                                </label>
+                                <textarea
+                                    id="tech-incident"
+                                    required
+                                    rows={3}
+                                    value={answers.incidentResponse}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Triage steps, comms, rollback, observability"
+                                />
+                            </div>
+
+                            {/* Question 4 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="tech-portfolio">
+                                    4. Portfolio / GitHub / Website Link (Required)
+                                </label>
+                                <input
+                                    id="tech-portfolio"
+                                    required
+                                    type="url"
+                                    value={answers.portfolioLink}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-input-url"
+                                    placeholder="Paste a link"
+                                />
+                            </div>
+
+                            {/* Question 5 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="tech-tools">
+                                    5. What tools, languages, or frameworks do you vibe with right now — and what's on your "I want to learn this next" list?
+                                </label>
+                                <textarea
+                                    id="tech-tools"
+                                    required
+                                    rows={3}
+                                    value={answers.toolsAndNext}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Stacks you love + next-to-learn"
+                                />
+                            </div>
+
+                            {/* Question 6 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="tech-one-word">
+                                    6. In one word — what do you bring to the team?
+                                </label>
+                                <input
+                                    id="tech-one-word"
+                                    required
+                                    value={answers.oneWord}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-input-short"
+                                    placeholder="One word"
+                                    maxLength={20}
+                                />
+                            </div>
+
+                            {/* Question 7 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="tech-proof">
+                                    7. Upload or link something that proves you build stuff — a repo, a design, a script, an automation, even a screenshot.
+                                </label>
+                                <textarea
+                                    id="tech-proof"
+                                    required
+                                    rows={3}
+                                    value={answers.proofLink}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Link(s) and short context"
+                                />
+                            </div>
+
+                            {/* Question 8 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="tech-goals">
+                                    8. What do you want to learn, build, or prove here?
+                                </label>
+                                <textarea
+                                    id="tech-goals"
+                                    required
+                                    rows={3}
+                                    value={answers.goals}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Your goals"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Submit Bar */}
+                        <div className="team-form-submit-bar">
+                            <button
+                                type="button"
+                                onClick={() => router.back()}
+                                disabled={isSubmitting}
+                                className="btn btn-secondary"
+                            >
+                                ← Back to Basic Details
+                            </button>
+                            <button
+                                type="submit"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    const form = document.getElementById('recruitment-form') as HTMLFormElement;
+                                    if (form) {
+                                        handleSubmit(e as any);
+                                    }
+                                }}
+                                disabled={isSubmitting}
+                                className="btn btn-primary"
+                            >
+                                {isSubmitting ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                        <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        SUBMITTING...
+                                    </span>
+                                ) : 'Submit Application'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </form>
+            </div>
+
+            <div className="w-full h-[2px] bg-red" style={{ background: 'var(--color-red)' }} />
         </div>
     );
 }

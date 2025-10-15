@@ -113,17 +113,7 @@ export default function RecruitmentFAB() {
             onMouseDown={handleMouseDown}
             onTouchStart={handleTouchStart}
             onClick={handleFABClick}
-            className={`
-                fixed z-50
-                group inline-flex items-center gap-4
-                rounded-2xl pl-7 pr-8 py-5
-                bg-[#E62B1E]/95 text-white text-base sm:text-lg font-semibold tracking-tight
-                shadow-[0_12px_28px_rgba(230,43,30,0.65)] ring-1 ring-white/30
-                hover:bg-[#E62B1E] hover:shadow-[0_16px_35px_rgba(230,43,30,0.8)]
-                active:scale-[0.97] transition-all duration-300
-                ${hideOnForm ? "opacity-0 pointer-events-none" : "opacity-100"} 
-                cursor-move
-            `}
+            className="recruitment-fab-floating"
             aria-label="Recruitments open — Join us now"
             style={{
                 left: `${position.x}%`,
@@ -131,28 +121,25 @@ export default function RecruitmentFAB() {
                 transform: `translate(-50%, -50%)`,
                 transition: isDragging
                     ? "none"
-                    : "opacity 300ms ease, transform 300ms ease, box-shadow 300ms ease",
+                    : "opacity 300ms ease, transform 300ms ease, box-shadow 300ms ease, backdrop-filter 300ms ease",
+                opacity: hideOnForm ? 0 : 1,
+                pointerEvents: hideOnForm ? 'none' : 'auto',
             }}
             disabled={hideOnForm}
         >
-            <span className="flex flex-col items-start leading-tight">
-                <span className="text-xs sm:text-sm opacity-90 uppercase tracking">
-                    Recruitments Open
-                </span>
-                <span className="text-lg sm:text-xl font-bold">Join us now</span>
-            </span>
-
-            <span className="ml-2 grid place-items-center w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/15 group-hover:bg-white/25 transition">
+            <span className="fab-glow"></span>
+            <span className="fab-content">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
-                    strokeWidth="3"
+                    strokeWidth="2.5"
                     stroke="currentColor"
-                    className="w-7 h-7 sm:w-8 sm:h-8 transition-transform group-hover:translate-x-1"
+                    className="fab-icon"
                 >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
+                <span className="fab-text">Join us</span>
             </span>
         </button>
     );

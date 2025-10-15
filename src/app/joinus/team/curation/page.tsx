@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -41,9 +40,6 @@ const formFieldMap: Record<string, string> = {
     'curation-enhance': 'enhance',
     'curation-image-desc': 'imageDesc',
 };
-
-const backButtonClasses = `w-full sm:w-48 bg-black hover:bg-white/20 text-white font-semibold px-6 py-3 sm:px-8 sm:py-4 rounded-full transition duration-300 border border-white/30 disabled:opacity-50 tracking-wide shadow-lg`;
-const submitButtonClasses = `w-full sm:w-48 bg-[#E62B1E] hover:bg-red-600 text-white font-semibold px-6 py-3 sm:px-8 sm:py-4 rounded-full transition duration-300 shadow-lg shadow-red-900/40 disabled:opacity-50 tracking-wide`;
 
 export default function CurationForm({ label = "Curation" }: CurationFormProps) {
     const router = useRouter();
@@ -117,12 +113,23 @@ export default function CurationForm({ label = "Curation" }: CurationFormProps) 
 
     if (!basicData && isClient) {
         return (
-            <div className="flex justify-center min-h-screen bg-black py-12 sm:py-16">
-                <div className="text-center p-8 sm:p-10 bg-red-900/20 border border-red-700 rounded-2xl max-w-md sm:max-w-lg mx-auto my-12 sm:my-16">
-                    <p className="text-xl sm:text-2xl text-red-400 font-semibold">Application Session Lost</p>
-                    <p className="text-white mt-4 text-sm sm:text-base">
-                        Please return to the <button onClick={() => router.push('/joinus')} className="text-[#E62B1E] underline hover:text-red-400 transition">basic details page</button> to start your application.
-                    </p>
+            <div className="min-h-screen bg-black flex items-center justify-center section">
+                <div className="container">
+                    <div className="team-form-error-card animate-fade-in-up">
+                        <h2 className="text-heading-2" style={{ marginBottom: 'var(--space-md)', color: 'var(--color-red)' }}>
+                            Application Session Lost
+                        </h2>
+                        <p className="text-body text-gray-300">
+                            Please return to the{' '}
+                            <button 
+                                onClick={() => router.push('/joinus')} 
+                                className="text-red underline hover:no-underline transition"
+                            >
+                                basic details page
+                            </button>
+                            {' '}to start your application.
+                        </p>
+                    </div>
                 </div>
             </div>
         );
@@ -133,255 +140,258 @@ export default function CurationForm({ label = "Curation" }: CurationFormProps) 
     }
 
     return (
-        <div className="flex justify-center min-h-screen bg-black py-12 sm:py-16">
-            <form
-                id="recruitment-form"
-                onSubmit={handleSubmit}
-                className="w-full max-w-5xl mx-auto px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32"
-            >
-                <header className="mb-8 sm:mb-12 text-center">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-white border-b-2 border-red-700 pb-3 sm:pb-4">
-                        Please answer the following questions for the <span className="text-[#E62B1E]">{label}</span> recruitment round.
-                    </h1>
-                </header>
+        <div className="min-h-screen bg-black flex flex-col">
+            <div className="w-full h-[2px] bg-red" style={{ background: 'var(--color-red)' }} />
+            
+            <div className="section flex-1 flex items-center justify-center">
+                <div className="container">
+                    <div className="max-w-4xl mx-auto w-full">
+                        <header className="text-center animate-fade-in-up" style={{ marginBottom: 'var(--space-3xl)' }}>
+                            <h1 className="text-heading-1" style={{ marginBottom: 'var(--space-lg)' }}>
+                                Please answer the following questions for the <span className="text-red">{label}</span> recruitment round.
+                            </h1>
+                        </header>
 
-                {/* YouTube Rickroll Embed with Autoplay */}
-                <div className="mb-8 sm:mb-12 w-full max-w-5xl mx-auto px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32">
-                    <div className="aspect-video">
-                        <iframe
-                            width="100%"
-                            height="100%"
-                            src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1"
-                            title="YouTube video player"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                            className="rounded-xl shadow-lg"
-                        ></iframe>
-                    </div>
-                </div>
-
-                {error && (
-                    <div className="mb-8 p-4 bg-red-600/20 border border-red-600 rounded-lg text-red-400 text-sm">
-                        {error}
-                    </div>
-                )}
-
-                <div className="grid grid-cols-1 gap-8 sm:gap-16">
-                    <div>
-                        <label className="block text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5" htmlFor="curation-writing-proficiency">
-                            1. How proficient are you with creative writing skills? Please describe your experience and self-assessed proficiency level.
-                        </label>
-                        <textarea
-                            id="curation-writing-proficiency"
-                            required
-                            rows={3}
-                            value={answers.writingProficiency}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full max-w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-3 py-2 sm:px-5 sm:py-4 min-h-[120px] sm:min-h-[150px] resize-none transition duration-200 text-sm sm:text-base disabled:opacity-50"
-                            placeholder="e.g., I have written short stories and blog posts for 2 years, self-assessed proficiency: 8/10"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5" htmlFor="curation-captions">
-                            2. Write 3 eye-catching captions related to the image.
-                        </label>
-
-                        <div className="mb-8 sm:mb-12 w-full max-w-5xl mx-auto px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32">
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-8">
-        <div className="w-full sm:max-w-[48%] rounded-xl overflow-hidden border border-white/20 shadow-lg">
-            <img
-                src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760461420/Picture3_wtdno4.png"
-                alt="First image for captions"
-                className="w-full object-cover max-h-[400px] sm:max-h-[500px]"
-            />
-        </div>
-        <div className="w-full sm:max-w-[48%] rounded-xl overflow-hidden border border-white/20 shadow-lg">
-            <img
-                src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760461420/Picture2_yflw5y.png"
-                alt="Second image for captions"
-                className="w-full object-cover max-h-[400px] sm:max-h-[500px]"
-            />
-        </div>
-    </div>
-</div>
-                        <textarea
-                            id="curation-captions"
-                            required
-                            rows={4}
-                            value={answers.captions}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full max-w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-3 py-2 sm:px-5 sm:py-4 min-h-[120px] sm:min-h-[150px] resize-none transition duration-200 text-sm sm:text-base disabled:opacity-50"
-                            placeholder="Write three options separated by new lines"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5" htmlFor="curation-themes">
-                            3. Based on the video, suggest at least two theme ideas for the next TEDx event along with taglines.
-                        </label>
-                        {/* YouTube TED Talk Embed with Autoplay */}
-                        <div className="mb-8 sm:mb-12 w-full max-w-5xl mx-auto px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32">
-                            <div className="aspect-video">
-                                <iframe
-                                    width="100%"
-                                    height="100%"
-                                    src="https://res.cloudinary.com/dkbvknwcu/video/upload/v1760460260/Dare_to_disagree___Margaret_Heffernan_gdjv2a.mp4"
-                                    title="Margaret Heffernan: Dare to Disagree"
-                                    frameBorder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
-                                    className="rounded-xl shadow-lg"
-                                ></iframe>
-                            </div>
+                        <div className="team-form-video-container animate-fade-in-up" style={{ animationDelay: '0.2s', opacity: 0, marginBottom: 'var(--space-3xl)' }}>
+                            <iframe
+                                width="100%"
+                                height="100%"
+                                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0"
+                                title="YouTube video player"
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                                className="rounded-xl"
+                            ></iframe>
                         </div>
-                        <textarea
-                            id="curation-themes"
-                            required
-                            rows={4}
-                            value={answers.themes}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full max-w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-3 py-2 sm:px-5 sm:py-4 min-h-[120px] sm:min-h-[150px] resize-none transition duration-200 text-sm sm:text-base disabled:opacity-50"
-                            placeholder="Theme idea + short tagline for each"
-                        />
-                    </div>
 
-                    <div>
-                        <label className="block text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5" htmlFor="curation-resonate">
-                            4. Which movie/book/music/series do you resonate with most and how did it impact you?
-                        </label>
-                        <textarea
-                            id="curation-resonate"
-                            required
-                            rows={4}
-                            value={answers.resonate}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full max-w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-3 py-2 sm:px-5 sm:py-4 min-h-[120px] sm:min-h-[150px] resize-none transition duration-200 text-sm sm:text-base disabled:opacity-50"
-                            placeholder="Explain briefly"
-                        />
-                    </div>
+                        {error && (
+                            <div className="form-error animate-fade-in-up" style={{ marginBottom: 'var(--space-xl)' }}>
+                                {error}
+                            </div>
+                        )}
 
-                    <div>
-                        <label className="block text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5" htmlFor="curation-philosophy">
-                            5. Share a philosophical thought or an idea that you find particularly fascinating.
-                        </label>
-                        <textarea
-                            id="curation-philosophy"
-                            required
-                            rows={3}
-                            value={answers.philosophy}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full max-w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-3 py-2 sm:px-5 sm:py-4 min-h-[120px] sm:min-h-[150px] resize-none transition duration-200 text-sm sm:text-base disabled:opacity-50"
-                            placeholder="Your idea"
-                        />
-                    </div>
+                        <div className="team-form-questions animate-fade-in-up" style={{ animationDelay: '0.4s', opacity: 0 }}>
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="curation-writing-proficiency">
+                                    1. How proficient are you with creative writing skills? Please describe your experience and self-assessed proficiency level.
+                                </label>
+                                <textarea
+                                    id="curation-writing-proficiency"
+                                    required
+                                    rows={3}
+                                    value={answers.writingProficiency}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="e.g., I have written short stories and blog posts for 2 years, self-assessed proficiency: 8/10"
+                                />
+                            </div>
 
-                    <div>
-                        <label className="block text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5" htmlFor="curation-why">
-                            6. Why have you chosen curation?
-                        </label>
-                        <textarea
-                            id="curation-why"
-                            required
-                            rows={3}
-                            value={answers.why}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full max-w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-3 py-2 sm:px-5 sm:py-4 min-h-[120px] sm:min-h-[150px] resize-none transition duration-200 text-sm sm:text-base disabled:opacity-50"
-                            placeholder="Your motivation"
-                        />
-                    </div>
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="curation-captions">
+                                    2. Write 3 eye-catching captions related to the image.
+                                </label>
 
-                    <div>
-                        <label className="block text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5" htmlFor="curation-ai">
-                            7. When we have AI for content, why do you think we need a team of curators?
-                        </label>
-                        <textarea
-                            id="curation-ai"
-                            required
-                            rows={3}
-                            value={answers.ai}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full max-w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-3 py-2 sm:px-5 sm:py-4 min-h-[120px] sm:min-h-[150px] resize-none transition duration-200 text-sm sm:text-base disabled:opacity-50"
-                            placeholder="Your perspective"
-                        />
-                    </div>
+                                <div className="curation-image-grid" style={{ marginBottom: 'var(--space-lg)' }}>
+                                    <div className="curation-image-wrapper">
+                                        <img
+                                            src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760461420/Picture3_wtdno4.png"
+                                            alt="First image for captions"
+                                            className="curation-image"
+                                        />
+                                    </div>
+                                    <div className="curation-image-wrapper">
+                                        <img
+                                            src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760461420/Picture2_yflw5y.png"
+                                            alt="Second image for captions"
+                                            className="curation-image"
+                                        />
+                                    </div>
+                                </div>
 
-                    <div>
-                        <label className="block text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5" htmlFor="curation-enhance">
-                            8. In what aspects would you enhance a given content?
-                        </label>
-                        <textarea
-                            id="curation-enhance"
-                            required
-                            rows={3}
-                            value={answers.enhance}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full max-w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-3 py-2 sm:px-5 sm:py-4 min-h-[120px] sm:min-h-[150px] resize-none transition duration-200 text-sm sm:text-base disabled:opacity-50"
-                            placeholder="Structure, tone, hooks, call-to-action, etc."
-                        />
-                    </div>
+                                <textarea
+                                    id="curation-captions"
+                                    required
+                                    rows={4}
+                                    value={answers.captions}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Write three options separated by new lines"
+                                />
+                            </div>
 
-                    <div>
-                        <label className="block text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5" htmlFor="curation-image-desc">
-                            9. For a given image, give us a description based on your creativity.
-                        </label>
-                        <div className="mb-8 sm:mb-12">
-                            <div className="relative w-full max-w-full rounded-2xl overflow-hidden border border-white/20 shadow-2xl">
-                                <img
-                                    src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760461419/Picture1_oel361.png"
-                                    alt="Inspiring TEDx stage with vibrant lighting and an engaged audience"
-                                    className="w-full max-w-full object-cover max-h-[400px] sm:max-h-[500px]"
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="curation-themes">
+                                    3. Based on the video, suggest at least two theme ideas for the next TEDx event along with taglines.
+                                </label>
+                                
+                                <div className="team-form-video-container" style={{ marginBottom: 'var(--space-lg)' }}>
+                                    <iframe
+                                        width="100%"
+                                        height="100%"
+                                        src="https://www.youtube.com/embed/PY_kd46RfVE?autoplay=1&mute=0"
+                                        title="Margaret Heffernan: Dare to Disagree"
+                                        frameBorder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                        className="rounded-xl"
+                                    ></iframe>
+                                </div>
+
+                                <textarea
+                                    id="curation-themes"
+                                    required
+                                    rows={4}
+                                    value={answers.themes}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Theme idea + short tagline for each"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="curation-resonate">
+                                    4. Which movie/book/music/series do you resonate with most and how did it impact you?
+                                </label>
+                                <textarea
+                                    id="curation-resonate"
+                                    required
+                                    rows={4}
+                                    value={answers.resonate}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Explain briefly"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="curation-philosophy">
+                                    5. Share a philosophical thought or an idea that you find particularly fascinating.
+                                </label>
+                                <textarea
+                                    id="curation-philosophy"
+                                    required
+                                    rows={3}
+                                    value={answers.philosophy}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Your idea"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="curation-why">
+                                    6. Why have you chosen curation?
+                                </label>
+                                <textarea
+                                    id="curation-why"
+                                    required
+                                    rows={3}
+                                    value={answers.why}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Your motivation"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="curation-ai">
+                                    7. When we have AI for content, why do you think we need a team of curators?
+                                </label>
+                                <textarea
+                                    id="curation-ai"
+                                    required
+                                    rows={3}
+                                    value={answers.ai}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Your perspective"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="curation-enhance">
+                                    8. In what aspects would you enhance a given content?
+                                </label>
+                                <textarea
+                                    id="curation-enhance"
+                                    required
+                                    rows={3}
+                                    value={answers.enhance}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Structure, tone, hooks, call-to-action, etc."
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="curation-image-desc">
+                                    9. For a given image, give us a description based on your creativity.
+                                </label>
+                                
+                                <div className="curation-single-image" style={{ marginBottom: 'var(--space-lg)' }}>
+                                    <img
+                                        src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760461419/Picture1_oel361.png"
+                                        alt="Inspiring TEDx stage with vibrant lighting and an engaged audience"
+                                        className="curation-image"
+                                    />
+                                </div>
+
+                                <textarea
+                                    id="curation-image-desc"
+                                    required
+                                    rows={3}
+                                    value={answers.imageDesc}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Write an evocative description"
                                 />
                             </div>
                         </div>
-                        <textarea
-                            id="curation-image-desc"
-                            required
-                            rows={3}
-                            value={answers.imageDesc}
-                            onChange={handleChange}
-                            disabled={isSubmitting}
-                            className="w-full max-w-full bg-transparent text-white border border-white/20 focus:border-[#E62B1E] focus:outline-none rounded-xl px-3 py-2 sm:px-5 sm:py-4 min-h-[120px] sm:min-h-[150px] resize-none transition duration-200 text-sm sm:text-base disabled:opacity-50"
-                            placeholder="Write an evocative description"
-                        />
+
+                        <div className="team-form-submit-bar">
+                            <button
+                                type="button"
+                                onClick={() => router.back()}
+                                disabled={isSubmitting}
+                                className="btn btn-secondary"
+                            >
+                                ← Back to Basic Details
+                            </button>
+                            <button
+                                type="submit"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleSubmit(e as any);
+                                }}
+                                disabled={isSubmitting}
+                                className="btn btn-primary"
+                            >
+                                {isSubmitting ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                        <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        SUBMITTING...
+                                    </span>
+                                ) : 'Submit Application'}
+                            </button>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div className="mt-12 sm:mt-24 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12 py-8 sm:py-10 border-t border-white/20">
-                    <button
-                        type="button"
-                        onClick={() => router.back()}
-                        disabled={isSubmitting}
-                        className={backButtonClasses}
-                    >
-                        &larr; Back to Basic Details
-                    </button>
-                    <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className={submitButtonClasses}
-                    >
-                        {isSubmitting ? (
-                            <div className="flex items-center justify-center">
-                                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                SUBMITTING...
-                            </div>
-                        ) : 'Submit Application'}
-                    </button>
-                </div>
-            </form>
+            <div className="w-full h-[2px] bg-red" style={{ background: 'var(--color-red)' }} />
         </div>
     );
 }
