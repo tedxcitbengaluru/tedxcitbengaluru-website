@@ -175,7 +175,7 @@ export default function EventManagementForm({ label = "Event Management" }: Even
                                 "em-prefer": '7. What kind of tasks would you prefer taking up?',
                                 "em-strategies": '8. Enlist 3 niche strategies for managing the team well in event management.',
                                 "em-tackle": '9. Suppose you are the lead and some member(s) are not working, how will you tackle it?',
-                                "em-portfolio": '10. Upload portfolio (if you have one)',
+                                "em-portfolio": '10. Upload portfolio & attach your social handles  (if you have one)',
                                 "em-campaign": '11. Mention a unique campaigning idea for the event.'
                             }).map(([id, labelText]) => (
                                 <div className="team-form-question" key={id}>
