@@ -13,7 +13,7 @@ export default function Hero() {
       {/* --- Full-width Mountain Background --- */}
       <div className="absolute inset-0">
         <Image
-          src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760494807/mountain_fpdj37.svg"
+          src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760513189/Mask_group_qwx8ys.svg"
           alt="Mountain background"
           fill
           className="object-cover object-bottom w-full h-full"
