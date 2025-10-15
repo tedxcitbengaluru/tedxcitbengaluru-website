@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "TEDxCIT Bengaluru - Empowering Minds to Shape Tomorrow",
   description: "TEDxCIT Bengaluru brings together thought-provoking ideas and inspiring speakers to create meaningful conversations that shape tomorrow.",
+  icons:{
+    icon:"/images/favicon.png",
+  }
 };
 
 export default function RootLayout({

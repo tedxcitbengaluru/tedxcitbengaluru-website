@@ -9,7 +9,7 @@ export default function SuccessPage() {
             <div className="w-full h-[2px]" style={{ background: 'var(--color-red)' }} />
             
             <div className="section flex-1 flex items-center justify-center">
-                <div className="container">
+                <div className="container-center">
                     <div className="max-w-3xl mx-auto w-full text-center">
                         {/* Success Icon */}
                         <div className="animate-fade-in-up mb-8">

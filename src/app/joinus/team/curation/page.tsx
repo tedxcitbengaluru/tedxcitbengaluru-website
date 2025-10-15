@@ -114,7 +114,7 @@ export default function CurationForm({ label = "Curation" }: CurationFormProps) 
     if (!basicData && isClient) {
         return (
             <div className="min-h-screen bg-black flex items-center justify-center section">
-                <div className="container">
+                <div className="container-center">
                     <div className="team-form-error-card animate-fade-in-up">
                         <h2 className="text-heading-2" style={{ marginBottom: 'var(--space-md)', color: 'var(--color-red)' }}>
                             Application Session Lost
@@ -144,7 +144,7 @@ export default function CurationForm({ label = "Curation" }: CurationFormProps) 
             <div className="w-full h-[2px] bg-red" style={{ background: 'var(--color-red)' }} />
             
             <div className="section flex-1 flex items-center justify-center">
-                <div className="container">
+                <div className="container-center">
                     <div className="max-w-4xl mx-auto w-full">
                         <header className="text-center animate-fade-in-up" style={{ marginBottom: 'var(--space-3xl)' }}>
                             <h1 className="text-heading-1" style={{ marginBottom: 'var(--space-lg)' }}>

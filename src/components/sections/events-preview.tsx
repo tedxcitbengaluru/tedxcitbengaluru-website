@@ -13,7 +13,7 @@ export default function EventPreview() {
           <div className="w-full lg:w-1/2 flex-shrink-0 animate-fade-in-left">
             <div className="event-image-container">
               <img
-                src="/images/team.jpg"
+                src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760513601/_Y3A8216_1_s00m6b.png"
                 alt="Event or team photo preview"
                 className="w-full h-full object-cover"
               />
