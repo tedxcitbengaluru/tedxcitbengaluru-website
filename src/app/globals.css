@@ -993,3 +993,53 @@ body {
     max-height: 400px;
   }
 }
+
+/* Responsive adjustments for team form */
+@media (max-width: 639px) {
+  .team-form-error-card {
+    max-width: 100%;
+    padding: var(--space-lg);
+  }
+
+  .team-form-video-container {
+    max-height: 300px;
+  }
+
+  .team-form-question-label {
+    font-size: 1rem;
+  }
+
+  .team-form-textarea {
+    font-size: 0.9375rem; /* Slightly smaller for mobile */
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .team-form-submit-bar {
+    gap: var(--space-md);
+  }
+
+  .team-form-submit-bar .btn {
+    padding: var(--space-sm) var(--space-md);
+    font-size: 0.8125rem;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 767px) {
+  .team-form-video-container {
+    max-height: 400px;
+  }
+
+  .team-form-question-label {
+    font-size: 1.125rem;
+  }
+
+  .team-form-textarea {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .team-form-video-container {
+    max-height: 500px;
+  }
+}
