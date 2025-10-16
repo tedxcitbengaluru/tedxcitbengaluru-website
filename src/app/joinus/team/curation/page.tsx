@@ -16,6 +16,7 @@ interface FormAnswers {
     ai: string;
     enhance: string;
     imageDesc: string;
+    otherTeams: string;
 }
 
 interface BasicFormData {
@@ -39,6 +40,7 @@ const formFieldMap: Record<string, string> = {
     'curation-ai': 'ai',
     'curation-enhance': 'enhance',
     'curation-image-desc': 'imageDesc',
+    'curation-other-teams': 'otherTeams',
 };
 
 export default function CurationForm({ label = "Curation" }: CurationFormProps) {
@@ -57,6 +59,7 @@ export default function CurationForm({ label = "Curation" }: CurationFormProps) 
         ai: '',
         enhance: '',
         imageDesc: '',
+        otherTeams: '',
     });
 
     useEffect(() => {
@@ -354,6 +357,22 @@ export default function CurationForm({ label = "Curation" }: CurationFormProps) 
                                     disabled={isSubmitting}
                                     className="team-form-textarea"
                                     placeholder="Write an evocative description"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="curation-other-teams">
+                                    10. Are you interested in being a part of any other team? If so, please specify which team and share why you would like to join that team.
+                                </label>
+                                <textarea
+                                    id="curation-other-teams"
+                                    required
+                                    rows={3}
+                                    value={answers.otherTeams}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Technical, Sponsorship, Media, Design, Curation, Event Management or type No if you aren't interested"
                                 />
                             </div>
                         </div>

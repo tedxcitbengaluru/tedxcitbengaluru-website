@@ -176,7 +176,7 @@ export default function JoinUsPage() {
                                     name="phone"
                                     value={formData.phone}
                                     onChange={handleChange}
-                                    placeholder="+91 9XXXXXXXXX"
+                                    placeholder="9XXXXXXXXX"
                                     type="tel"
                                     disabled={isSubmitting}
                                 />

@@ -13,6 +13,7 @@ interface FormAnswers {
     tools: string;
     strategy: string;
     links: string;
+    otherTeams:string;
 }
 
 interface BasicFormData {
@@ -33,6 +34,7 @@ const formFieldMap: Record<string, string> = {
     'media-tools': 'tools',
     'media-strategy': 'strategy',
     'media-links': 'links',
+    'media-other-teams': 'otherTeams',
 };
 
 export default function MediaForm({ label = "Media" }: MediaFormProps) {
@@ -48,6 +50,7 @@ export default function MediaForm({ label = "Media" }: MediaFormProps) {
         tools: '',
         strategy: '',
         links: '',
+        otherTeams: '',
     });
 
     useEffect(() => {
@@ -271,6 +274,22 @@ export default function MediaForm({ label = "Media" }: MediaFormProps) {
                                     disabled={isSubmitting}
                                     className="team-form-textarea"
                                     placeholder="Paste any relevant links here"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="media-other-teams">
+                                    7. Are you interested in being a part of any other team? If so, please specify which team and share why you would like to join that team.
+                                </label>
+                                <textarea
+                                    id="media-other-teams"
+                                    required
+                                    rows={3}
+                                    value={answers.otherTeams}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Technical, Sponsorship, Media, Design, Curation, Event Management or type No if you aren't interested"
                                 />
                             </div>
                         </div>

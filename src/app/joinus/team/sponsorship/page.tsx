@@ -15,6 +15,7 @@ interface FormAnswers {
     proposal: string;
     objections: string;
     availability: string;
+    otherTeams: string;
 }
 
 interface BasicFormData {
@@ -37,6 +38,7 @@ const formFieldMap: Record<string, string> = {
     'sp-proposal': 'proposal',
     'sp-objections': 'objections',
     'sp-availability': 'availability',
+    'sp-other-teams': 'otherTeams',
 };
 
 export default function SponsorshipForm({ label = "Sponsorship" }: SponsorshipFormProps) {
@@ -54,6 +56,7 @@ export default function SponsorshipForm({ label = "Sponsorship" }: SponsorshipFo
         proposal: '',
         objections: '',
         availability: '',
+        otherTeams: '',
     });
 
     useEffect(() => {
@@ -294,6 +297,22 @@ export default function SponsorshipForm({ label = "Sponsorship" }: SponsorshipFo
                                     disabled={isSubmitting}
                                     className="team-form-textarea"
                                     placeholder="Describe your plan to stay reachable"
+                                />
+                            </div>
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="sp-other-teams">
+                                    9. Are you interested in being a part of any other team? If so, please specify which team and share why you would like to join that team.
+                                </label>
+                                <textarea
+                                    id="sp-other-teams"
+                                    required
+                                    rows={3}
+                                    value={answers.otherTeams}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Technical, Sponsorship, Media, Design, Curation, Event Management or type No if you aren't interested"
                                 />
                             </div>
                         </div>
