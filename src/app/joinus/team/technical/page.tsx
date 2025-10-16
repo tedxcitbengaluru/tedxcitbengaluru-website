@@ -22,6 +22,7 @@ const formFieldMap: Record<string, string> = {
     'tech-one-word': 'oneWord',
     'tech-proof': 'proofLink',
     'tech-goals': 'goals',
+    'tech-other-teams': 'otherTeams',
 };
 
 export default function TechnicalForm() {
@@ -39,6 +40,7 @@ export default function TechnicalForm() {
         oneWord: '',
         proofLink: '',
         goals: '',
+        otherTeams: '',
     });
 
     useEffect(() => {
@@ -296,6 +298,23 @@ export default function TechnicalForm() {
                                     disabled={isSubmitting}
                                     className="team-form-textarea"
                                     placeholder="Your goals"
+                                />
+                            </div>
+
+                            {/* Question 9 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="tech-other-teams">
+                                    9. Are you interested in being a part of any other team? If so, please specify which team and share why you would like to join that team.
+                                </label>
+                                <textarea
+                                    id="tech-other-teams"
+                                    required
+                                    rows={3}
+                                    value={answers.otherTeams}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Technical, Sponsorship, Media, Design, Curation, Event Management or type No if you aren't interested"
                                 />
                             </div>
                         </div>

@@ -18,6 +18,7 @@ interface FormAnswers {
     tackle: string;
     portfolio: string;
     campaign: string;
+    otherTeams: string;
 }
 
 interface BasicFormData {
@@ -43,6 +44,7 @@ const formFieldMap: Record<string, string> = {
     'em-tackle': 'tackle',
     'em-portfolio': 'portfolio',
     'em-campaign': 'campaign',
+    'em-otherTeams': 'otherTeams',
 };
 
 export default function EventManagementForm({ label = "Event Management" }: EventManagementFormProps) {
@@ -63,6 +65,7 @@ export default function EventManagementForm({ label = "Event Management" }: Even
         tackle: '',
         portfolio: '',
         campaign: '',
+        otherTeams: '',
     });
 
     useEffect(() => {
@@ -164,50 +167,217 @@ export default function EventManagementForm({ label = "Event Management" }: Even
                             </div>
                         )}
 
-                        <div className="team-form-questions animate-fade-in-up" style={{ animationDelay: '0.4s', opacity: 0 }}>
-                            {Object.entries({
-                                "em-why": "1. Why do you want to be part of TEDxCIT's Event Management team?",
-                                "em-meaning": '2. What does "TEDx" mean to you?',
-                                "em-excites": '3. What excites you most about working in event management?',
-                                "em-pressure": '4. How do you handle work under pressure or tight deadlines?',
-                                "em-teamwork": '5. Describe a time when you successfully worked as part of a team.',
-                                "em-experience": '6. Do you have any prior experience in logistics, coordination, or event setup?',
-                                "em-prefer": '7. What kind of tasks would you prefer taking up?',
-                                "em-strategies": '8. Enlist 3 niche strategies for managing the team well in event management.',
-                                "em-tackle": '9. Suppose you are the lead and some member(s) are not working, how will you tackle it?',
-                                "em-portfolio": '10. Upload portfolio & attach your social handles  (if you have one)',
-                                "em-campaign": '11. Mention a unique campaigning idea for the event.'
-                            }).map(([id, labelText]) => (
-                                <div className="team-form-question" key={id}>
-                                    <label className="team-form-question-label" htmlFor={id}>{labelText}</label>
-                                    {id === "em-portfolio" ? (
-                                        <input
-                                            id={id}
-                                            type="url"
-                                            required
-                                            value={answers[formFieldMap[id] as keyof FormAnswers]}
-                                            onChange={handleChange}
-                                            disabled={isSubmitting}
-                                            className="team-form-textarea"
-                                            placeholder="Paste a portfolio link (Drive/Notion/Behance/etc.)"
-                                        />
-                                    ) : (
-                                        <textarea
-                                            id={id}
-                                            required
-                                            rows={3}
-                                            value={answers[formFieldMap[id] as keyof FormAnswers]}
-                                            onChange={handleChange}
-                                            disabled={isSubmitting}
-                                            className="team-form-textarea"
-                                            placeholder="Your answer"
-                                        />
-                                    )}
-                                </div>
-                            ))}
+                        <div 
+                            id="recruitment-form"
+                            className="team-form-questions animate-fade-in-up" 
+                            style={{ animationDelay: '0.4s', opacity: 0 }}
+                        >
+                            {/* Question 1 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="em-why">
+                                    1. Why do you want to be part of TEDxCIT's Event Management team?
+                                </label>
+                                <textarea
+                                    id="em-why"
+                                    required
+                                    rows={3}
+                                    value={answers.why}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Share your motivation and what draws you to event management"
+                                />
+                            </div>
+
+                            {/* Question 2 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="em-meaning">
+                                    2. What does "TEDx" mean to you?
+                                </label>
+                                <textarea
+                                    id="em-meaning"
+                                    required
+                                    rows={3}
+                                    value={answers.meaning}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Your understanding and perspective"
+                                />
+                            </div>
+
+                            {/* Question 3 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="em-excites">
+                                    3. What excites you most about working in event management?
+                                </label>
+                                <textarea
+                                    id="em-excites"
+                                    required
+                                    rows={3}
+                                    value={answers.excites}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="What aspects of event management energize you?"
+                                />
+                            </div>
+
+                            {/* Question 4 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="em-pressure">
+                                    4. How do you handle work under pressure or tight deadlines?
+                                </label>
+                                <textarea
+                                    id="em-pressure"
+                                    required
+                                    rows={3}
+                                    value={answers.pressure}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Describe your approach and give an example if possible"
+                                />
+                            </div>
+
+                            {/* Question 5 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="em-teamwork">
+                                    5. Describe a time when you successfully worked as part of a team.
+                                </label>
+                                <textarea
+                                    id="em-teamwork"
+                                    required
+                                    rows={4}
+                                    value={answers.teamwork}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Share a specific example with context and outcome"
+                                />
+                            </div>
+
+                            {/* Question 6 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="em-experience">
+                                    6. Do you have any prior experience in logistics, coordination, or event setup?
+                                </label>
+                                <textarea
+                                    id="em-experience"
+                                    required
+                                    rows={3}
+                                    value={answers.experience}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="List any relevant experience or type 'None' if you're starting fresh"
+                                />
+                            </div>
+
+                            {/* Question 7 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="em-prefer">
+                                    7. What kind of tasks would you prefer taking up?
+                                </label>
+                                <textarea
+                                    id="em-prefer"
+                                    required
+                                    rows={3}
+                                    value={answers.prefer}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="E.g., logistics, vendor coordination, on-ground execution, planning, etc."
+                                />
+                            </div>
+
+                            {/* Question 8 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="em-strategies">
+                                    8. Enlist 3 niche strategies for managing the team well in event management.
+                                </label>
+                                <textarea
+                                    id="em-strategies"
+                                    required
+                                    rows={4}
+                                    value={answers.strategies}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="List three specific strategies with brief explanations"
+                                />
+                            </div>
+
+                            {/* Question 9 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="em-tackle">
+                                    9. Suppose you are the lead and some member(s) are not working, how will you tackle it?
+                                </label>
+                                <textarea
+                                    id="em-tackle"
+                                    required
+                                    rows={4}
+                                    value={answers.tackle}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Describe your leadership approach to handling underperformance"
+                                />
+                            </div>
+
+                            {/* Question 10 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="em-portfolio">
+                                    10. Upload portfolio & attach your social handles (if you have one)
+                                </label>
+                                <input
+                                    id="em-portfolio"
+                                    type="url"
+                                    required
+                                    value={answers.portfolio}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-input-url"
+                                    placeholder="Paste a portfolio link (Drive/Notion/Behance/etc.)"
+                                />
+                            </div>
+
+                            {/* Question 11 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="em-campaign">
+                                    11. Mention a unique campaigning idea for the event.
+                                </label>
+                                <textarea
+                                    id="em-campaign"
+                                    required
+                                    rows={4}
+                                    value={answers.campaign}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Share a creative and unique campaign idea for TEDxCIT"
+                                />
+                            </div>
+
+                            {/* Question 12 */}
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="em-otherTeams">
+                                    12. Are you interested in being a part of any other team? If so, please specify which team and share why you would like to join that team.
+                                </label>
+                                <textarea
+                                    id="em-otherTeams"
+                                    required
+                                    rows={3}
+                                    value={answers.otherTeams}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Technical, Sponsorship, Media, Design, Curation, Event Management or type 'No' if you aren't interested"
+                                />
+                            </div>
                         </div>
 
-                        <div className="team-form-submit-bar flex flex-col sm:flex-row items-center justify-center gap-4 mt-12">
+                        <div className="team-form-submit-bar">
                             <button
                                 type="button"
                                 onClick={() => router.back()}
@@ -218,7 +388,13 @@ export default function EventManagementForm({ label = "Event Management" }: Even
                             </button>
                             <button
                                 type="submit"
-                                onClick={(e) => { e.preventDefault(); handleSubmit(e as any); }}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    const form = document.getElementById('recruitment-form') as HTMLFormElement;
+                                    if (form) {
+                                        handleSubmit(e as any);
+                                    }
+                                }}
                                 disabled={isSubmitting}
                                 className="btn btn-primary"
                             >

@@ -15,6 +15,7 @@ interface FormAnswers {
     inspiration: string;
     communication: string;
     links: string;
+    otherTeams:string;
 }
 
 interface BasicFormData {
@@ -37,6 +38,7 @@ const formFieldMap: Record<string, string> = {
     'des-inspiration': 'inspiration',
     'des-communication': 'communication',
     'des-links': 'links',
+    'des-otherTeams': 'otherTeams',
 };
 
 export default function DesignForm({ label = "Design" }: DesignFormProps) {
@@ -54,6 +56,7 @@ export default function DesignForm({ label = "Design" }: DesignFormProps) {
         inspiration: '',
         communication: '',
         links: '',
+        otherTeams: '',
     });
 
     useEffect(() => {
@@ -296,6 +299,24 @@ export default function DesignForm({ label = "Design" }: DesignFormProps) {
                                     placeholder="Paste links here"
                                 />
                             </div>
+
+
+                            <div className="team-form-question">
+                                <label className="team-form-question-label" htmlFor="des-otherTeams">
+                                    9. Are you interested in being a part of any other team? If so, please specify which team and share why you would like to join that team.
+                                </label>
+                                <textarea
+                                    id="des-otherTeams"
+                                    required
+                                    rows={3}
+                                    value={answers.otherTeams}
+                                    onChange={handleChange}
+                                    disabled={isSubmitting}
+                                    className="team-form-textarea"
+                                    placeholder="Technical, Sponsorship, Media, Design, Curation, Event Management or type No if you aren't interested"
+                                />
+                            </div>
+
                         </div>
 
                         <div className="team-form-submit-bar">

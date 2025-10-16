@@ -45,6 +45,7 @@ const TEAM_HEADERS: Record<string, string[]> = {
     'One Word',
     'Proof Link',
     'Goals',
+    'otherTeams',
   ],
   'event-management': [
     'Timestamp',
@@ -68,6 +69,7 @@ const TEAM_HEADERS: Record<string, string[]> = {
     'Tackle Non-Working Members',
     'Portfolio Link',
     'Campaign Idea',
+    'otherTeams',
   ],
   'sponsorship': [
     'Timestamp',
@@ -88,6 +90,7 @@ const TEAM_HEADERS: Record<string, string[]> = {
     'Proposal Contents',
     'Handle Objections',
     'Availability Plan',
+    'otherTeams',
   ],
   'curation': [
     'Timestamp',
@@ -109,6 +112,7 @@ const TEAM_HEADERS: Record<string, string[]> = {
     'AI vs Curators',
     'Content Enhancement',
     'Image Description',
+    'otherTeams',
   ],
   'design': [
     'Timestamp',
@@ -129,6 +133,7 @@ const TEAM_HEADERS: Record<string, string[]> = {
     'Inspiration Sources',
     'Team Communication',
     'Past Work Links',
+    'otherTeams',
   ],
   'media': [
     'Timestamp',
@@ -147,6 +152,7 @@ const TEAM_HEADERS: Record<string, string[]> = {
     'New Tools Comfort',
     'Engagement Strategy',
     'Past Work Links',
+    'otherTeams',
   ],
 };
 
@@ -244,7 +250,9 @@ export async function POST(request: NextRequest) {
             technicalDetails.toolsAndNext || '',
             technicalDetails.oneWord || '',
             technicalDetails.proofLink || '',
-            technicalDetails.goals || ''
+            technicalDetails.goals || '',
+            technicalDetails.otherTeams || ''
+
           );
         }
         break;
@@ -261,7 +269,8 @@ export async function POST(request: NextRequest) {
             eventManagementDetails.strategies || '',
             eventManagementDetails.tackle || '',
             eventManagementDetails.portfolio || '',
-            eventManagementDetails.campaign || ''
+            eventManagementDetails.campaign || '',
+            eventManagementDetails.otherTeams || ''
           );
         }
         break;
@@ -275,7 +284,8 @@ export async function POST(request: NextRequest) {
             sponsorshipDetails.relationships || '',
             sponsorshipDetails.proposal || '',
             sponsorshipDetails.objections || '',
-            sponsorshipDetails.availability || ''
+            sponsorshipDetails.availability || '',
+            sponsorshipDetails.otherTeams || ''
           );
         }
         break;
@@ -290,7 +300,8 @@ export async function POST(request: NextRequest) {
             curationDetails.why || '',
             curationDetails.ai || '',
             curationDetails.enhance || '',
-            curationDetails.imageDesc || ''
+            curationDetails.imageDesc || '',
+            curationDetails.otherTeams || ''
           );
         }
         break;
@@ -304,7 +315,8 @@ export async function POST(request: NextRequest) {
             designDetails.trends || '',
             designDetails.inspiration || '',
             designDetails.communication || '',
-            designDetails.links || ''
+            designDetails.links || '',
+            designDetails.otherTeams || ''
           );
         }
         break;
@@ -316,7 +328,8 @@ export async function POST(request: NextRequest) {
             mediaDetails.inspiration || '',
             mediaDetails.tools || '',
             mediaDetails.strategy || '',
-            mediaDetails.links || ''
+            mediaDetails.links || '',
+            mediaDetails.otherTeams || ''
           );
         }
         break;
