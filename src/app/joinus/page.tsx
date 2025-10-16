@@ -164,7 +164,7 @@ export default function JoinUsPage() {
                                     name="usn"
                                     value={formData.usn}
                                     onChange={handleChange}
-                                    placeholder="e.g. 1CD17CS001, If not applicable, write N/A"
+                                    placeholder="Not received? drop your name & section."
                                     disabled={isSubmitting}
                                 />
                             </div>
