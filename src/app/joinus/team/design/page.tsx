@@ -15,7 +15,7 @@ interface FormAnswers {
     inspiration: string;
     communication: string;
     links: string;
-    otherTeams:string;
+    otherTeams: string;
 }
 
 interface BasicFormData {
@@ -70,7 +70,6 @@ export default function DesignForm({ label = "Design" }: DesignFormProps) {
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const { id, value } = e.target;
         const stateKey = formFieldMap[id];
-       
         if (stateKey) {
             setAnswers(prev => ({ ...prev, [stateKey]: value }));
         }
@@ -113,13 +112,13 @@ export default function DesignForm({ label = "Design" }: DesignFormProps) {
 
     if (!basicData && isClient) {
         return (
-            <div className="min-h-screen bg-black flex items-center justify-center section">
-                <div className="container-center">
-                    <div className="team-form-error-card animate-fade-in-up">
-                        <h2 className="text-heading-2" style={{ marginBottom: 'var(--space-md)', color: 'var(--color-red)' }}>
+            <div className="min-h-screen bg-black flex items-center justify-center section px-4 sm:px-6 md:px-0">
+                <div className="container-center w-full max-w-[90%] sm:max-w-md">
+                    <div className="team-form-error-card animate-fade-in-up p-4 sm:p-6">
+                        <h2 className="text-heading-2 mb-4 sm:mb-6 text-red">
                             Application Session Lost
                         </h2>
-                        <p className="text-body text-gray-300">
+                        <p className="text-body text-gray-300 text-sm sm:text-base">
                             Please return to the{' '}
                             <button 
                                 onClick={() => router.push('/joinus')} 
@@ -143,199 +142,195 @@ export default function DesignForm({ label = "Design" }: DesignFormProps) {
         <div className="min-h-screen bg-black flex flex-col">
             <div className="w-full h-[2px] bg-red" style={{ background: 'var(--color-red)' }} />
             
-            <div className="section flex-1 flex items-center justify-center">
-                <div className="container-center">
-                    <div className="max-w-4xl mx-auto w-full">
-                        <header className="text-center animate-fade-in-up" style={{ marginBottom: 'var(--space-3xl)' }}>
-                            <h1 className="text-heading-1" style={{ marginBottom: 'var(--space-lg)' }}>
-                                Please answer the following questions for the <span className="text-red">{label}</span> recruitment round.
-                            </h1>
-                        </header>
+            <div className="section flex-1 flex items-center justify-center px-4 sm:px-6 md:px-0">
+                <div className="container-center max-w-4xl mx-auto w-full">
+                    <header className="text-center animate-fade-in-up" style={{ marginBottom: 'var(--space-3xl)' }}>
+                        <h1 className="text-heading-1 text-xl sm:text-2xl md:text-3xl" style={{ marginBottom: 'var(--space-lg)' }}>
+                            Please answer the following questions for the <span className="text-red">{label}</span> recruitment round.
+                        </h1>
+                    </header>
 
-                        <div className="team-form-video-container animate-fade-in-up" style={{ animationDelay: '0.2s', opacity: 0, marginBottom: 'var(--space-3xl)' }}>
-                            <iframe
-                                width="100%"
-                                height="100%"
-                                src="https://www.youtube.com/embed/sKUo3XQlszU?autoplay=1&mute=0"
-                                title="YouTube video player"
-                                frameBorder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                                className="rounded-xl"
-                            ></iframe>
+                    <div className="team-form-video-container animate-fade-in-up" style={{ animationDelay: '0.2s', opacity: 0, marginBottom: 'var(--space-3xl)' }}>
+                        <iframe
+                            width="100%"
+                            className="rounded-xl w-full aspect-video max-h-[250px] sm:max-h-[350px] md:max-h-[500px]"
+                            src="https://www.youtube.com/embed/sKUo3XQlszU?autoplay=1&mute=0"
+                            title="YouTube video player"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        ></iframe>
+                    </div>
+
+                    {error && (
+                        <div className="form-error animate-fade-in-up text-sm sm:text-base" style={{ marginBottom: 'var(--space-xl)' }}>
+                            {error}
+                        </div>
+                    )}
+
+                    <form 
+                        id="recruitment-form"
+                        className="team-form-questions animate-fade-in-up"
+                        style={{ animationDelay: '0.4s', opacity: 0 }}
+                        onSubmit={handleSubmit}
+                    >
+                        <div className="team-form-question mb-6 sm:mb-8">
+                            <label className="team-form-question-label text-base sm:text-lg md:text-xl" htmlFor="des-proficiency">
+                                1. How proficient are you with the following software: Figma, Adobe Photoshop, Adobe Illustrator, Canva, and any other tools? Please specify your proficiency level for each.
+                            </label>
+                            <textarea
+                                id="des-proficiency"
+                                required
+                                rows={4}
+                                value={answers.proficiency}
+                                onChange={handleChange}
+                                disabled={isSubmitting}
+                                className="team-form-textarea w-full text-sm sm:text-base"
+                                placeholder="e.g., Figma: Advanced, Adobe Photoshop: Intermediate, Adobe Illustrator: Beginner, Canva: Expert, Sketch: Intermediate"
+                            />
                         </div>
 
-                        {error && (
-                            <div className="form-error animate-fade-in-up" style={{ marginBottom: 'var(--space-xl)' }}>
-                                {error}
-                            </div>
-                        )}
-
-                        <div className="team-form-questions animate-fade-in-up" style={{ animationDelay: '0.4s', opacity: 0 }}>
-                            <div className="team-form-question">
-                                <label className="team-form-question-label" htmlFor="des-proficiency">
-                                    1. How proficient are you with the following software: Figma, Adobe Photoshop, Adobe Illustrator, Canva, and any other tools? Please specify your proficiency level for each.
-                                </label>
-                                <textarea
-                                    id="des-proficiency"
-                                    required
-                                    rows={4}
-                                    value={answers.proficiency}
-                                    onChange={handleChange}
-                                    disabled={isSubmitting}
-                                    className="team-form-textarea"
-                                    placeholder="e.g., Figma: Advanced, Adobe Photoshop: Intermediate, Adobe Illustrator: Beginner, Canva: Expert, Sketch: Intermediate"
-                                />
-                            </div>
-
-                            <div className="team-form-question">
-                                <label className="team-form-question-label" htmlFor="des-new-tools">
-                                    2. How comfortable are you with trying new tools or learning on the go?
-                                </label>
-                                <textarea
-                                    id="des-new-tools"
-                                    required
-                                    rows={3}
-                                    value={answers.newTools}
-                                    onChange={handleChange}
-                                    disabled={isSubmitting}
-                                    className="team-form-textarea"
-                                    placeholder="Share your approach"
-                                />
-                            </div>
-
-                            <div className="team-form-question">
-                                <label className="team-form-question-label" htmlFor="des-strategies">
-                                    3. What strategies do you use to make an event visually and experientially engaging?
-                                </label>
-                                <textarea
-                                    id="des-strategies"
-                                    required
-                                    rows={4}
-                                    value={answers.strategies}
-                                    onChange={handleChange}
-                                    disabled={isSubmitting}
-                                    className="team-form-textarea"
-                                    placeholder="Share ideas across visual design and experience"
-                                />
-                            </div>
-
-                            <div className="team-form-question">
-                                <label className="team-form-question-label" htmlFor="des-project">
-                                    4. Tell us about a design project you're proud of and how you made it.
-                                </label>
-                                <textarea
-                                    id="des-project"
-                                    required
-                                    rows={4}
-                                    value={answers.project}
-                                    onChange={handleChange}
-                                    disabled={isSubmitting}
-                                    className="team-form-textarea"
-                                    placeholder="Process, tools, outcome"
-                                />
-                            </div>
-
-                            <div className="team-form-question">
-                                <label className="team-form-question-label" htmlFor="des-trends">
-                                    5. What latest trends in design and technology excite you, and how do you use them?
-                                </label>
-                                <textarea
-                                    id="des-trends"
-                                    required
-                                    rows={3}
-                                    value={answers.trends}
-                                    onChange={handleChange}
-                                    disabled={isSubmitting}
-                                    className="team-form-textarea"
-                                    placeholder="Trends and applications"
-                                />
-                            </div>
-
-                            <div className="team-form-question">
-                                <label className="team-form-question-label" htmlFor="des-inspiration">
-                                    6. What inspires your creative work, and how do you translate it into tangible projects?
-                                </label>
-                                <textarea
-                                    id="des-inspiration"
-                                    required
-                                    rows={3}
-                                    value={answers.inspiration}
-                                    onChange={handleChange}
-                                    disabled={isSubmitting}
-                                    className="team-form-textarea"
-                                    placeholder="Inspiration and execution"
-                                />
-                            </div>
-
-                            <div className="team-form-question">
-                                <label className="team-form-question-label" htmlFor="des-communication">
-                                    7. TEDx designs often need coordination with curation and tech — how do you communicate your ideas?
-                                </label>
-                                <textarea
-                                    id="des-communication"
-                                    required
-                                    rows={3}
-                                    value={answers.communication}
-                                    onChange={handleChange}
-                                    disabled={isSubmitting}
-                                    className="team-form-textarea"
-                                    placeholder="Handoffs, feedback loops, tools"
-                                />
-                            </div>
-
-                            <div className="team-form-question">
-                                <label className="team-form-question-label" htmlFor="des-links">
-                                    8. Share past work links (Instagram/Behance/YouTube/Pinterest/Dribbble/Figma/Other)
-                                </label>
-                                <textarea
-                                    id="des-links"
-                                    required
-                                    rows={3}
-                                    value={answers.links}
-                                    onChange={handleChange}
-                                    disabled={isSubmitting}
-                                    className="team-form-textarea"
-                                    placeholder="Paste links here"
-                                />
-                            </div>
-
-
-                            <div className="team-form-question">
-                                <label className="team-form-question-label" htmlFor="des-otherTeams">
-                                    9. Are you interested in being a part of any other team? If so, please specify which team and share why you would like to join that team.
-                                </label>
-                                <textarea
-                                    id="des-otherTeams"
-                                    required
-                                    rows={3}
-                                    value={answers.otherTeams}
-                                    onChange={handleChange}
-                                    disabled={isSubmitting}
-                                    className="team-form-textarea"
-                                    placeholder="Technical, Sponsorship, Media, Design, Curation, Event Management or type No if you aren't interested"
-                                />
-                            </div>
-
+                        <div className="team-form-question mb-6 sm:mb-8">
+                            <label className="team-form-question-label text-base sm:text-lg md:text-xl" htmlFor="des-new-tools">
+                                2. How comfortable are you with trying new tools or learning on the go?
+                            </label>
+                            <textarea
+                                id="des-new-tools"
+                                required
+                                rows={3}
+                                value={answers.newTools}
+                                onChange={handleChange}
+                                disabled={isSubmitting}
+                                className="team-form-textarea w-full text-sm sm:text-base"
+                                placeholder="Share your approach"
+                            />
                         </div>
 
-                        <div className="team-form-submit-bar">
+                        <div className="team-form-question mb-6 sm:mb-8">
+                            <label className="team-form-question-label text-base sm:text-lg md:text-xl" htmlFor="des-strategies">
+                                3. What strategies do you use to make an event visually and experientially engaging?
+                            </label>
+                            <textarea
+                                id="des-strategies"
+                                required
+                                rows={4}
+                                value={answers.strategies}
+                                onChange={handleChange}
+                                disabled={isSubmitting}
+                                className="team-form-textarea w-full text-sm sm:text-base"
+                                placeholder="Share ideas across visual design and experience"
+                            />
+                        </div>
+
+                        <div className="team-form-question mb-6 sm:mb-8">
+                            <label className="team-form-question-label text-base sm:text-lg md:text-xl" htmlFor="des-project">
+                                4. Tell us about a design project you're proud of and how you made it.
+                            </label>
+                            <textarea
+                                id="des-project"
+                                required
+                                rows={4}
+                                value={answers.project}
+                                onChange={handleChange}
+                                disabled={isSubmitting}
+                                className="team-form-textarea w-full text-sm sm:text-base"
+                                placeholder="Process, tools, outcome"
+                            />
+                        </div>
+
+                        <div className="team-form-question mb-6 sm:mb-8">
+                            <label className="team-form-question-label text-base sm:text-lg md:text-xl" htmlFor="des-trends">
+                                5. What latest trends in design and technology excite you, and how do you use them?
+                            </label>
+                            <textarea
+                                id="des-trends"
+                                required
+                                rows={3}
+                                value={answers.trends}
+                                onChange={handleChange}
+                                disabled={isSubmitting}
+                                className="team-form-textarea w-full text-sm sm:text-base"
+                                placeholder="Trends and applications"
+                            />
+                        </div>
+
+                        <div className="team-form-question mb-6 sm:mb-8">
+                            <label className="team-form-question-label text-base sm:text-lg md:text-xl" htmlFor="des-inspiration">
+                                6. What inspires your creative work, and how do you translate it into tangible projects?
+                            </label>
+                            <textarea
+                                id="des-inspiration"
+                                required
+                                rows={3}
+                                value={answers.inspiration}
+                                onChange={handleChange}
+                                disabled={isSubmitting}
+                                className="team-form-textarea w-full text-sm sm:text-base"
+                                placeholder="Inspiration and execution"
+                            />
+                        </div>
+
+                        <div className="team-form-question mb-6 sm:mb-8">
+                            <label className="team-form-question-label text-base sm:text-lg md:text-xl" htmlFor="des-communication">
+                                7. TEDx designs often need coordination with curation and tech — how do you communicate your ideas?
+                            </label>
+                            <textarea
+                                id="des-communication"
+                                required
+                                rows={3}
+                                value={answers.communication}
+                                onChange={handleChange}
+                                disabled={isSubmitting}
+                                className="team-form-textarea w-full text-sm sm:text-base"
+                                placeholder="Handoffs, feedback loops, tools"
+                            />
+                        </div>
+
+                        <div className="team-form-question mb-6 sm:mb-8">
+                            <label className="team-form-question-label text-base sm:text-lg md:text-xl" htmlFor="des-links">
+                                8. Share past work links (Instagram/Behance/YouTube/Pinterest/Dribbble/Figma/Other)
+                            </label>
+                            <textarea
+                                id="des-links"
+                                required
+                                rows={3}
+                                value={answers.links}
+                                onChange={handleChange}
+                                disabled={isSubmitting}
+                                className="team-form-textarea w-full text-sm sm:text-base"
+                                placeholder="Paste links here"
+                            />
+                        </div>
+
+                        <div className="team-form-question mb-6 sm:mb-8">
+                            <label className="team-form-question-label text-base sm:text-lg md:text-xl" htmlFor="des-otherTeams">
+                                9. Are you interested in being a part of any other team? If so, please specify which team and share why you would like to join that team.
+                            </label>
+                            <textarea
+                                id="des-otherTeams"
+                                required
+                                rows={3}
+                                value={answers.otherTeams}
+                                onChange={handleChange}
+                                disabled={isSubmitting}
+                                className="team-form-textarea w-full text-sm sm:text-base"
+                                placeholder="Technical, Sponsorship, Media, Design, Curation, Event Management or type No if you aren't interested"
+                            />
+                        </div>
+
+                        <div className="team-form-submit-bar flex flex-col sm:flex-row sm:gap-4">
                             <button
                                 type="button"
                                 onClick={() => router.back()}
                                 disabled={isSubmitting}
-                                className="btn btn-secondary"
+                                className="btn btn-secondary w-full sm:w-auto text-sm sm:text-base mb-4 sm:mb-0"
                             >
                                 ← Back to Basic Details
                             </button>
                             <button
                                 type="submit"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    handleSubmit(e as any);
-                                }}
                                 disabled={isSubmitting}
-                                className="btn btn-primary"
+                                className="btn btn-primary w-full sm:w-auto text-sm sm:text-base"
                             >
                                 {isSubmitting ? (
                                     <span className="flex items-center justify-center gap-2">
@@ -348,7 +343,7 @@ export default function DesignForm({ label = "Design" }: DesignFormProps) {
                                 ) : 'Submit Application'}
                             </button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
 
