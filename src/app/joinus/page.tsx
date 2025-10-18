@@ -138,7 +138,7 @@ export default function JoinUsPage() {
                                     disabled={isSubmitting}
                                 />
                                 <InputField
-                                    label="College email"
+                                    label="College email (Type N/A it not received)"
                                     name="collegeEmail"
                                     type="email"
                                     value={formData.collegeEmail}
@@ -156,7 +156,7 @@ export default function JoinUsPage() {
                                     type="email"
                                     value={formData.personalEmail}
                                     onChange={handleChange}
-                                    placeholder="yourname@gmail.com"
+                                    placeholder="e.g., yourname@gmail.com"
                                     disabled={isSubmitting}
                                 />
                                 <InputField
@@ -219,8 +219,8 @@ export default function JoinUsPage() {
                             {/* Team Descriptions PDF Embed */}
                             <div className="form-field" style={{ marginBottom: 'var(--space-xl)' }}>
                                 <h2 style={{ 
-                                    fontSize: '1.5rem',
-                                    fontWeight: '600',
+                                    fontSize: '1.2rem',
+                                    fontWeight: '400',
                                     textAlign: 'center',
                                     marginBottom: 'var(--space-lg)',
                                     color: 'white'
