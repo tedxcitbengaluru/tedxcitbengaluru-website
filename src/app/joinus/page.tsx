@@ -218,7 +218,15 @@ export default function JoinUsPage() {
 
                             {/* Team Descriptions PDF Embed */}
                             <div className="form-field" style={{ marginBottom: 'var(--space-xl)' }}>
-                                <label className="form-label">Team Descriptions & Responsibilities</label>
+                                <h2 style={{ 
+                                    fontSize: '1.5rem',
+                                    fontWeight: '600',
+                                    textAlign: 'center',
+                                    marginBottom: 'var(--space-lg)',
+                                    color: 'white'
+                                }}>
+                                    <strong>Team Responsibilities and Skills Required</strong>
+                                </h2>
                                 <div className="w-full" style={{ 
                                     border: '1px solid rgba(255, 255, 255, 0.1)',
                                     borderRadius: '8px',
