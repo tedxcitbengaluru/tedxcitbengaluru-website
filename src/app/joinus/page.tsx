@@ -216,6 +216,25 @@ export default function JoinUsPage() {
                                 />
                             </div>
 
+                            {/* Team Descriptions PDF Embed */}
+                            <div className="form-field" style={{ marginBottom: 'var(--space-xl)' }}>
+                                <label className="form-label">Team Descriptions & Responsibilities</label>
+                                <div className="w-full" style={{ 
+                                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                                    borderRadius: '8px',
+                                    overflow: 'hidden',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.05)'
+                                }}>
+                                    <iframe
+                                        src="https://drive.google.com/file/d/1ouk_5WnyNV-Sne1Vqs8uVYddrpaQGy-G/preview"
+                                        width="100%"
+                                        height="600"
+                                        allow="autoplay"
+                                        style={{ border: 'none' }}
+                                    />
+                                </div>
+                            </div>
+
                             {/* Team Selection */}
                             <div className="form-team-select">
                                 <label className="form-team-label">Choose your preferred team</label>
