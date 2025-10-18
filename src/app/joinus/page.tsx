@@ -138,7 +138,7 @@ export default function JoinUsPage() {
                                     disabled={isSubmitting}
                                 />
                                 <InputField
-                                    label="College email"
+                                    label="College email (Type N/A it not received)"
                                     name="collegeEmail"
                                     type="email"
                                     value={formData.collegeEmail}
@@ -156,7 +156,7 @@ export default function JoinUsPage() {
                                     type="email"
                                     value={formData.personalEmail}
                                     onChange={handleChange}
-                                    placeholder="yourname@gmail.com"
+                                    placeholder="e.g., yourname@gmail.com"
                                     disabled={isSubmitting}
                                 />
                                 <InputField
@@ -214,6 +214,33 @@ export default function JoinUsPage() {
                                     className="form-textarea"
                                     disabled={isSubmitting}
                                 />
+                            </div>
+
+                            {/* Team Descriptions PDF Embed */}
+                            <div className="form-field" style={{ marginBottom: 'var(--space-xl)' }}>
+                                <h2 style={{ 
+                                    fontSize: '1.2rem',
+                                    fontWeight: '400',
+                                    textAlign: 'center',
+                                    marginBottom: 'var(--space-lg)',
+                                    color: 'white'
+                                }}>
+                                    <strong>Team Responsibilities and Skills Required</strong>
+                                </h2>
+                                <div className="w-full" style={{ 
+                                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                                    borderRadius: '8px',
+                                    overflow: 'hidden',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.05)'
+                                }}>
+                                    <iframe
+                                        src="https://drive.google.com/file/d/1ouk_5WnyNV-Sne1Vqs8uVYddrpaQGy-G/preview"
+                                        width="100%"
+                                        height="600"
+                                        allow="autoplay"
+                                        style={{ border: 'none' }}
+                                    />
+                                </div>
                             </div>
 
                             {/* Team Selection */}
