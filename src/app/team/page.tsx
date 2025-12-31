@@ -42,7 +42,7 @@ const Page = () => {
 
     // Teams data organized by event
     const teamsData: TeamsData = {
-        EPOCH: {
+        Epoch: {
             organizers: [
                 { name: "Bharath SBK", role: "Organizer" },
                 { name: "Prajna", role: "Co-Organizer" },
@@ -124,7 +124,7 @@ const Page = () => {
                 },
             ]
         },
-        AETHER: {
+        Aether: {
             organizers: [
                 { name: "Bharatesh Patel", role: "Organizer" },
                 { name: "Srinidhi GG", role: "Co-Organizer" },
@@ -159,7 +159,7 @@ const Page = () => {
                 },
             ]
         },
-        ZENITH: {
+        Zenith: {
             organizers:  [
                 { name: "Imtiyaz Ahmed", role: "Organizer" },
                 { name: "Hannah Thomas", role: "Co-Organizer" },
@@ -179,7 +179,7 @@ const Page = () => {
                 { id: 6, name: "Zenith ECP", role: "ECP Team", members: [] },
             ]
         },
-        ELIXIR: {
+        Elixir: {
             organizers:  [
                 { name: "Poojitha Prakash", role: "Organizer" },
                 { name: "Karan Desai", role: "Co-Organizer" },
@@ -200,7 +200,7 @@ const Page = () => {
                 { id:  7, name: "Elixer ECP", role: "ECP Team", members: [] },
             ]
         },
-        THRIVE: {
+        Thrive: {
             organizers:  [
                 { name: "Kevin Alberts Daniel", role: "Organizer" },
                 { name: "Sanjeevini Surendran", role: "Co-Organizer" },
@@ -221,7 +221,7 @@ const Page = () => {
                 { id: 8, name: "Thrive ECP", role: "ECP Team", members: [] },
             ]
         },
-        IRIDESCENCE: {
+        Iridescence: {
             organizers:  [
                 { name: "Kevin Alberts Daniel", role: "Organizer" },
                 { name: "Sanjeevini Surendran", role: "Co-Organizer" },
