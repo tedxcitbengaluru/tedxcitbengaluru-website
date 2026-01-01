@@ -73,7 +73,7 @@ const page = () => {
         </div>
 
         <footer className="w-full text-center pt-4 text-[14px] text-gray-600">
-            Copyright 2023 &copy; TEDxCITBengaluru. This independent TEDx event is operated under license from TED 
+            Copyright 2025 &copy; TEDxCITBengaluru. This independent TEDx event is operated under license from TED 
         </footer>
     </div>
     </section>
