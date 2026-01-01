@@ -1,11 +1,14 @@
-import React from 'react'
+"use client";
+import React from "react";
+import Hero from "./hero";
+import Content from "./content";
 
 const page = () => {
-  return (
-    <div>
-      Sponsors page coming soon!
-    </div>
-  )
+ return (
+   <div>
+     <Hero />
+     <Content />
+   </div>
+ );
 }
-
-export default page
+export default page;
