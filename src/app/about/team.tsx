@@ -1,205 +1,430 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import Image from 'next/image';
+import ProfileCard from '@/components/ui/ProfileCard';
 
+// --- TYPES ---
 interface TeamMember {
     name: string;
-    image: string;
+    role: string;
 }
 
-interface EventTeam {
-    organizers: TeamMember[];
-    leads: TeamMember[];
+interface TeamLead {
+    id: number;
+    name?: string;
+    names?: string[];
+    role: string;
+    isDouble?: boolean;
+    members?: TeamMember[];
 }
 
-const teamData: Record<string, EventTeam> = {
-    EPOCH: {
+interface Organizer {
+    name: string;
+    role: string;
+}
+
+interface EventData {
+    organizers: Organizer[];
+    teamLeads: TeamLead[];
+}
+
+interface TeamsData {
+    [key: string]: EventData;
+}
+
+// --- STATIC DATA (Moved outside component to prevent re-render loops) ---
+const EVENT_TYPES = ["Upcoming", "Epoch", "Aether", "Zenith", "Elixir", "Thrive", "Iridescence"];
+
+// Placeholder for missing images
+const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231a1a1a'/%3E%3Cpath d='M50 30 C40 30 32 38 32 48 C32 58 40 66 50 66 C60 66 68 58 68 48 C68 38 60 30 50 30 Z M50 72 C35 72 22 80 22 90 L78 90 C78 80 65 72 50 72 Z' fill='%23333'/%3E%3C/svg%3E";
+
+const TEAMS_DATA: TeamsData = {
+    Upcoming: {
         organizers: [
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
+            { name: "Coming Soon", role: "Organizer" },
+            { name: "Coming Soon", role: "Co-Organizer" },
+            { name: "Coming Soon", role: "Lead Coordinator" },
         ],
-        leads: [
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-        ],
+        teamLeads: [
+            { id: 1, name: "Coming Soon", role: "Lead Creator", members: [] },
+            { id: 2, name: "Coming Soon", role: "Lead Curator", members: [] },
+            { id: 3, name: "Coming Soon", role: "Event Director", members: [] },
+            { id: 4, name: "Coming Soon", role: "Media Lead", members: [] },
+            { id: 5, name: "Coming Soon", role: "Sponsorship Head", members: [] },
+            { id: 6, name: "Coming Soon", role: "Technical Lead", members: [] },
+            { id: 7, name: "Coming Soon", role: "Design Lead", members: [] },
+        ]
     },
-    AETHER: {
+    Epoch: {
         organizers: [
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
+            { name: "Bharath SBK", role: "Organizer" },
+            { name: "Prajna", role: "Co-Organizer" },
+            { name: "Aaron Rohan", role: "Lead Coordinator" },
         ],
-        leads: [
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-        ],
+        teamLeads: [
+            { 
+                id: 1,
+                name: "Debasis Maharana", 
+                role: "Lead Creator",
+                members: [
+                    { name: "Nandheeswaran.M", role: "Core Team" },
+                    { name: "Monish B", role: "Core Team" },
+                    { name: "Rohan", role: "Core Team" },
+                    { name: "Pulak Mishra", role: "Core Team" },
+                    { name: "Sahithi K", role: "Core Team" },
+                    { name: "Veeresh R Dodamani", role: "Core Team" },
+                    { name: "Sharan tej", role: "Volunteer" },
+                ]
+            },
+            { 
+                id: 2,
+                name: "Roshani Bankar", 
+                role: "Lead Curator",
+                members: [
+                    { name: "Anarghya Gunashekaran", role: "Core Team" },
+                    { name: "Vidhula Shree Shankar", role: "Core Team" },
+                    { name: "Lagineni Sreenithai", role: "Core Team" },
+                    { name: "Palleboyina Deekshitha", role: "Core Team" },
+                    { name: "Himashree Kolisetty", role: "Volunteer" },
+                    { name: "Sudarshan S Hosamani", role: "Volunteer" },
+                ]
+            },
+            { 
+                id: 3,
+                names: ["Akshat Chauhan", "Roseantic Gudino"], 
+                role: "Event Director",
+                isDouble: true,
+                members: [
+                    { name: "Kshitij Tiwari", role: "Core Team" },
+                    { name: "Samhitha N A", role: "Core Team" },
+                    { name: "Vishnupriya S", role: "Core Team" },
+                    { name: "Anushka Tiwari", role: "Core Team" },
+                    { name: "Faisal Imam", role: "Core Team" },
+                    { name: "Navyashree R", role: "Core Team" },
+                    { name: "Aditya Raut", role: "Volunteer" },
+                    { name: "Rakshitha", role: "Volunteer" },
+                    { name: "Shreya Upadhyay", role: "Volunteer" },
+                    { name: "Ankur Bhattacharyya", role: "Volunteer" },
+                    { name: "Neil Anthony", role: "Volunteer" },
+                    { name: "Wafiza Syed", role: "Volunteer" },
+                ]
+            },
+            { 
+                id: 5,
+                name: "Anirudh Kottakota", 
+                role: "Sponshorship Lead",
+                members: [
+                    { name: "Anjali", role: "Core Team" },
+                    { name: "Syed Owais", role: "Core Team" },
+                    { name: "Kuladeep M N", role: "Volunteer" },
+                    { name: "Arjun Dev", role: "Volunteer" },
+                    { name: "Purvi P", role: "Volunteer" },
+                ]
+            },
+            { 
+                id: 6,
+                name: "Naresh Karthigeyan", 
+                role: "Technical Lead",
+                members: [
+                    { name: "D Manoj", role: "Core Team" },
+                    { name: "Guru Swarupa", role: "Core Team" },
+                    { name: "Shreya V", role: "Core Team" },
+                    { name: "M Krithik", role: "Volunteer" },
+                    { name: "Anik Tiwary", role: "Volunteer" },
+                    { name: "Daksha K Gowda", role: "Volunteer" },
+                    { name: "P L Vijaya Vittahal", role: "Volunteer" },
+                ]
+            },
+        ]
     },
-    ZENITH: {
+    Aether: {
         organizers: [
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
+            { name: "Bharatesh Patel", role: "Organizer" },
+            { name: "Srinidhi GG", role: "Co-Organizer" },
+            { name: "Snehith Reddy", role: "Lead Co-ordinator" }, 
         ],
-        leads: [
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-        ],
+        teamLeads: [
+            { id: 1, name: "Mukul Singh", role: "Lead Creator" },
+            { id: 2, name: "Aaron Rohan", role: "Lead Curator" },
+            { id: 3, names: ["Prajna", "Bharath SBK"], role: "Event Director", isDouble: true },
+            { id: 5, name: "Vishnu Singh", role: "Media Lead" },
+            { id: 6, name: "Neeraj", role: "Sponsorship Head" },
+        ]
     },
-    ELIXIR: {
+    Zenith: {
         organizers: [
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
+            { name: "Imtiyaz Ahmed", role: "Organizer" },
+            { name: "Hannah Thomas", role: "Co-Organizer" },
+            { name: "Bharatesh Patel", role: "Lead Co-ordinator" },
         ],
-        leads: [
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-        ],
+        teamLeads: [
+            { id: 1, name: "Mukul Singh", role: "Creative Lead", members: [] },
+            { id: 2, name: "Kiran S", role: "Sponsorship Head", members: [] },
+            { id: 3, names: ["Prajna", "Bhuvan L P"], role: "Event Director", isDouble: true, members: [] },
+            { id: 5, name: "Akanksha", role: "Lead Curator", members: [] },
+            { id: 6, name: "Zenith ECP", role: "ECP Team", members: [] },
+        ]
     },
-    THRIVE: {
+    Elixir: {
         organizers: [
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
+            { name: "Poojitha Prakash", role: "Organizer" },
+            { name: "Karan Desai", role: "Co-Organizer" },
+            { name: "Uday Shankar", role: "Student Coordinator" },
         ],
-        leads: [
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-        ],
+        teamLeads: [
+            { id: 1, name: "Sai Sanjana", role: "Lead Curator", members: [] },
+            { id: 2, name: "Pranav Durai", role: "Lead Design", members: [] },
+            { id: 3, name: "Himanshu Agarwal", role: "Technical Lead", members: [] },
+            { id: 4, name: "Bharatesh Patel", role: "Sponsorship Head", members: [] },
+            { id: 5, names: ["Ashvin", "Parijatha G S"], role: "Event Director", isDouble: true, members: [] },
+            { id: 7, name: "Elixer ECP", role: "ECP Team", members: [] },
+        ]
     },
-    IRIDESCENCE: {
+    Thrive: {
         organizers: [
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
+            { name: "Kevin Alberts Daniel", role: "Organizer" },
+            { name: "Sanjeevini Surendran", role: "Co-Organizer" },
         ],
-        leads: [
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
-            { name: "Name Here", image: "" },
+        teamLeads: [
+            { id: 1, name: "Ananya Agnihotri", role: "Lead Curator", members: [] },
+            { id: 2, name: "Uday Shankar", role: "Lead Designer", members: [] },
+            { id: 3, name: "Ishan Dubey", role: "Technical Lead", members: [] },
+            { id: 4, name: "Vanishree Kulkarni", role: "Social Media Manager", members: [] },
+            { id: 5, name: "Bharatesh Patel", role: "Sponsorship Head", members: [] },
+            { id: 6, names: ["Lennard Mario", "Parijatha G S"], role: "Event Director", isDouble: true, members: [] },
+            { id: 8, name: "Thrive ECP", role: "ECP Team", members: [] },
+        ]
+    },
+    Iridescence: {
+        organizers: [
+            { name: "Kevin Alberts Daniel", role: "Organizer" },
+            { name: "Sanjeevini Surendran", role: "Co-Organizer" },
         ],
+        teamLeads: [
+            { id: 1, name: "Karan Desai", role: "Lead Curator", members: [] },
+            { id: 2, name: "Uday Shankar", role: "Lead Creator", members: [] },
+            { id: 3, name: "Ishan Dubey", role: "Technical Lead", members: [] },
+            { id: 4, name: "Nikita Saha", role: "Social Media Manager", members: [] },
+            { id: 5, name: "Aditya M", role: "Sponsorship head", members: [] },
+            { id: 6, names: ["S G Yashoda", "Poojitha Prakash"], role: "Event Director", isDouble: true, members: [] },
+        ]
     },
 };
 
-const events = ["EPOCH", "AETHER", "ZENITH", "ELIXIR", "THRIVE", "IRIDESCENCE"];
-
 export default function Team() {
-    const [selectedEvent, setSelectedEvent] = useState<string>("EPOCH");
-    
-    const currentTeam = teamData[selectedEvent];
+    const [selectedEvent, setSelectedEvent] = useState<string>("Upcoming"); 
+    const [expandedTeam, setExpandedTeam] = useState<number | null>(null);
+
+    // Get current event's data using useMemo to prevent unnecessary recalculations
+    const currentOrganizers = useMemo(() => TEAMS_DATA[selectedEvent]?.organizers || [], [selectedEvent]);
+    const currentTeamLeads = useMemo(() => TEAMS_DATA[selectedEvent]?.teamLeads || [], [selectedEvent]);
+
+    const handleTeamLeadClick = useCallback((teamId: number) => {
+        const lead = currentTeamLeads.find((l: TeamLead) => l.id === teamId);
+        // Only allow clicking if they have members
+        if (lead?.members && lead.members.length > 0) {
+            setExpandedTeam(prev => prev === teamId ? null : teamId);
+        }
+    }, [currentTeamLeads]);
+
+    const handleEventChange = useCallback((event: string) => {
+        setSelectedEvent(event);
+        setExpandedTeam(null);
+    }, []);
+
+    // Check if we should disable heavy effects (like tilt) to improve performance
+    // We disable it for "Upcoming" as there are many placeholders and no real interaction
+    const isPerformanceMode = selectedEvent === "Upcoming";
 
     return (
-        <section className='relative w-full overflow-hidden bg-[#1F1F1F]'>
-            <div className="relative z-10 h-full flex flex-col px-8 lg:px-16 py-8">
-                <h2 className="text-[8vh] font-bold text-[#B0B0B0] mb-0" >MEET OUR <span className='text-[#EB0028]'>CORE</span> TEAM</h2>
-                <div className='w-[705px] h-[6.24px] bg-[#EB0028] mb-[54.24px] rounded-2xl'></div>
-                <ul className="flex w-[715px] justify-around">
-                    {events.map((event) => (
-                        <li 
+        <section className="relative w-full bg-black text-white">
+            {/* CONTENT SECTION */}
+            <div className="relative container mx-auto px-6 py-10 flex flex-col items-start -mt-32 z-10">
+                
+                {/* Main Heading */}
+                <div className="mb-4 max-w-2xl">
+                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-[#B0B0B0] leading-tight uppercase tracking-tighter">
+                        <span className="text-[#EB0028]">OUR</span> TEAM
+                    </h1>
+                </div>
+
+                <div className="mb-12 w-full max-w-4xl">
+                    <p className="text-[#B0B0B0] text-md md:text-lg leading-relaxed py-4">
+                        At TEDxCITBengaluru, our team is a passionate collective of thinkers, creators, and organizers dedicated to bringing ideas worth spreading to life. Working behind the scenes, we collaborate across disciplines to curate meaningful experiences, foster innovation, and build a platform that inspires dialogue, connection, and positive change.
+                    </p>
+                </div>
+
+                {/* Event Type Tabs */}
+                <div className="flex flex-wrap gap-4 mb-12 mt-4 w-full justify-center md:justify-start">
+                    {EVENT_TYPES.map((event) => (
+                        <button
                             key={event}
-                            onClick={() => setSelectedEvent(event)}
-                            className={`cursor-pointer flex flex-col items-center text-center text-[16.71px] font-bold px-8 py-3 rounded-full transition-colors hover:[background:linear-gradient(99deg,#EB0028_38%,#860017_100%)] ${
-                                selectedEvent === event 
-                                    ? '[background:linear-gradient(99deg,#EB0028_38%,#860017_100%)]' 
-                                    : ''
+                            onClick={() => handleEventChange(event)}
+                            className={`min-h-[44px] px-8 py-3 text-sm font-semibold rounded-full transition-all duration-300 flex items-center justify-center ${
+                                selectedEvent === event
+                                    ?  "bg-[#EB0028] text-white shadow-[0_0_20px_rgba(235,0,40,0.4)] scale-105"
+                                    :  "text-gray-400 border border-gray-700 hover:text-white hover:border-[#EB0028] hover:bg-[#EB0028]/10"
                             }`}
                         >
                             {event}
-                        </li>
+                        </button>
                     ))}
-                </ul>
-            </div>
-            {/* content */}
-            <div className='relative w-full min-h-screen bg-[#1f1f1f] pb-16'>
-                <div className="absolute top-0 right-0 bottom-0 w-full md:w-1/2 pointer-events-none">
-                    <Image
-                        src="/images/X1.svg"
-                        alt="Red X background"
-                        fill
-                        className="object-cover object-right rotate-180 ml-[250px]"
-                        priority
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#1F1F1F] via-transparent to-transparent"></div>
                 </div>
-                
-                {/* Organizers Section */}
-                <h2 className="text-[4vh] font-semibold text-[#EB0028] mb-8 px-16">ORGANIZERS</h2>
-                <div className="grid grid-cols-4 gap-6 px-16 mb-16 relative z-10">
-                    {currentTeam.organizers.map((member, index) => (
-                        <div key={index} className="flex flex-col items-center">
-                            <div className="w-[200px] h-[180px] bg-[#3A3A3A] rounded-2xl overflow-hidden mb-3">
-                                {member.image ? (
-                                    <Image 
-                                        src={member.image} 
-                                        alt={member.name}
-                                        width={200}
-                                        height={180}
-                                        className="w-full h-full object-cover"
+
+                {/* Event-specific content */}
+                <div key={selectedEvent} className="w-full animate-fadeIn">
+                    
+                    {/* ORGANIZERS */}
+                    <div className="w-full mb-16">
+                        <h2 className="text-2xl md:text-3xl font-bold text-[#EB0028] mb-8 uppercase tracking-wider flex items-center gap-3">
+                            <span className="w-2 h-8 bg-[#EB0028] rounded-full"></span>
+                            Organizers
+                        </h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
+                            {currentOrganizers.map((organizer, idx) => (
+                                <div 
+                                    // Use stable key combining event and index to ensure clean remount on tab switch
+                                    key={`${selectedEvent}-org-${idx}`} 
+                                    style={{ animation: `slideUp 0.4s ease-out ${idx * 0.1}s both` }}
+                                >
+                                    <ProfileCard
+                                        name={organizer.name}
+                                        title={organizer.role}
+                                        handle={selectedEvent}
+                                        status="Organizer"
+                                        // Handle missing images for "Coming Soon"
+                                        avatarUrl={organizer.name === "Coming Soon" ? PLACEHOLDER_IMG : `/team/${selectedEvent}/${organizer.name}.jpg`}
+                                        // Disable tilt for "Coming Soon" to fix lag
+                                        enableTilt={!isPerformanceMode}
+                                        enableMobileTilt={!isPerformanceMode}
+                                        behindGlowEnabled={!isPerformanceMode}
+                                        innerGradient="linear-gradient(145deg, #2a0a0f 0%, #000000 100%)"
                                     />
-                                ) : null}
-                            </div>
-                            <span className="text-[#B0B0B0] text-lg">{member.name}</span>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
-                
-                {/* Leads Section */}
-                <h2 className="text-[4vh] font-semibold text-[#EB0028] mb-8 px-16">LEADS</h2>
-                <div className="grid grid-cols-4 gap-6 px-16 relative z-10">
-                    {currentTeam.leads.map((member, index) => (
-                        <div key={index} className="flex flex-col items-center">
-                            <div className="w-[200px] h-[180px] bg-[#3A3A3A] rounded-2xl overflow-hidden mb-3">
-                                {member.image ? (
-                                    <Image 
-                                        src={member.image} 
-                                        alt={member.name}
-                                        width={200}
-                                        height={180}
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : null}
-                            </div>
-                            <span className="text-[#B0B0B0] text-lg">{member.name}</span>
+                    </div>
+
+                    {/* TEAM LEADS */}
+                    <div className="w-full mb-16">
+                        <h2 className="text-2xl md:text-3xl font-bold text-[#EB0028] mb-8 uppercase tracking-wider flex items-center gap-3">
+                            <span className="w-2 h-8 bg-[#EB0028] rounded-full"></span>
+                            Team Leads
+                        </h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
+                            {currentTeamLeads.map((lead, idx) => {
+                                // Logic for double names
+                                if (lead.isDouble && lead.names) {
+                                    return (
+                                        <React.Fragment key={`${selectedEvent}-lead-${lead.id}`}>
+                                            <div style={{ animation: `slideUp 0.4s ease-out ${idx * 0.1}s both` }}>
+                                                <ProfileCard
+                                                    name={lead.names[0]}
+                                                    title={lead.role}
+                                                    handle={selectedEvent}
+                                                    status="Team Lead"
+                                                    avatarUrl={`/team/${selectedEvent}/${lead.names[0]}.jpg`}
+                                                    contactText="View Team"
+                                                    // Removed "View Team" text toggle as requested
+                                                    onContactClick={() => handleTeamLeadClick(lead.id)}
+                                                    enableTilt={!isPerformanceMode}
+                                                    enableMobileTilt={!isPerformanceMode}
+                                                />
+                                            </div>
+                                            <div style={{ animation: `slideUp 0.4s ease-out ${idx * 0.1 + 0.1}s both` }}>
+                                                <ProfileCard
+                                                    name={lead.names[1]}
+                                                    title={lead.role}
+                                                    handle={selectedEvent}
+                                                    status="Team Lead"
+                                                    avatarUrl={`/team/${selectedEvent}/${lead.names[1]}.jpg`}
+                                                    contactText="View Team"
+                                                    onContactClick={() => handleTeamLeadClick(lead.id)}
+                                                    enableTilt={!isPerformanceMode}
+                                                    enableMobileTilt={!isPerformanceMode}
+                                                />
+                                            </div>
+                                        </React.Fragment>
+                                    );
+                                }
+                                return (
+                                    <div 
+                                        key={`${selectedEvent}-lead-${lead.id}`} 
+                                        style={{ animation: `slideUp 0.4s ease-out ${idx * 0.1}s both` }}
+                                    >
+                                        <ProfileCard
+                                            name={lead.name || "Unknown"}
+                                            title={lead.role}
+                                            handle={selectedEvent}
+                                            status="Team Lead"
+                                            avatarUrl={lead.name === "Coming Soon" ? PLACEHOLDER_IMG : `/team/${selectedEvent}/${lead.name}.jpg`}
+                                            contactText="View Team"
+                                            onContactClick={() => handleTeamLeadClick(lead.id)}
+                                            // Disable tilt for performance on placeholder items
+                                            enableTilt={!isPerformanceMode}
+                                            enableMobileTilt={!isPerformanceMode}
+                                            behindGlowEnabled={!isPerformanceMode}
+                                        />
+                                    </div>
+                                );
+                            })}
                         </div>
-                    ))}
+                    </div>
+
+                    {/* EXPANDED TEAM MEMBERS GRID */}
+                    {expandedTeam !== null && (
+                        <div className="w-full my-10 animate-fadeIn scroll-mt-20" id="team-grid">
+                            <div className="flex items-center justify-between mb-8 bg-[#111] p-6 rounded-2xl border border-white/5">
+                                <div>
+                                    <h3 className="text-xl md:text-2xl font-bold text-white uppercase tracking-wider">
+                                        {currentTeamLeads.find((lead: TeamLead) => lead.id === expandedTeam)?.role}
+                                    </h3>
+                                    <p className="text-gray-400 text-sm mt-1">Core Team & Volunteers</p>
+                                </div>
+                                <button 
+                                    onClick={() => setExpandedTeam(null)}
+                                    className="px-6 py-2 bg-white/10 text-white rounded-full hover:bg-[#EB0028] transition-all duration-300 text-sm font-semibold flex items-center gap-2"
+                                >
+                                    <span>Close</span>
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 w-full">
+                                {currentTeamLeads.find((lead: TeamLead) => lead.id === expandedTeam)?.members?.map((member, idx) => (
+                                    <div key={`${expandedTeam}-mem-${idx}`} style={{ animation: `slideUp 0.4s ease-out ${idx * 0.05}s both` }}>
+                                        <ProfileCard
+                                            name={member.name}
+                                            title={member.role}
+                                            handle={selectedEvent}
+                                            status="Member"
+                                            avatarUrl={`/team/${selectedEvent}/${member.name}.jpg`}
+                                            enableTilt={false} // Disable tilt for smaller grid members to save performance
+                                            enableMobileTilt={false}
+                                            behindGlowEnabled={false}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
+
+            {/* Animations */}
+            <style jsx global>{`
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to { opacity: 1; transform:  translateY(0); }
+                }
+                @keyframes slideUp {
+                    from { opacity: 0; transform: translateY(30px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .animate-fadeIn {
+                    animation: fadeIn 0.5s ease-out;
+                }
+            `}</style>
         </section>
-    );
+    )
 }

@@ -43,8 +43,7 @@ export default function ImageHolder({
   }, [currentIndex, maxIndex, autoPlayInterval, images.length]);
   
   return (
-    <div className="relative w-full max-w-[95vw] h-[50vh] bg-[#4A4A4A] flex flex-col items-center justify-center mx-auto rounded-2xl z-10 overflow-hidden">
-      {/* Large background image */}
+<div className="relative w-full h-[30vh] md:h-[50vh] bg-[#4A4A4A] flex flex-col items-center justify-center mx-auto rounded-2xl z-10 overflow-hidden shadow-2xl">      {/* Large background image */}
       {images.length > 0 && (
         <div className="absolute inset-0 transition-opacity duration-500">
           <img 
