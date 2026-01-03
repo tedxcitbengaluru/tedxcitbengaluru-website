@@ -1,7 +1,7 @@
 "use client";
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import Image from 'next/image'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import Header from '@/components/layout/header'
 
 // --- TYPE DEFINITIONS ---
@@ -15,27 +15,7 @@ interface EventsData {
     [key: string]: Speaker[];
 }
 
-const Page = () => {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    
-    // Initialize state based on URL param, default to "Epoch"
-    const initialTab = searchParams.get('tab') || "Epoch";
-    const [activeTab, setActiveTab] = useState(initialTab);
-
-    // Update state if URL changes (e.g. back button)
-    useEffect(() => {
-        const tab = searchParams.get('tab');
-        if (tab && eventsData[tab]) {
-            setActiveTab(tab);
-        }
-    }, [searchParams]);
-
-    const handleTabChange = (tab: string) => {
-        setActiveTab(tab);
-        // Update URL without reloading the page
-        router.replace(`?tab=${tab}`, { scroll: false });
-    };
+// --- DATA (Moved outside to prevent re-creation on render) ---
 
     // --- DATA POPULATION (Kept exactly as requested) ---
     const eventsData: EventsData = {
@@ -102,26 +82,82 @@ const Page = () => {
         ],
     };
 
+
+// --- SUB-COMPONENT FOR SPEAKER CARD (Clean Image Loading) ---
+const SpeakerCard = ({ speaker }: { speaker: Speaker }) => {
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    return (
+        <div className="group relative w-full aspect-[3/4] bg-[#111] rounded-xl overflow-hidden border border-white/5 shadow-2xl transition-transform duration-300 hover:-translate-y-2">
+            
+            {/* Image Container with Fade-in Effect */}
+            <div className="absolute inset-0">
+                <Image 
+                    src={speaker.image}
+                    alt={speaker.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className={`object-cover transition-all duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0
+                        ${isLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-lg'} 
+                    `}
+                    onLoad={() => setIsLoaded(true)}
+                    onError={(e: any) => { e.target.style.display = 'none'; }}
+                />
+                
+                {/* Fallback Placeholder */}
+                <div className={`absolute inset-0 bg-[#1a1a1a] -z-10 flex items-center justify-center transition-opacity duration-500 ${isLoaded ? 'opacity-0' : 'opacity-100'}`}>
+                    <span className="text-white/10 text-4xl font-black uppercase tracking-tighter">TEDx</span>
+                </div>
+            </div>
+
+            {/* Cinematic Overlay Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-80" />
+
+            {/* Text Content */}
+            <div className="absolute bottom-0 left-0 w-full p-6 flex flex-col justify-end">
+                <div className="w-8 h-1 bg-[#EB0028] mb-3 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+                <h3 className="text-white text-xl md:text-2xl font-bold leading-tight uppercase tracking-tight mb-1">
+                    {speaker.name}
+                </h3>
+                <p className="text-gray-400 text-xs md:text-sm font-medium uppercase tracking-wider line-clamp-2">
+                    {speaker.role}
+                </p>
+            </div>
+        </div>
+    );
+};
+
+// --- INNER COMPONENT USING USE_SEARCH_PARAMS ---
+const SpeakersContent = () => {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+    
+    // Initialize state based on URL param, default to "Epoch"
+    const initialTab = searchParams.get('tab') || "Epoch";
+    const [activeTab, setActiveTab] = useState(initialTab);
+
+    // Update state if URL changes
+    useEffect(() => {
+        const tab = searchParams.get('tab');
+        if (tab && eventsData[tab]) {
+            setActiveTab(tab);
+        }
+    }, [searchParams]);
+
+    const handleTabChange = (tabName: string) => {
+        setActiveTab(tabName);
+        // Update URL
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('tab', tabName);
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    };
+
     const currentSpeakers = eventsData[activeTab] || [];
     const eventTypes = Object.keys(eventsData);
 
     return (
-        <section className="relative w-full bg-black min-h-screen">
-            <Header />
-
-            {/* IMAGE SECTION */}
-            <div className="relative w-full h-[50vh] md:h-[60vh] overflow-hidden">
-                <Image
-                    src="/images/bg-left-bird.svg"
-                    alt="Background decoration"
-                    width={1920}
-                    height={1080}
-                    priority
-                    className="w-full h-full object-cover object-top opacity-60"
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/60 to-black" />
-            </div>
-
+        <>
             {/* CONTENT SECTION */}
             <div className="relative container mx-auto px-6 -mt-32 z-10 flex flex-col items-start pb-20">
                 
@@ -158,7 +194,7 @@ const Page = () => {
                 {/* Speaker Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
                     {currentSpeakers.map((speaker, idx) => (
-                        <SpeakerCard key={idx} speaker={speaker} />
+                        <SpeakerCard key={`${activeTab}-${idx}`} speaker={speaker} />
                     ))}
                 </div>
 
@@ -166,55 +202,39 @@ const Page = () => {
                     Copyright {new Date().getFullYear()} &copy; TEDxCITBengaluru. This independent TEDx event is operated under license from TED 
                 </footer>
             </div>
+        </>
+    );
+};
+
+// --- MAIN PAGE COMPONENT (WRAPPED IN SUSPENSE) ---
+const Page = () => {
+    return (
+        <section className="relative w-full bg-black min-h-screen">
+            <Header />
+
+            {/* IMAGE SECTION */}
+            <div className="relative w-full h-[50vh] md:h-[60vh] overflow-hidden">
+                <Image
+                    src="/images/bg-left-bird.svg"
+                    alt="Background decoration"
+                    width={1920}
+                    height={1080}
+                    priority
+                    className="w-full h-full object-cover object-top opacity-60"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/60 to-black" />
+            </div>
+
+            {/* WRAP CONTENT IN SUSPENSE FOR BUILD ERROR */}
+            <Suspense fallback={
+                <div className="relative container mx-auto px-6 -mt-32 z-10 min-h-[50vh] flex items-center justify-center">
+                    <div className="w-12 h-12 border-4 border-[#EB0028] border-t-transparent rounded-full animate-spin"></div>
+                </div>
+            }>
+                <SpeakersContent />
+            </Suspense>
         </section>
     )
 }
-
-// Separate Component to handle individual image loading smoothly
-const SpeakerCard = ({ speaker }: { speaker: Speaker }) => {
-    const [isLoaded, setIsLoaded] = useState(false);
-
-    return (
-        <div className="group relative w-full aspect-[3/4] bg-[#111] rounded-xl overflow-hidden border border-white/5 shadow-2xl transition-transform duration-300 hover:-translate-y-2">
-            {/* Image Container */}
-            <div className="absolute inset-0">
-                <Image 
-                    src={speaker.image}
-                    alt={speaker.name}
-                    fill
-                    className={`object-cover transition-all duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0
-                        ${isLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-lg'}
-                    `}
-                    onLoad={() => setIsLoaded(true)}
-                    // Fallback for missing images
-                    onError={(e: any) => {
-                        e.target.style.display = 'none';
-                    }}
-                />
-                
-                {/* Fallback Placeholder (Visible if loading or error) */}
-                <div className={`absolute inset-0 bg-[#1a1a1a] -z-10 flex items-center justify-center transition-opacity duration-500 ${isLoaded ? 'opacity-0' : 'opacity-100'}`}>
-                    <span className="text-white/10 text-4xl font-black uppercase tracking-tighter">TEDx</span>
-                </div>
-            </div>
-
-            {/* Cinematic Overlay Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-80" />
-
-            {/* Text Content */}
-            <div className="absolute bottom-0 left-0 w-full p-6 flex flex-col justify-end">
-                {/* Red accent line */}
-                <div className="w-8 h-1 bg-[#EB0028] mb-3 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
-                
-                <h3 className="text-white text-xl md:text-2xl font-bold leading-tight uppercase tracking-tight mb-1">
-                    {speaker.name}
-                </h3>
-                <p className="text-gray-400 text-xs md:text-sm font-medium uppercase tracking-wider line-clamp-2">
-                    {speaker.role}
-                </p>
-            </div>
-        </div>
-    );
-};
 
 export default Page
