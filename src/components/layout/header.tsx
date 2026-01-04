@@ -12,7 +12,7 @@ export default function Header() {
   const [socialOpen, setSocialOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-  const links = ["ABOUT","EVENTS", "SPEAKERS & PERFORMERS", "TEAM", "SPONSORS", "CONTACT"];
+  const links = ["ABOUT","EVENTS", "SPEAKERS & PERFORMERS", "SPONSORS", "CONTACT"];
 
   const getHref = (link: string) => {
     if (link === "HOME") return "/";

@@ -2,21 +2,80 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 import Header from '@/components/layout/header'
+import { motion, AnimatePresence, Variants } from 'framer-motion';
+
+// --- TYPES ---
+interface Video {
+    title: string;
+    url: string;
+    thumbnail: string;
+}
+
+interface EventData {
+    name: string;
+    date: string;
+    src: string;
+    videos: Video[];
+}
 
 const Page = () => {
     const [activeTab, setActiveTab] = useState('events');
+    const [selectedEvent, setSelectedEvent] = useState<EventData | null>(null);
 
-    // Array of event data to keep the code clean and avoid repetition
-    const events = [
-        { name:  'Epoch', date: '6th MAY 2024', src: '/events/Epoch.jpg' },
-        { name:  'Aether', date:  '6th MAY 2024', src: '/events/Aether.jpg' },
-        { name: 'Zenith', date: '6th MAY 2024', src: '/events/Zenith.jpg' },
-        { name: 'Elixir', date: '6th MAY 2024', src:  '/events/Elixir.jpg' },
-        { name:  'Thrive', date:  '6th MAY 2024', src: '/events/Thrive.jpg' },
-        { name: 'Iridescence', date: '6th MAY 2024', src: '/events/Iridescence.jpg' },
+    // --- DATA ---
+    const events: EventData[] = [
+        { 
+            name: 'Epoch', 
+            date: '6th MAY 2024', 
+            src: '/events/Epoch.jpg',
+            videos: [
+                { title: "Standup Comedy by Shankar Chugani", url: "https://www.youtube.com/embed/DMUkJWNQhO0?autoplay=0", thumbnail: "https://img.youtube.com/vi/DMUkJWNQhO0/0.jpg" },
+                { title: "Musical Performance by Dhananjay Keys", url: "https://www.youtube.com/embed/9LPhOwITmjQ?autoplay=0", thumbnail: "https://img.youtube.com/vi/9LPhOwITmjQ/0.jpg" }
+            ]
+        },
+        { 
+            name: 'Aether', 
+            date: '6th MAY 2024', 
+            src: '/events/Aether.jpg',
+            videos: [
+                { title: "Bridging Communities through Language | Sakshi Baid", url: "https://www.youtube.com/embed/wgv67rTc5pk?autoplay=0", thumbnail: "https://img.youtube.com/vi/wgv67rTc5pk/0.jpg" },
+                { title: "Elements of Self-Expression | Ruby Naaz", url: "https://www.youtube.com/embed/fmZs6srNYOA?autoplay=0", thumbnail: "https://img.youtube.com/vi/fmZs6srNYOA/0.jpg" }
+            ]
+        },
+        { 
+            name: 'Zenith', 
+            date: '6th MAY 2024', 
+            src: '/events/Zenith.jpg',
+            videos: [
+                { title: "Pursuing Excellence | Saptarshi Prakash", url: "https://www.youtube.com/embed/GVNvrxoZW8k?autoplay=0", thumbnail: "https://img.youtube.com/vi/GVNvrxoZW8k/0.jpg" }
+            ]
+        },
+        { 
+            name: 'Elixir', 
+            date: '6th MAY 2024', 
+            src: '/events/Elixir.jpg',
+            videos: [
+                { title: "Consistency and Excellence | Reshi Magada", url: "https://www.youtube.com/embed/h6olKX9BajA?autoplay=0", thumbnail: "https://img.youtube.com/vi/h6olKX9BajA/0.jpg" }
+            ]
+        },
+        { 
+            name: 'Thrive', 
+            date: '6th MAY 2024', 
+            src: '/events/Thrive.jpg',
+            videos: [
+                { title: "Struggles of Women & Sexual Minorities | Akkai Padmashali", url: "https://www.youtube.com/embed/5y7Ek2sDMu4?autoplay=0", thumbnail: "https://img.youtube.com/vi/5y7Ek2sDMu4/0.jpg" }
+            ]
+        },
+        { 
+            name: 'Iridescence', 
+            date: '6th MAY 2024', 
+            src: '/events/Iridescence.jpg',
+            videos: [
+                { title: "Thinking from Another Perspective | Wilfred Shreyas", url: "https://www.youtube.com/embed/r4UeEGmOATA?autoplay=0", thumbnail: "https://img.youtube.com/vi/r4UeEGmOATA/0.jpg" }
+            ]
+        },
     ];
 
-    // Array of circles data (example)
     const circles = [
         { name: 'Agree to Disagree',  src: '/circles/Agree to Disagree.jpg' },
         { name: 'Beginnings', src: '/circles/Beginnings.jpg'},
@@ -33,46 +92,72 @@ const Page = () => {
         { name: 'Teamwork', src: '/circles/Teamwork.jpg'},
     ];
 
+    // --- ANIMATION VARIANTS ---
+    const containerVariants: Variants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 }
+        },
+        exit: { opacity: 0, transition: { duration: 0.2 } }
+    };
+
+    const itemVariants: Variants = {
+        hidden: { y: 30, opacity: 0, scale: 0.98 },
+        visible: { 
+            y: 0, 
+            opacity: 1, 
+            scale: 1,
+            transition: { type: "spring", stiffness: 60, damping: 20 }
+        }
+    };
+
+    const modalVariants: Variants = {
+        hidden: { opacity: 0, scale: 0.9 },
+        visible: { opacity: 1, scale: 1, transition: { duration: 0.3, ease: "easeOut" } },
+        exit: { opacity: 0, scale: 0.9, transition: { duration: 0.2 } }
+    };
+
     return (
-        <section className="relative w-full h-full bg-gradient-to-b from-gray-900 via-gray-900 to-black">
+        <section className="relative w-full min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-black">
             <Header />
 
-            {/* IMAGE SECTION — The Background */}
-            <div className="relative w-full h-full bg-white md:bg-white sm:bg-white">
+            {/* IMAGE SECTION */}
+            <div className="relative w-full bg-white md:bg-white sm:bg-white">
                 <Image
-                    src="/images/Group 222.png"
+                    src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1767472992/Group_222_vxkhj9.png"
                     alt="Mountain background"
                     width={1920}
                     height={1080}
                     priority
+                    unoptimized
                     className="w-full h-auto object-contain overflow-clip"
                 />
-                {/* Gradient overlay to help text readability */}
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black" />
             </div>
 
-            {/* CONTENT SECTION — Now overlapping the image above */}
+            {/* CONTENT SECTION */}
             <div className="relative z-20 container mx-auto px-6 mt-[-80vh] md:mt-[-120vh] sm:mt-[-100vh] lg:mt-[-350vh] w-full md:w-1/2 sm:w-2/3 flex flex-col items-start pb-20">
                 
-                {/* Toggle Buttons Section */}
-                <div className="mb-12 w-full flex justify-center">
-                    <div className="inline-flex backdrop-blur-md rounded-full shadow-xl bg-gray-600 border border-white/20">
+                {/* --- TOGGLE BUTTONS --- */}
+                <div className="mb-16 w-full flex justify-center">
+                    <div className="inline-flex bg-white/5 backdrop-blur-xl border border-white/10 rounded-full p-1.5 shadow-2xl">
                         <button
                             onClick={() => setActiveTab('events')}
-                            className={`px-6 py-2.5 sm:px-6 sm:py-3 md:px-8 md:py-3 rounded-full text-sm sm:text-base font-semibold uppercase border-none ${
+                            className={`px-8 py-3 rounded-full text-base font-bold uppercase tracking-wider transition-all duration-300 ${
                                 activeTab === 'events'
-                                    ? 'bg-gradient-to-r from-[#fd0202] via-[#a8000f] to-[#770215] text-white rounded-full'
-                                    : 'text-gray-300 hover:text-white bg-transparent'
+                                    ? 'bg-[#EB0028] text-white shadow-lg scale-105'
+                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
                             }`}
                         >
                             Events
                         </button>
                         <button
                             onClick={() => setActiveTab('circles')}
-                            className={`px-6 py-2.5 sm:px-6 sm:py-3 md:px-8 md:py-3 rounded-full text-sm sm:text-base font-semibold uppercase border-none ${
+                            className={`px-8 py-3 rounded-full text-base font-bold uppercase tracking-wider transition-all duration-300 ${
                                 activeTab === 'circles'
-                                    ? 'bg-gradient-to-r from-[#fd0202] via-[#a8000f] to-[#770215] text-white rounded-full'
-                                    : 'text-gray-300 hover:text-white bg-transparent'
+                                    ? 'bg-[#EB0028] text-white shadow-lg scale-105'
+                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
                             }`}
                         >
                             Circles
@@ -80,72 +165,166 @@ const Page = () => {
                     </div>
                 </div>
 
-                {/* Conditional Content based on Active Tab */}
-                {activeTab === 'events' ?  (
-                    // EVENTS CONTENT
-                    <>
-                        {events.map((event, index) => (
-                            <div key={index} className="relative w-full rounded-4xl overflow-hidden group mb-12 shadow-2xl">
-                                <Image
-                                    src={event.src}
-                                    alt={`${event.name} background`}
-                                    width={1920}
-                                    height={1080}
-                                    priority
-                                    className="w-full h-auto object-contain rounded-4xl grayscale-100 group-hover:grayscale-0 transition-all duration-700"
-                                />
+                {/* --- ANIMATED CONTENT AREA --- */}
+                <div className="w-full min-h-[50vh]">
+                    <AnimatePresence mode="wait">
+                        {activeTab === 'events' ?  (
+                            <motion.div 
+                                key="events-list"
+                                variants={containerVariants}
+                                initial="hidden"
+                                animate="visible"
+                                exit="exit"
+                                className="w-full space-y-16"
+                            >
+                                {events.map((event, index) => (
+                                    <motion.div 
+                                        key={index} 
+                                        variants={itemVariants}
+                                        viewport={{ once: true, margin: "-50px" }}
+                                        className="relative w-full rounded-[40px] overflow-hidden shadow-2xl border border-white/10 bg-[#0a0a0a] group"
+                                    >
+                                        <div className="relative w-full">
+                                            <Image
+                                                src={event.src}
+                                                alt={`${event.name} background`}
+                                                width={1920}
+                                                height={1080}
+                                                priority={index < 2}
+                                                className="w-full h-auto object-contain grayscale-100 group-hover:grayscale-0 transition-all duration-700 scale-100 group-hover:scale-105"
+                                            />
 
-                                {/* Glass Effect Date Button - Top Left */}
-                                <div className="absolute top-0 left-0">
-                                    <button className="bg-[#ff00004d] backdrop-blur-md text-white text-[10px] font-bold px-6 py-3 rounded-br-3xl border-b border-r border-white/20 uppercase tracking-wider shadow-lg">
-                                        {event.date}
-                                    </button>
-                                </div>
+                                            {/* Date Badge */}
+                                            <div className="absolute top-0 left-0">
+                                                <div className="bg-black/60 backdrop-blur-md border-b border-r border-white/10 px-8 py-4 rounded-br-3xl">
+                                                    <span className="text-white text-[13px] font-bold uppercase tracking-widest">
+                                                        {event.date}
+                                                    </span>
+                                                </div>
+                                            </div>
 
-                                {/* "Know More" Button - Bottom Center */}
-                                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 md:bottom-4 sm:bottom-6">
-                                    <button className="bg-[#EB0028] hover:bg-[#c4001f] py-2 text-white text-xs font-bold px-4 rounded-full shadow-xl sm:py-3 sm:px-6 sm:text-md md:px-4 md:py-2 md:text-sm transition-all duration-300 hover:scale-105">
-                                        Know more
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </>
-                ) : (
-                    // CIRCLES CONTENT
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-                      {circles.map((circle, index) => (
-                          <div 
-                              key={index} 
-                              className="relative aspect-[3/4] w-full rounded-3xl overflow-hidden group shadow-xl border border-white/10"
-                          >
-                              {/* Background Image */}
-                              <Image
-                                  src={circle.src} // Ensure your circles array has valid image paths
-                                  alt={circle.name}
-                                  fill
-                                  className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out scale-105 group-hover:scale-100"
-                              />
-
-                              {/* Overlay Gradient (Optional: helps button stand out) */}
-                              <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
-
-                              {/* "Know More" Button - Centered */}
-                              {/* <div className="absolute inset-0 flex flex-col items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500 pb-4">
-                                  <button className="bg-[#EB0028] text-white text-xs font-bold px-6 py-3 rounded-full shadow-2xl hover:scale-110 transition-transform uppercase tracking-widest whitespace-nowrap">
-                                      Know more
-                                  </button>
-                              </div> */}
-                              
-                          </div>
-                      ))}
-                  </div>
-                )}
-
+                                            {/* Know More Button (Opens Modal) */}
+                                            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 opacity-90 hover:opacity-100">
+                                                <button 
+                                                    onClick={() => setSelectedEvent(event)}
+                                                    className="bg-[#EB0028] hover:bg-[#c4001f] text-white text-xs font-bold px-8 py-3 rounded-full shadow-lg hover:shadow-[#EB0028]/40 transition-all duration-300 hover:scale-105 uppercase tracking-widest border border-white/10"
+                                                >
+                                                    Know more
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </motion.div>
+                        ) : (
+                            <motion.div 
+                                key="circles-list"
+                                variants={containerVariants}
+                                initial="hidden"
+                                animate="visible"
+                                exit="exit"
+                                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full"
+                            >
+                                {circles.map((circle, index) => (
+                                    <motion.div 
+                                        key={index} 
+                                        variants={itemVariants}
+                                        viewport={{ once: true }}
+                                    >
+                                        <div className="relative w-full aspect-[3/4] rounded-3xl overflow-hidden shadow-xl border border-white/10 bg-[#0a0a0a] group cursor-pointer">
+                                            <div className="relative w-full h-full">
+                                                <Image
+                                                    src={circle.src}
+                                                    alt={circle.name}
+                                                    fill
+                                                    className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out scale-100 group-hover:scale-110"
+                                                />
+                                                <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500" />
+                                                
+                                                <div className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black/90 via-black/50 to-transparent">
+                                                    <p className="text-white text-center font-bold text-lg uppercase tracking-wide opacity-80 group-hover:opacity-100 transition-opacity">
+                                                        {circle.name}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
             </div>
-                                        <footer className="w-full z-50 relative bottom -0 text-center pt-4 text-[14px] text-gray-600">
-            Copyright 2023 &copy; TEDxCITBengaluru. This independent TEDx event is operated under license from TED 
-        </footer>  
+
+            {/* --- VIDEO MODAL --- */}
+            <AnimatePresence>
+                {selectedEvent && (
+                    <motion.div
+                        className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/80 backdrop-blur-sm"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setSelectedEvent(null)} // Close on background click
+                    >
+                        <motion.div
+                            className="bg-[#111] w-full max-w-5xl rounded-3xl border border-white/10 overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col"
+                            variants={modalVariants}
+                            initial="hidden"
+                            animate="visible"
+                            exit="exit"
+                            onClick={(e) => e.stopPropagation()} // Prevent close on modal click
+                        >
+                            {/* Modal Header */}
+                            <div className="flex justify-between items-center p-6 border-b border-white/10 bg-[#1a1a1a]">
+                                <div>
+                                    <h3 className="text-2xl font-bold text-white uppercase tracking-wider">{selectedEvent.name}</h3>
+                                    <p className="text-[#EB0028] text-sm font-bold tracking-widest mt-1">Talks & Performances</p>
+                                </div>
+                                <button 
+                                    onClick={() => setSelectedEvent(null)}
+                                    className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            {/* Modal Content - Scrollable Video Grid */}
+                            <div className="p-6 overflow-y-auto">
+                                {selectedEvent.videos.length > 0 ? (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {selectedEvent.videos.map((video, idx) => (
+                                            <div key={idx} className="flex flex-col gap-3 group">
+                                                <div className="relative aspect-video rounded-xl overflow-hidden border border-white/10 shadow-lg">
+                                                    <iframe 
+                                                        src={video.url} 
+                                                        title={video.title}
+                                                        className="w-full h-full"
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                        allowFullScreen
+                                                    ></iframe>
+                                                </div>
+                                                <h4 className="text-white font-medium text-lg leading-tight group-hover:text-[#EB0028] transition-colors">
+                                                    {video.title}
+                                                </h4>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-20 text-gray-500">
+                                        <p>More videos coming soon.</p>
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+            
+            <footer className="w-full z-50 relative bottom-0 text-center pt-4 text-[14px] text-gray-600 pb-10 bg-black">
+                Copyright {new Date().getFullYear()} &copy; TEDxCITBengaluru. This independent TEDx event is operated under license from TED 
+            </footer>  
         </section>
     )
 }
