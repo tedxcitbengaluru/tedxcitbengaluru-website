@@ -35,7 +35,8 @@ export default function AboutUs() {
                         <div className="lg:col-span-5 flex flex-col justify-end pb-2">
                             <div className="w-12 h-1 bg-[#EB0028] mb-6"></div>
                             <p className="text-gray-300 text-lg md:text-xl font-light leading-relaxed text-justify">
-                                <span className="text-white font-semibold">TEDxCITBengaluru</span> is not just an event; it is a legacy. An independently organized collective based in Cambridge Institute of Technology, striving to curate top-tier intellectual experiences.
+                                <span className="text-white font-semibold">TEDxCITBengaluru</span> is not just an event; it is a legacy.
+                                An independently organized collective based in Cambridge Institute of Technology, striving to curate top-tier intellectual experiences.
                             </p>
                         </div>
 

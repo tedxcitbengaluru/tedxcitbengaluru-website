@@ -223,7 +223,16 @@ export default function Team() {
         const lead = currentTeamLeads.find((l: TeamLead) => l.id === teamId);
         // Only allow clicking if they have members
         if (lead?.members && lead.members.length > 0) {
-            setExpandedTeam(prev => prev === teamId ? null : teamId);
+            setExpandedTeam(prev => {
+                const newValue = prev === teamId ? null : teamId;
+                // I added scroll to the top of the section so that its easy to navigate
+                if (newValue !== null) {
+                    setTimeout(() => {
+                        document.getElementById('team-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                }
+                return newValue;
+            });
         }
     }, [currentTeamLeads]);
 

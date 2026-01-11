@@ -21,7 +21,7 @@ export default function Hero() {
         />
 
         {/* FADE GRADIENT - Fades mountain into the next section color */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#1F1F1F]"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#050505]"></div>
       </div>
 
             {/* Optional: A Hero Title if you want one (Uncomment to use) */}
