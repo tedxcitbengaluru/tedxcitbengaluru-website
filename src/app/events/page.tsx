@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Header from '@/components/layout/header'
 import { motion, AnimatePresence, Variants } from 'framer-motion';
@@ -21,6 +21,34 @@ interface EventData {
 const Page = () => {
     const [activeTab, setActiveTab] = useState('events');
     const [selectedEvent, setSelectedEvent] = useState<EventData | null>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (contentRef.current) {
+            const targetPosition = contentRef.current.getBoundingClientRect().top + window.scrollY;
+            const startPosition = window.scrollY;
+            const distance = targetPosition - startPosition;
+            const duration = 100;
+            let start: number | null = null;
+
+            const animation = (currentTime: number) => {
+                if (start === null) start = currentTime;
+                const timeElapsed = currentTime - start;
+                const progress = Math.min(timeElapsed / duration, 1);
+                
+                // Easing function for smoother animation
+                const ease = progress * (2 - progress);
+                
+                window.scrollTo(0, startPosition + distance * ease);
+                
+                if (timeElapsed < duration) {
+                    requestAnimationFrame(animation);
+                }
+            };
+
+            requestAnimationFrame(animation);
+        }
+    }, []);
 
     // --- DATA ---
     const events: EventData[] = [
@@ -119,51 +147,56 @@ const Page = () => {
     };
 
     return (
-        <section className="relative w-full min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-black">
-            <Header />
+        <div className="bg-[#050505]">
+            {/* HERO SECTION - Same as About Page */}
+            <section className="relative w-full h-screen overflow-hidden bg-white">
+                <Header />
+                
+                {/* --- Full-width Mountain Background --- */}
+                <div className="absolute inset-0">
+                    <Image
+                        src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760513189/Mask_group_qwx8ys.svg"
+                        alt="Mountain background"
+                        fill
+                        className="object-cover object-bottom w-full h-full"
+                        priority
+                        sizes="100vw"
+                    />
 
-            {/* IMAGE SECTION */}
-            <div className="relative w-full bg-white md:bg-white sm:bg-white">
-                <Image
-                    src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1767472992/Group_222_vxkhj9.png"
-                    alt="Mountain background"
-                    width={1920}
-                    height={1080}
-                    priority
-                    unoptimized
-                    className="w-full h-auto object-contain overflow-clip"
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black" />
-            </div>
+                    {/* FADE GRADIENT - Fades mountain into the next section color */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#050505]"></div>
+                </div>
+            </section>
 
             {/* CONTENT SECTION */}
-            <div className="relative z-20 container mx-auto px-6 mt-[-80vh] md:mt-[-120vh] sm:mt-[-100vh] lg:mt-[-350vh] w-full md:w-1/2 sm:w-2/3 flex flex-col items-start pb-20">
-                
-                {/* --- TOGGLE BUTTONS --- */}
-                <div className="mb-16 w-full flex justify-center">
-                    <div className="inline-flex bg-white/5 backdrop-blur-xl border border-white/10 rounded-full p-1.5 shadow-2xl">
-                        <button
-                            onClick={() => setActiveTab('events')}
-                            className={`px-8 py-3 rounded-full text-base font-bold uppercase tracking-wider transition-all duration-300 ${
-                                activeTab === 'events'
-                                    ? 'bg-[#EB0028] text-white shadow-lg scale-105'
-                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
-                            }`}
-                        >
-                            Events
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('circles')}
-                            className={`px-8 py-3 rounded-full text-base font-bold uppercase tracking-wider transition-all duration-300 ${
-                                activeTab === 'circles'
-                                    ? 'bg-[#EB0028] text-white shadow-lg scale-105'
-                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
-                            }`}
-                        >
-                            Circles
-                        </button>
+            <section ref={contentRef} className="relative z-20 bg-[#050505] py-20">
+                <div className="container mx-auto px-6 w-full md:w-2/3 lg:w-1/2 flex flex-col items-center">
+                    
+                    {/* --- TOGGLE BUTTONS --- */}
+                    <div className="mb-16 w-full flex justify-center">
+                        <div className="inline-flex bg-white/5 backdrop-blur-xl border border-white/10 rounded-full p-1.5 shadow-2xl">
+                            <button
+                                onClick={() => setActiveTab('events')}
+                                className={`px-8 py-3 rounded-full text-base font-bold uppercase tracking-wider transition-all duration-300 ${
+                                    activeTab === 'events'
+                                        ? 'bg-[#EB0028] text-white shadow-lg scale-105'
+                                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                }`}
+                            >
+                                Events
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('circles')}
+                                className={`px-8 py-3 rounded-full text-base font-bold uppercase tracking-wider transition-all duration-300 ${
+                                    activeTab === 'circles'
+                                        ? 'bg-[#EB0028] text-white shadow-lg scale-105'
+                                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                }`}
+                            >
+                                Circles
+                            </button>
+                        </div>
                     </div>
-                </div>
 
                 {/* --- ANIMATED CONTENT AREA --- */}
                 <div className="w-full min-h-[50vh]">
@@ -255,6 +288,7 @@ const Page = () => {
                     </AnimatePresence>
                 </div>
             </div>
+            </section>
 
             {/* --- VIDEO MODAL --- */}
             <AnimatePresence>
@@ -322,10 +356,10 @@ const Page = () => {
                 )}
             </AnimatePresence>
             
-            <footer className="w-full z-50 relative bottom-0 text-center pt-4 text-[14px] text-gray-600 pb-10 bg-black">
+            <footer className="w-full z-50 relative bottom-0 text-center pt-4 text-[14px] text-gray-600 pb-10 bg-[#050505]">
                 Copyright {new Date().getFullYear()} &copy; TEDxCITBengaluru. This independent TEDx event is operated under license from TED 
             </footer>  
-        </section>
+        </div>
     )
 }
 

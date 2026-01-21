@@ -1,5 +1,6 @@
 import React, { useRef, useCallback, useState } from 'react';
 import './ProfileCard.css';
+import Image from 'next/image';
 
 interface ProfileCardProps {
   avatarUrl: string;
@@ -83,9 +84,11 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
 
         {/* TEDx Watermark (Top Right) */}
         <div className="card-watermark">
-            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20 20 L40 50 L20 80 H35 L50 58 L65 80 H80 L60 50 L80 20 H65 L50 42 L35 20 Z" fill="#EB0028"/>
-            </svg>
+              <img 
+                src="/images/x.png" 
+                alt="TEDx" 
+                className="watermark-image"
+              />
         </div>
 
         {/* Content Info */}
