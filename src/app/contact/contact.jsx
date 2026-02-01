@@ -1,169 +1,137 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
+import { FaInstagram, FaLinkedinIn, FaYoutube, FaEnvelope, FaArrowRight } from 'react-icons/fa'
 
 export default function Contact() {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        mobile: '',
-        description: ''
-    })
-    const [isSubmitting, setIsSubmitting] = useState(false)
-    const [submitted, setSubmitted] = useState(false)
+    const [loaded, setLoaded] = useState(false);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }))
-    }
+    useEffect(() => {
+        setLoaded(true);
+    }, []);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        setIsSubmitting(true)
-
-        const res = await fetch("/api/contact", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                name: formData.name,
-                email: formData.email,
-                mobile: formData.mobile,
-                message: formData.description
-            }),
-        });
-
-        if (res.ok) {
-            setSubmitted(true)
-        } else {
-            alert("Something went wrong");
+    const socialLinks = [
+        {
+            name: "Instagram",
+            icon: <FaInstagram size={32} />,
+            url: "https://www.instagram.com/tedxcitbengaluru/",
+            brandColor: "group-hover:text-[#E1306C]", 
+            glowColor: "group-hover:shadow-[0_0_30px_-5px_rgba(225,48,108,0.4)]",
+            borderColor: "group-hover:border-[#E1306C]/50",
+            subtext: "DM us @tedxcitbengaluru"
+        },
+        {
+            name: "LinkedIn",
+            icon: <FaLinkedinIn size={32} />,
+            url: "https://www.linkedin.com/company/tedxcitbengaluru/",
+            brandColor: "group-hover:text-[#0077B5]",
+            glowColor: "group-hover:shadow-[0_0_30px_-5px_rgba(0,119,181,0.4)]",
+            borderColor: "group-hover:border-[#0077B5]/50",
+            subtext: "Connect with us"
+        },
+        {
+            name: "Email",
+            icon: <FaEnvelope size={32} />,
+            url: "mailto:tedxcitbengaluru@cambridge.edu.in",
+            brandColor: "group-hover:text-[#EA4335]",
+            glowColor: "group-hover:shadow-[0_0_30px_-5px_rgba(234,67,53,0.4)]",
+            borderColor: "group-hover:border-[#EA4335]/50",
+            subtext: "tedxcitbengaluru@cambridge.edu.in"
+        },
+        {
+            name: "YouTube",
+            icon: <FaYoutube size={32} />,
+            url: "https://youtube.com/@tedxcitbengaluru?si=-nGEuzBrCFst98i6",
+            brandColor: "group-hover:text-[#FF0000]",
+            glowColor: "group-hover:shadow-[0_0_30px_-5px_rgba(255,0,0,0.4)]",
+            borderColor: "group-hover:border-[#FF0000]/50",
+            subtext: "Watch our talks"
         }
-        
-        setIsSubmitting(false)
-        setFormData({
-            name: '',
-            email: '',
-            mobile: '',
-            description: ''
-        })
-    }
+    ];
 
     return(
-        <section className='relative w-full min-h-screen overflow-hidden bg-[#1F1F1F] flex flex-col'>
-            <div className="absolute inset-0">
+        // REVERTED: Back to #1F1F1F (Charcoal) instead of Black
+        <section className='relative w-full min-h-screen overflow-hidden bg-[#1F1F1F] flex flex-col font-sans'>
+            
+            {/* Background Particles - Increased Opacity */}
+            <div className="absolute inset-0 pointer-events-none">
                 <Image
                     src="/images/sponsors_particles.svg"
                     alt="graphics background"
                     fill
-                    className="mt-[230.27px] ml-[550.71px] w-[1565px] h-[1862px]"
+                    className="object-cover opacity-60" // Bumped up opacity so it's clearly visible
                     priority
-                    sizes="100vw"
                 />
             </div>
-            <div className="relative z-10 flex-1 flex flex-col px-8 lg:px-16 py-8">
-                <h2 className="text-[8vh] font-bold text-[#B0B0B0] mb-4">
-                    CONTACT <span className='text-[#EB0028]'>US</span>
-                </h2>
+
+            {/* Main Content */}
+            <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-20">
                 
-                <div className="max-w-2xl w-full mt-8 mx-aut">
-                    {submitted ? (
-                        <div className="border-2 border-[#EB0028] rounded-lg p-8 text-center">
-                            <h3 className="text-[#EB0028] text-2xl font-bold mb-4">Thank You!</h3>
-                            <p className="text-[#B0B0B0]">Your message has been sent successfully. We'll get back to you soon.</p>
-                            <button 
-                                onClick={() => setSubmitted(false)}
-                                className="mt-6 px-6 py-2 bg-[#EB0028] text-white rounded-lg hover:bg-[#c70022] transition-colors"
-                            >
-                                Send Another Message
-                            </button>
-                        </div>
-                    ) : (
-                        <form onSubmit={handleSubmit} className="space-y-6 ">
-                            <div>
-                                <label htmlFor="name" className="block text-[#B0B0B0] text-lg mb-2">
-                                    Name
-                                </label>
-                                <input
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full px-4 py-3 bg-transparent border-2 border-[#EB0028] rounded-lg text-[#B0B0B0] placeholder-[#666666] focus:outline-none focus:border-[#ff3350] transition-colors"
-                                    placeholder="Enter your name"
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="email" className="block text-[#B0B0B0] text-lg mb-2">
-                                    Email
-                                </label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full px-4 py-3 bg-transparent border-2 border-[#EB0028] rounded-lg text-[#B0B0B0] placeholder-[#666666] focus:outline-none focus:border-[#ff3350] transition-colors"
-                                    placeholder="Enter your email"
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="mobile" className="block text-[#B0B0B0] text-lg mb-2">
-                                    Mobile No.
-                                </label>
-                                <input
-                                    type="tel"
-                                    id="mobile"
-                                    name="mobile"
-                                    value={formData.mobile}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full px-4 py-3 bg-transparent border-2 border-[#EB0028] rounded-lg text-[#B0B0B0] placeholder-[#666666] focus:outline-none focus:border-[#ff3350] transition-colors"
-                                    placeholder="Enter your mobile number"
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="description" className="block text-[#B0B0B0] text-lg mb-2">
-                                    Description
-                                </label>
-                                <textarea
-                                    id="description"
-                                    name="description"
-                                    value={formData.description}
-                                    onChange={handleChange}
-                                    required
-                                    rows={5}
-                                    className="w-full px-4 py-3 bg-transparent border-2 border-[#EB0028] rounded-lg text-[#B0B0B0] placeholder-[#666666] focus:outline-none focus:border-[#ff3350] transition-colors resize-none"
-                                    placeholder="Enter your message"
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="w-full py-3 bg-[#EB0028] text-white font-bold text-lg rounded-lg hover:bg-[#c70022] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {isSubmitting ? 'Sending...' : 'Submit'}
-                            </button>
-                        </form>
-                    )}
+                {/* Heading */}
+                <div className={`text-center mb-16 transition-all duration-1000 transform ${loaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+                    <h2 className="text-5xl md:text-8xl font-black text-[#B0B0B0] tracking-tighter uppercase mb-4 drop-shadow-2xl">
+                        Get In <span className='text-[#EB0028]'>Touch</span>
+                    </h2>
+                    <div className="h-1 w-24 bg-[#EB0028] mx-auto rounded-full mb-6 shadow-[0_0_20px_#EB0028]" />
+                    <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed">
+                        Have a question, an idea, or just want to say hello? <br className="hidden md:block"/>
+                        We are just one click away.
+                    </p>
                 </div>
+                
+                {/* Social Cards Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 w-full max-w-5xl">
+                    {socialLinks.map((social, index) => (
+                        <a 
+                            key={social.name}
+                            href={social.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ transitionDelay: `${index * 100}ms` }}
+                            className={`
+                                group relative flex items-center gap-5 p-5 md:p-6
+                                /* LIGHTER CARD BG: Using white/5 so it stands out against the grey bg */
+                                bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl
+                                transform transition-all duration-500 hover:-translate-y-2 
+                                ${social.glowColor} ${social.borderColor} hover:bg-white/10
+                                ${loaded ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}
+                            `}
+                        >
+                            {/* Icon Box */}
+                            <div className={`
+                                flex-shrink-0 p-4 rounded-xl bg-black/20 border border-white/5
+                                text-white transition-all duration-300 group-hover:scale-110
+                                ${social.brandColor}
+                            `}>
+                                {social.icon}
+                            </div>
 
-                <div className="mt-auto pt-8">
-                    <div className="container mx-auto px-4 sm:px-6">
-                        <p className="text-xs sm:text-sm text-center text-white leading-relaxed">
-                            © {new Date().getFullYear()}{' '}
-                            <span className="font-semibold text-white">TEDxCITBengaluru</span>.
-                            This independent TEDx event is operated under license from TED.
-                        </p>
-                    </div>
+                            {/* Text Info */}
+                            <div className="flex flex-col min-w-0 flex-1">
+                                <span className="text-lg md:text-xl font-bold text-white uppercase tracking-wider mb-1">
+                                    {social.name}
+                                </span>
+                                <span className="text-sm md:text-base text-gray-400 font-medium group-hover:text-gray-200 transition-colors break-words">
+                                    {social.subtext}
+                                </span>
+                            </div>
+
+                            {/* Animated Arrow */}
+                            <div className="flex-shrink-0 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out text-[#EB0028]">
+                                <FaArrowRight size={20} />
+                            </div>
+                        </a>
+                    ))}
+                </div>
+            </div>
+
+            {/* Footer */}
+            <div className="relative z-10 py-8 border-t border-white/5 bg-[#1F1F1F]">
+                <div className="container mx-auto px-4 text-center">
+                    <p className="text-xs md:text-sm text-gray-500 font-medium uppercase tracking-wide">
+                        © {new Date().getFullYear()} <span className="text-gray-300">TEDxCITBengaluru</span>.
+                        This independent TEDx event is operated under license from TED.
+                    </p>
                 </div>
             </div>
         </section>

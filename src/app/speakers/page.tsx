@@ -47,7 +47,7 @@ interface EventsData {
             { name: "Devamshi Ravivansh", role: "Artist", image: "/speakers/Devamshi Ravivansh.jpg" },
             { name: "Insync Crew", role: "Dance Crew", image: "/speakers/Insync Crew.jpg" },
             { name: "Shankar Ram Chugani", role: "Entertainer", image: "/speakers/Shankar Ram Chugani.jpg" },
-            { name: "Shraddha Mishra", role: "Speaker", image: "/speakers/Shraddha Mishra.jpg" },
+            { name: "Shraddha Mishra", role: "Speaker", image: "/speakers/Shraddha  Mishra.jpg" },
             { name: "Rahul Rawat", role: "Speaker", image: "/speakers/Rahul Rawat.jpg" },
             { name: "Adarsha K", role: "Speaker", image: "/speakers/Adarsha K.jpg" },
             { name: "Subhash Choudhary", role: "Entrepreneur", image: "/speakers/Subhash Choudhary.jpg" },
@@ -74,30 +74,31 @@ interface EventsData {
         Iridescence: [
             { name: "Irfan Sait", role: "Cricket Coach", image: "/speakers/Irfan Sait.jpg" },
             { name: "Nehal Kasliwal", role: "Blogger x Influencer", image: "/speakers/Nehal Kasliwal.jpg" },
-            { name: "Aravindhan A.", role: "Engineer x Educationist", image: "/speakers/Aravindhan A.jpg" },
-            { name: "Subramaniyan T.N.", role: "Entrepreneur", image: "/speakers/Subramaniyan T.N.jpg" },
+            { name: "Aravindhan A.", role: "Engineer x Educationist", image: "/speakers/Aravindhan A..jpg" },
+            { name: "Subramaniyan T.N.", role: "Entrepreneur", image: "/speakers/Subramaniyan T.N..jpg" },
             { name: "Wilfred Shreyas", role: "Motivational Speaker", image: "/speakers/Wilfred Shreyas.jpg" },
             { name: "Yogesh Ojha", role: "Cyber Security Expert", image: "/speakers/Yogesh Ojha.jpg" },
             { name: "Shashi", role: "Actor x Entrepreneur", image: "/speakers/Shashi.jpg" },
         ],
     };
 
-
-// --- SUB-COMPONENT FOR SPEAKER CARD (Clean Image Loading) ---
+// --- SUB-COMPONENT FOR SPEAKER CARD (Fixed Image Cropping) ---
 const SpeakerCard = ({ speaker }: { speaker: Speaker }) => {
     const [isLoaded, setIsLoaded] = useState(false);
 
     return (
         <div className="group relative w-full aspect-[3/4] bg-[#111] rounded-xl overflow-hidden border border-white/5 shadow-2xl transition-transform duration-300 hover:-translate-y-2">
             
-            {/* Image Container with Fade-in Effect */}
-            <div className="absolute inset-0">
+            {/* Image Container */}
+            <div className="absolute inset-0 flex items-center justify-center">
                 <Image 
                     src={speaker.image}
                     alt={speaker.name}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className={`object-cover transition-all duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0
+                    className={`
+                        object-contain object-top 
+                        transition-all duration-700 group-hover:scale-105 grayscale group-hover:grayscale-0
                         ${isLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-lg'} 
                     `}
                     onLoad={() => setIsLoaded(true)}
@@ -110,16 +111,16 @@ const SpeakerCard = ({ speaker }: { speaker: Speaker }) => {
                 </div>
             </div>
 
-            {/* Cinematic Overlay Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-80" />
+            {/* Cinematic Overlay Gradient - Adjusted to ensure text readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90" />
 
             {/* Text Content */}
-            <div className="absolute bottom-0 left-0 w-full p-6 flex flex-col justify-end">
+            <div className="absolute bottom-0 left-0 w-full p-6 flex flex-col justify-end z-10">
                 <div className="w-8 h-1 bg-[#EB0028] mb-3 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
-                <h3 className="text-white text-xl md:text-2xl font-bold leading-tight uppercase tracking-tight mb-1">
+                <h3 className="text-white text-xl md:text-2xl font-bold leading-tight uppercase tracking-tight mb-1 drop-shadow-md">
                     {speaker.name}
                 </h3>
-                <p className="text-gray-400 text-xs md:text-sm font-medium uppercase tracking-wider line-clamp-2">
+                <p className="text-gray-300 text-xs md:text-sm font-medium uppercase tracking-wider line-clamp-2 drop-shadow-sm">
                     {speaker.role}
                 </p>
             </div>
