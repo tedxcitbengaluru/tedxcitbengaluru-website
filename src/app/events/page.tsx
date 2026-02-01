@@ -54,7 +54,7 @@ const Page = () => {
     const events: EventData[] = [
         { 
             name: 'Epoch', 
-            date: '6th MAY 2024', 
+            date: '28th FEBRUARY 2025', 
             src: '/events/Epoch.jpg',
             videos: [
                 { title: "Standup Comedy by Shankar Chugani", url: "https://www.youtube.com/embed/DMUkJWNQhO0?autoplay=0", thumbnail: "https://img.youtube.com/vi/DMUkJWNQhO0/0.jpg" },
@@ -72,7 +72,7 @@ const Page = () => {
         },
         { 
             name: 'Zenith', 
-            date: '6th MAY 2024', 
+            date: '31st MARCH 2023', 
             src: '/events/Zenith.jpg',
             videos: [
                 { title: "Pursuing Excellence | Saptarshi Prakash", url: "https://www.youtube.com/embed/GVNvrxoZW8k?autoplay=0", thumbnail: "https://img.youtube.com/vi/GVNvrxoZW8k/0.jpg" }
@@ -80,7 +80,7 @@ const Page = () => {
         },
         { 
             name: 'Elixir', 
-            date: '6th MAY 2024', 
+            date: '8th JULY 2022', 
             src: '/events/Elixir.jpg',
             videos: [
                 { title: "Consistency and Excellence | Reshi Magada", url: "https://www.youtube.com/embed/h6olKX9BajA?autoplay=0", thumbnail: "https://img.youtube.com/vi/h6olKX9BajA/0.jpg" }
@@ -88,7 +88,7 @@ const Page = () => {
         },
         { 
             name: 'Thrive', 
-            date: '6th MAY 2024', 
+            date: '11th NOVEMBER 2021', 
             src: '/events/Thrive.jpg',
             videos: [
                 { title: "Struggles of Women & Sexual Minorities | Akkai Padmashali", url: "https://www.youtube.com/embed/5y7Ek2sDMu4?autoplay=0", thumbnail: "https://img.youtube.com/vi/5y7Ek2sDMu4/0.jpg" }
@@ -96,7 +96,7 @@ const Page = () => {
         },
         { 
             name: 'Iridescence', 
-            date: '6th MAY 2024', 
+            date: '23rd AUGUST 2021', 
             src: '/events/Iridescence.jpg',
             videos: [
                 { title: "Thinking from Another Perspective | Wilfred Shreyas", url: "https://www.youtube.com/embed/r4UeEGmOATA?autoplay=0", thumbnail: "https://img.youtube.com/vi/r4UeEGmOATA/0.jpg" }
