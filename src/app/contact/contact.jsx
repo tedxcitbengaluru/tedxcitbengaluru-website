@@ -41,7 +41,7 @@ export default function Contact() {
         {
             name: "YouTube",
             icon: <FaYoutube size={32} />,
-            url: "https://youtube.com/@tedxcitbengaluru?si=-nGEuzBrCFst98i6",
+            url: "https://www.youtube.com/@TEDxCITBengaluru/playlists",
             brandColor: "group-hover:text-[#FF0000]",
             glowColor: "group-hover:shadow-[0_0_30px_-5px_rgba(255,0,0,0.4)]",
             borderColor: "group-hover:border-[#FF0000]/50",

@@ -58,7 +58,13 @@ const Page = () => {
             src: '/events/Epoch.jpg',
             videos: [
                 { title: "Standup Comedy by Shankar Chugani", url: "https://www.youtube.com/embed/DMUkJWNQhO0?autoplay=0", thumbnail: "https://img.youtube.com/vi/DMUkJWNQhO0/0.jpg" },
-                { title: "Musical Performance by Dhananjay Keys", url: "https://www.youtube.com/embed/9LPhOwITmjQ?autoplay=0", thumbnail: "https://img.youtube.com/vi/9LPhOwITmjQ/0.jpg" }
+                { title: "Musical Performance by Dhananjay Keys", url: "https://www.youtube.com/embed/9LPhOwITmjQ?autoplay=0", thumbnail: "https://img.youtube.com/vi/9LPhOwITmjQ/0.jpg" },
+                { title: "Three P's - Passion Persona & Pursuit - A Way to Life | Dr. Shivananda Koteshwar", url: "https://www.youtube.com/embed/Kf7uW6Fz9EE?autoplay=0",thumbnail: "https://img.youtube.com/vi/Kf7uW6Fz9EE/0.jpg" },
+                { title: "A Psychiatrist's Journey Through Challenge and Change | Dr. Muralidharan Kesavan", url: "https://www.youtube.com/embed/VUlADlxWiZo?autoplay=0",thumbnail: "https://img.youtube.com/vi/VUlADlxWiZo/0.jpg"},
+                { title: "Journey in fashion through stitching stories | Aditi Bhonsle", url: "https://www.youtube.com/embed/-UORHKxp_xA?autoplay=0",thumbnail: "https://img.youtube.com/vi/-UORHKxp_xA/0.jpg" },
+                { title: "How I mastered VFX, life, and leadership | Shiji Sunil", url: "https://www.youtube.com/embed/QCeyOnyZ-tM?autoplay=0",thumbnail: "https://img.youtube.com/vi/QCeyOnyZ-tM/0.jpg" },
+                { title: "Band Perfomance by Team Madhari", url: "https://www.youtube.com/embed/p6uiT0kfrzw?autoplay=0",thumbnail: "https://img.youtube.com/vi/p6uiT0kfrzw/0.jpg"},
+                { title: "Dance Perfomance by Team Pregos", url: "https://www.youtube.com/embed/Yag75vS6JAs?autoplay=0",thumbnail: "https://img.youtube.com/vi/Yag75vS6JAs/0.jpg"}
             ]
         },
         { 
@@ -67,7 +73,11 @@ const Page = () => {
             src: '/events/Aether.jpg',
             videos: [
                 { title: "Bridging Communities through Language | Sakshi Baid", url: "https://www.youtube.com/embed/wgv67rTc5pk?autoplay=0", thumbnail: "https://img.youtube.com/vi/wgv67rTc5pk/0.jpg" },
-                { title: "Elements of Self-Expression | Ruby Naaz", url: "https://www.youtube.com/embed/fmZs6srNYOA?autoplay=0", thumbnail: "https://img.youtube.com/vi/fmZs6srNYOA/0.jpg" }
+                { title: "Elements of Self-Expression | Ruby Naaz", url: "https://www.youtube.com/embed/fmZs6srNYOA?autoplay=0", thumbnail: "https://img.youtube.com/vi/fmZs6srNYOA/0.jpg" },
+                { title: "Carving our own path towards Love and Acceptance | Nivi Nived Antony", url: "https://www.youtube.com/embed/fNTuwce22zg?autoplay=0",thumbnail: "https://img.youtube.com/vi/fNTuwce22zg/0.jpg" },
+                { title: "Connecting the strings through Self Exploration | Akshay Singh", url: "https://www.youtube.com/embed/h8_NnDaV1OM?autoplay=0",thumbnail: "https://img.youtube.com/vi/h8_NnDaV1OM/0.jpg" },
+                { title: "The Relativity of Time: Redefining Success and Purpose in Life | Madhuri Braganza", url: "https://www.youtube.com/embed/DdEIgzLttl0?autoplay=0",thumbnail: "https://img.youtube.com/vi/DdEIgzLttl0/0.jpg" },
+                { title: "Achieving the harmony of within through sound healing | Yogabandhu Prashanth", url: "https://www.youtube.com/embed/ymReuWqNID8?autoplay=0",thumbnail: "https://img.youtube.com/vi/ymReuWqNID8/0.jpg" }
             ]
         },
         { 

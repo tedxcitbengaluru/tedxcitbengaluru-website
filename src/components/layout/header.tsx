@@ -1,18 +1,84 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X, Menu, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaInstagram, FaLinkedinIn, FaYoutube } from "react-icons/fa";
 import Link from "next/link";
-import { useRouter } from "next/navigation";  
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+
+// --- Custom Easing Curve ---
+// This curve is the secret sauce. It accelerates incredibly fast and decelerates very smoothly.
+const premiumEase: [number, number, number, number] = [0.22, 1, 0.36, 0.65];
+
+// --- Framer Motion Variants ---
+
+// The red background that creates the "pop" trailing effect
+const redWipeVariants = {
+  hidden: { x: "100%" },
+  visible: { 
+    x: "0%", 
+    transition: { duration: 0.8, ease: premiumEase } 
+  },
+  exit: { 
+    x: "100%", 
+    transition: { duration: 0.8, ease: premiumEase, delay: 0.1 } 
+  }
+};
+
+// The main dark menu panel
+const menuVariants = {
+  hidden: { x: "100%" },
+  visible: { 
+    x: "0%", 
+    transition: { duration: 0.8, ease: premiumEase, delay: 0.05 } 
+  },
+  exit: { 
+    x: "100%", 
+    transition: { duration: 0.8, ease: premiumEase } 
+  }
+};
+
+// Container to stagger the links
+const linkContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.35 }
+  },
+  exit: {
+    opacity: 0,
+    transition: { staggerChildren: 0.04, staggerDirection: -1 }
+  }
+};
+
+// Masked text reveal for individual links
+const linkItemVariants = {
+  hidden: { y: "110%", opacity: 0, rotateX: 20 },
+  visible: { 
+    y: "0%", 
+    opacity: 1, 
+    rotateX: 0,
+    transition: { duration: 0.8, ease: premiumEase } 
+  },
+  exit: { 
+    y: "110%", 
+    opacity: 0,
+    transition: { duration: 0.4, ease: premiumEase } 
+  }
+};
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [socialOpen, setSocialOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-  const links = ["ABOUT","EVENTS", "SPEAKERS & PERFORMERS", "SPONSORS", "CONTACT"];
+  const links = ["HOME", "ABOUT", "EVENTS", "SPEAKERS & PERFORMERS", "SPONSORS", "CONTACT"];
+
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    if (menuOpen) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "unset";
+  }, [menuOpen]);
 
   const getHref = (link: string) => {
     if (link === "HOME") return "/";
@@ -20,18 +86,17 @@ export default function Header() {
     return `/${link.toLowerCase()}`;
   };
 
-
   return (
     <header className="absolute top-0 left-0 w-full z-40 px-4 sm:px-6 md:px-8 py-4 md:py-6 h-24">
       
       {/* ------------------------------- */}
-      {/* LEFT: SOCIAL SIDEBAR SECTION    */}
+      {/* LEFT: SOCIAL SIDEBAR            */}
       {/* ------------------------------- */}
       <div className="absolute top-4 md:top-6 left-4 sm:left-6 md:left-8 z-50">
         {!socialOpen && (
           <button
             onClick={() => setSocialOpen(true)}
-            className="bg-black/80 backdrop-blur text-white p-3 md:p-4 rounded-full hover:text-red-600 hover:bg-gray-900 transition-all duration-300 shadow-lg border border-gray-800 hover:border-red-600"
+            className="bg-black/80 backdrop-blur text-white p-3 md:p-4 rounded-full hover:text-[#E62B1E] hover:bg-gray-900 transition-all duration-300 shadow-lg border border-gray-800"
             aria-label="Open social sidebar"
           >
             <User size={24} />
@@ -49,21 +114,20 @@ export default function Header() {
             >
               <button
                 onClick={() => setSocialOpen(false)}
-                className="text-gray-400 hover:text-red-600 transition-colors duration-200 p-1 hover:bg-gray-800 rounded-lg"
+                className="text-gray-400 hover:text-[#E62B1E] transition-colors duration-200 p-1 hover:bg-gray-800 rounded-lg"
               >
                 <X size={20} />
               </button>
               <div className="w-6 h-px bg-gray-700"></div>
               <nav className="flex flex-col items-center gap-5">
-                <a href="https://www.instagram.com/tedxcitbengaluru/" className="text-gray-400 hover:text-red-600 hover:scale-110 transition-all duration-200"><FaInstagram size={22} /></a>
-                <a href="https://www.linkedin.com/company/tedxcitbengaluru/" className="text-gray-400 hover:text-red-600 hover:scale-110 transition-all duration-200"><FaLinkedinIn size={22} /></a>
-                <a href="https://youtube.com/@tedxcitbengaluru?si=-nGEuzBrCFst98i6" className="text-gray-400 hover:text-red-600 hover:scale-110 transition-all duration-200"><FaYoutube size={22} /></a>
+                <a href="https://www.instagram.com/tedxcitbengaluru/" className="text-gray-400 hover:text-[#E62B1E] hover:scale-110 transition-all duration-200"><FaInstagram size={22} /></a>
+                <a href="https://www.linkedin.com/company/tedxcitbengaluru/" className="text-gray-400 hover:text-[#E62B1E] hover:scale-110 transition-all duration-200"><FaLinkedinIn size={22} /></a>
+                <a href="https://www.youtube.com/@TEDxCITBengaluru/playlists" className="text-gray-400 hover:text-[#E62B1E] hover:scale-110 transition-all duration-200"><FaYoutube size={22} /></a>
               </nav>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-
 
       {/* ------------------------------- */}
       {/* CENTER: LOGO                    */}
@@ -76,76 +140,107 @@ export default function Header() {
         />
       </div>
 
-
       {/* ------------------------------- */}
-      {/* RIGHT: NAVIGATION MENU          */}
+      {/* RIGHT: HAMBURGER TRIGGER        */}
       {/* ------------------------------- */}
       <div className="absolute top-4 md:top-6 right-4 sm:right-6 md:right-8 z-50">
-        
-        {/* HAMBURGER BUTTON (Only visible when menu is CLOSED) */}
-        {!menuOpen && (
-          <button
-            onClick={() => setMenuOpen(true)}
-            className="text-black hover:text-[#E62B1E] transition p-2 rounded-xl"
-          >
-            <Menu size={32} />
-          </button>
-        )}
+        <button
+          onClick={() => setMenuOpen(true)}
+          className="text-black mix-blend-difference hover:text-[#E62B1E] transition p-2 rounded-xl"
+        >
+          <Menu size={32} />
+        </button>
+      </div>
 
-        {/* MENU DROPDOWN CARD */}
-        <AnimatePresence>
-          {menuOpen && (
+      {/* ------------------------------- */}
+      {/* FULL HEIGHT MENU OVERLAY        */}
+      {/* ------------------------------- */}
+      <AnimatePresence>
+        {menuOpen && (
+          <>
+            {/* Background Backdrop (Optional dimming of the left side) */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, transition: { delay: 0.4 } }}
+              onClick={() => setMenuOpen(false)}
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[60]"
+            />
+
+            {/* Red Trailing Wipe */}
             <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.85 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.85 }}
-              transition={{ duration: 0.2 }}
-              className="absolute top-0 right-0 bg-[#121212] text-white rounded-2xl p-4 w-74 shadow-2xl border border-white/10 flex flex-col"
+              variants={redWipeVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="fixed top-0 right-0 w-full md:w-1/2 h-screen bg-[#E62B1E] z-[61] shadow-2xl"
+            />
+
+            {/* Main Dark Menu Panel */}
+            <motion.div
+              variants={menuVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="fixed top-0 right-0 w-full md:w-1/2 h-screen bg-[#111] z-[62] flex flex-col justify-center px-12 sm:px-20 border-l border-white/5 shadow-2xl"
             >
               
-              {/* Close Button */}
-              <div className="flex justify-end mb-8">
+              {/* Close Button Inside Menu */}
+              <div className="absolute top-8 right-8 md:top-10 md:right-12">
                 <button
                   onClick={() => setMenuOpen(false)}
-                  className="text-white hover:text-[#E62B1E] transition-colors"
+                  className="text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 p-3 rounded-full transition-all duration-300 backdrop-blur-md border border-white/10"
                 >
                   <X size={28} />
                 </button>
               </div>
 
-              {/* Links */}
-              <ul className="flex flex-col gap-5 text-right">
+              {/* Staggered Navigation Links */}
+              <motion.nav 
+                variants={linkContainerVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="flex flex-col gap-6 md:gap-8"
+              >
                 {links.map((link) => {
                   const href = getHref(link);
-                  const isActive =
-                    pathname === href ||
-                    (href !== "/" && pathname.startsWith(href));
+                  const isActive = pathname === href || (href !== "/" && pathname.startsWith(href));
 
                   return (
-                    <li key={link}>
-                      <Link
-                        href={href}
-                        onClick={() => setMenuOpen(false)}
-                        className={`
-                          block text-lg font-bold tracking-wider transition-colors duration-200
-                          ${
-                            isActive
-                              ? "text-[#E62B1E] underline underline-offset-4"
-                              : "text-white hover:text-[#E62B1E]"
-                          }
-                        `}
-                      >
-                        {link}
-                      </Link>
-                    </li>
+                    // The overflow-hidden wrapper creates the "masked reveal" effect
+                    <div key={link} className="overflow-hidden py-1">
+                      <motion.div variants={linkItemVariants}>
+                        <Link
+                          href={href}
+                          onClick={() => setMenuOpen(false)}
+                          className={`
+                            block text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter uppercase transition-colors duration-300
+                            ${isActive ? "text-[#E62B1E]" : "text-white hover:text-[#E62B1E]"}
+                          `}
+                        >
+                          {link}
+                        </Link>
+                      </motion.div>
+                    </div>
                   );
                 })}
-              </ul>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              </motion.nav>
 
-      </div>
+              {/* Bottom Footer Info in Menu */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0, transition: { delay: 0.6, duration: 0.6 } }}
+                exit={{ opacity: 0, y: 10, transition: { duration: 0.3 } }}
+                className="absolute bottom-10 left-12 sm:left-20 text-gray-500 text-sm font-medium tracking-wide"
+              >
+                © 2026 TEDxCITBengaluru
+              </motion.div>
+
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
     </header>
   );
