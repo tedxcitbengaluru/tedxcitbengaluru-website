@@ -6,7 +6,7 @@ const stats = [
     { label: "Minutes Of Talks", value: "300+" },
     { label: "Speakers", value: "30+" },
     { label: "TED Circles", value: "12+" },
-    { label: "Social Followers", value: "1600+" },
+    { label: "Social Followers", value: "2000+" },
 ];
 
 export default function Mission() {
