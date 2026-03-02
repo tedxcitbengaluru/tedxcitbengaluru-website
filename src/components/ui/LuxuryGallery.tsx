@@ -36,7 +36,7 @@ export default function LuxuryGallery({ images }: LuxuryGalleryProps) {
                 src={src}
                 alt={theme.title}
                 fill
-                className="object-cover grayscale transition-all duration-700 ease-out group-hover:grayscale-0"
+                className="object-contain md:object-cover grayscale transition-all duration-700 ease-out group-hover:grayscale-0"
               />
             </div>
 

@@ -1,49 +1,51 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { X, Menu, User } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { FaInstagram, FaLinkedinIn, FaYoutube } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 
-// --- Custom Easing Curve ---
-// This curve is the secret sauce. It accelerates incredibly fast and decelerates very smoothly.
-const premiumEase: [number, number, number, number] = [0.22, 1, 0.36, 0.65];
+// --- Custom Easing Curve (Strictly typed for Framer Motion) ---
+// Changed the last value to 1 to ensure it completely settles into place without snapping.
+const premiumEase: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 // --- Framer Motion Variants ---
 
 // The red background that creates the "pop" trailing effect
-const redWipeVariants = {
+const redWipeVariants: Variants = {
   hidden: { x: "100%" },
   visible: { 
     x: "0%", 
-    transition: { duration: 0.8, ease: premiumEase } 
+    transition: { duration: 0.85, ease: premiumEase } 
   },
   exit: { 
     x: "100%", 
-    transition: { duration: 0.8, ease: premiumEase, delay: 0.1 } 
+    transition: { duration: 0.85, ease: premiumEase, delay: 0.1 } 
   }
 };
 
 // The main dark menu panel
-const menuVariants = {
+const menuVariants: Variants = {
   hidden: { x: "100%" },
   visible: { 
     x: "0%", 
-    transition: { duration: 0.8, ease: premiumEase, delay: 0.05 } 
+    // Slight delay so the red wipe leads the way
+    transition: { duration: 0.85, ease: premiumEase, delay: 0.08 } 
   },
   exit: { 
     x: "100%", 
-    transition: { duration: 0.8, ease: premiumEase } 
+    // Exits immediately so the red wipe follows it
+    transition: { duration: 0.85, ease: premiumEase } 
   }
 };
 
 // Container to stagger the links
-const linkContainerVariants = {
+const linkContainerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.35 }
+    transition: { staggerChildren: 0.08, delayChildren: 0.3 }
   },
   exit: {
     opacity: 0,
@@ -52,16 +54,15 @@ const linkContainerVariants = {
 };
 
 // Masked text reveal for individual links
-const linkItemVariants = {
-  hidden: { y: "110%", opacity: 0, rotateX: 20 },
+const linkItemVariants: Variants = {
+  hidden: { y: "110%", opacity: 0 },
   visible: { 
     y: "0%", 
     opacity: 1, 
-    rotateX: 0,
     transition: { duration: 0.8, ease: premiumEase } 
   },
   exit: { 
-    y: "110%", 
+    y: "50%", 
     opacity: 0,
     transition: { duration: 0.4, ease: premiumEase } 
   }
@@ -109,7 +110,7 @@ export default function Header() {
               initial={{ opacity: 0, x: -20, scale: 0.95 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: -20, scale: 0.95 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
+              transition={{ duration: 0.3, ease: premiumEase }}
               className="bg-black/90 backdrop-blur text-white rounded-2xl p-5 md:p-6 w-16 md:w-20 flex flex-col items-center gap-6 shadow-2xl border border-gray-800"
             >
               <button
@@ -132,11 +133,12 @@ export default function Header() {
       {/* ------------------------------- */}
       {/* CENTER: LOGO                    */}
       {/* ------------------------------- */}
-      <div className="absolute top-4 md:top-4 left-1/2 -translate-x-1/2 z-40 hover:cursor-pointer">
+      <div className="absolute top-4 md:top-4 left-1/2 -translate-x-1/2 z-40 hover:cursor-pointer transition-transform hover:scale-105 duration-300">
         <img 
           src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1766846025/1c4a732edd17da65e8739683d472d6fa5ed0162c_plrnph.png" 
           alt="TEDxCITBengaluru Logo" 
-          className="h-8 sm:h-10 md:h-12" onClick={() => router.push('/')} 
+          className="h-8 sm:h-10 md:h-12" 
+          onClick={() => router.push('/')} 
         />
       </div>
 
@@ -146,7 +148,7 @@ export default function Header() {
       <div className="absolute top-4 md:top-6 right-4 sm:right-6 md:right-8 z-50">
         <button
           onClick={() => setMenuOpen(true)}
-          className="text-black mix-blend-difference hover:text-[#E62B1E] transition p-2 rounded-xl"
+          className="text-black mix-blend-difference hover:text-[#E62B1E] transition p-2 rounded-xl active:scale-95"
         >
           <Menu size={32} />
         </button>
@@ -158,38 +160,42 @@ export default function Header() {
       <AnimatePresence>
         {menuOpen && (
           <>
-            {/* Background Backdrop (Optional dimming of the left side) */}
+            {/* Background Backdrop */}
             <motion.div 
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0, transition: { delay: 0.4 } }}
+              animate={{ opacity: 1, transition: { duration: 0.5 } }}
+              // Synced exit delay with the sliding panels so it doesn't vanish too early
+              exit={{ opacity: 0, transition: { duration: 0.5, delay: 0.4 } }}
               onClick={() => setMenuOpen(false)}
-              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[60]"
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]"
+              style={{ willChange: "opacity" }}
             />
 
-            {/* Red Trailing Wipe */}
+            {/* Red Trailing Wipe (GPU Accelerated) */}
             <motion.div
               variants={redWipeVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="fixed top-0 right-0 w-full md:w-1/2 h-screen bg-[#E62B1E] z-[61] shadow-2xl"
+              className="fixed top-0 right-0 w-full md:w-1/2 h-screen bg-[#E62B1E] z-[61] shadow-2xl transform-gpu"
+              style={{ willChange: "transform" }}
             />
 
-            {/* Main Dark Menu Panel */}
+            {/* Main Dark Menu Panel (GPU Accelerated) */}
             <motion.div
               variants={menuVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="fixed top-0 right-0 w-full md:w-1/2 h-screen bg-[#111] z-[62] flex flex-col justify-center px-12 sm:px-20 border-l border-white/5 shadow-2xl"
+              className="fixed top-0 right-0 w-full md:w-1/2 h-screen bg-[#0A0A0A] z-[62] flex flex-col justify-center px-12 sm:px-20 border-l border-white/5 shadow-2xl transform-gpu"
+              style={{ willChange: "transform" }}
             >
               
               {/* Close Button Inside Menu */}
               <div className="absolute top-8 right-8 md:top-10 md:right-12">
                 <button
                   onClick={() => setMenuOpen(false)}
-                  className="text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 p-3 rounded-full transition-all duration-300 backdrop-blur-md border border-white/10"
+                  className="text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 p-3 rounded-full transition-all duration-300 backdrop-blur-md border border-white/10 active:scale-90"
                 >
                   <X size={28} />
                 </button>
@@ -208,7 +214,6 @@ export default function Header() {
                   const isActive = pathname === href || (href !== "/" && pathname.startsWith(href));
 
                   return (
-                    // The overflow-hidden wrapper creates the "masked reveal" effect
                     <div key={link} className="overflow-hidden py-1">
                       <motion.div variants={linkItemVariants}>
                         <Link
@@ -230,7 +235,7 @@ export default function Header() {
               {/* Bottom Footer Info in Menu */}
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0, transition: { delay: 0.6, duration: 0.6 } }}
+                animate={{ opacity: 1, y: 0, transition: { delay: 0.6, duration: 0.6, ease: premiumEase } }}
                 exit={{ opacity: 0, y: 10, transition: { duration: 0.3 } }}
                 className="absolute bottom-10 left-12 sm:left-20 text-gray-500 text-sm font-medium tracking-wide"
               >

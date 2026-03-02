@@ -11,7 +11,7 @@ export default function Hero() {
             {/* --- Full-width Mountain Background --- */}
             <div className="absolute inset-0">
             <Image
-                src="/images/bg-left-bird.svg"
+                src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1772475032/bg-left-bird_tryk5c.svg"
                 alt="Mountain background"
                 fill
                 className="object-cover object-bottom w-full h-full"
