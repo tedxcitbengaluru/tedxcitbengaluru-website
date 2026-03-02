@@ -239,7 +239,7 @@ export default function TicketingPage() {
               Initialize Clearance.
             </h1>
             <p className="text-gray-400 text-sm md:text-base max-w-md leading-relaxed">
-              Enter exact demographic credentials below to generate your physical ARC 07 badge and proceed to payment.
+              Enter exact demographic credentials below to generate your virtual ARC 07 badge and proceed to payment.
             </p>
           </div>
 
@@ -385,6 +385,7 @@ export default function TicketingPage() {
                               <option value="ME/CV" className="bg-[#111]">ME/CV</option>
                               <option value="MCA" className="bg-[#111]">MCA</option>
                               <option value="MBA" className="bg-[#111]">MBA</option>
+                              <option value="MBA" className="bg-[#111]">PU College</option>
                               <option value="Degree Block" className="bg-[#111]">Degree Block</option>
                               <option value="Faculty" className="bg-[#111]">Faculty</option>
                             </select>
@@ -442,10 +443,10 @@ export default function TicketingPage() {
 
                 <div className="flex flex-col md:flex-row gap-8 items-center md:items-start bg-black/40 p-6 rounded-xl border border-white/5">
                   <div className="shrink-0 text-center">
-                    <div className="w-40 h-40 bg-white p-2 rounded-lg mx-auto overflow-hidden">
-                      <img src="/images/upi.jpeg" alt="UPI QR Code" className="w-full h-full object-cover rounded" />
+                    <div className="w-60 h-60 bg-white p-2 rounded-lg mx-auto overflow-hidden">
+                      <img src="/images/image.png" alt="UPI QR Code" className="w-full h-full object-cover rounded" />
                     </div>
-                    <p className="font-mono text-xs text-gray-400 mt-3 select-all bg-white/5 py-1 px-2 rounded">aaronrohanraj7@okaxis</p>
+                    <p className="font-mono text-xl text-gray-400 mt-3 select-all bg-white/5 py-1 px-2 rounded">rohanraj7@indie</p>
                   </div>
                   
                   <div className="w-full space-y-6">
