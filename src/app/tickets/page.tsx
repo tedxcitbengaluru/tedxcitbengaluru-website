@@ -151,7 +151,9 @@ export default function TicketingPage() {
   const executeSubmit = async () => {
     setShowConfirmModal(false);
     setStatus("loading");
-    toast.loading('Encrypting and authenticating your submission...', { duration: 10000 });
+    
+    // 1. Capture the ID of the loading toast
+    const toastId = toast.loading('Encrypting and authenticating your submission...', { duration: 10000 });
 
     let paymentScreenshotLink = formData.paymentScreenshot;
 
@@ -171,12 +173,12 @@ export default function TicketingPage() {
           const { link } = await response.json();
           paymentScreenshotLink = link;
         } else {
-          toast.error('Failed to upload payment verification. Storage API Error.');
+          toast.error('Failed to upload payment verification. Storage API Error.', { id: toastId });
           setStatus("idle");
           return;
         }
       } catch (error) {
-        toast.error('Network Error: Storage API Unresponsive.');
+        toast.error('Network Error: Storage API Unresponsive.', { id: toastId });
         setStatus("idle");
         return;
       }
@@ -198,14 +200,14 @@ export default function TicketingPage() {
       });
 
       if (sheetResponse.ok) {
-        toast.success('Clearance granted. Welcome to ARC 07.');
+        toast.success('Clearance granted. Welcome to ARC 07.', { id: toastId });
         setStatus("success");
       } else {
-        toast.error('Database rejection. Please try again.');
+        toast.error('Database rejection. Please try again.', { id: toastId });
         setStatus("idle");
       }
     } catch (error) {
-      toast.error('Critical systems error during data submission.');
+      toast.error('Critical systems error during data submission.', { id: toastId });
       setStatus("idle");
     }
   };
