@@ -177,6 +177,26 @@
   transform-origin: center;
 }
 
+@keyframes energy {
+  0% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.8;
+  }
+  60% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+
+.animate-energy {
+  animation: energy 3s ease-in-out infinite;
+}
 
 /* ==========================================================================
    4. COMMENTED OUT LEGACY FORMS (Team & Curation)
