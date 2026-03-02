@@ -35,7 +35,7 @@ export default function TicketingPage() {
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
   // Default to Solo Access
   const [ticketType, setTicketType] = useState<string>("Solo Access");
-  const [ticketPrice, setTicketPrice] = useState<number>(549); 
+  const [ticketPrice, setTicketPrice] = useState<number>(599); 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   // --- Payment State (Cash Removed, strictly UPI) ---
@@ -78,12 +78,12 @@ export default function TicketingPage() {
   const handleTicketTypeChange = (selectedType: string) => {
     setTicketType(selectedType);
     let memberCount = 1;
-    let price = 549; // Default price
+    let price = 599; // Default price
 
-    if (selectedType === 'Solo Access') { memberCount = 1; price = 549; }
+    if (selectedType === 'Solo Access') { memberCount = 1; price = 599; }
     /* --- UNCOMMENT NEXT WEEK FOR STUDENTS ---
     else if (selectedType === 'Early Bird') { memberCount = 1; price = 399; }
-    else if (selectedType === 'Solo') { memberCount = 1; price = 549; }
+    else if (selectedType === 'Solo') { memberCount = 1; price = 599; }
     else if (selectedType === 'Group of 3') { memberCount = 3; price = 1497; }
     else if (selectedType === 'Group of 5') { memberCount = 5; price = 2245; }
     */
@@ -260,7 +260,7 @@ export default function TicketingPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
                     // --- ACTIVE TIERS ---
-                    { id: 'Solo Access', title: 'Solo Access Pass', price: '₹549', desc: 'Standard individual access pass', highlight: true },
+                    { id: 'Solo Access', title: 'Solo Access Pass', price: '₹599', desc: 'Standard individual access pass', highlight: true },
                     
                     /* --- COMMENTED OUT FOR NEXT WEEK ---
                     { id: 'Early Bird', title: 'Early Bird (Students)', price: '₹399', desc: 'Limited to 30 Seats!', highlight: true },
