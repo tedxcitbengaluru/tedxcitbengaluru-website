@@ -1,8 +1,9 @@
 "use client";
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import { Toaster, toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import QRCode from 'react-qr-code';
 
 interface TeamMember {
   name: string;
@@ -20,23 +21,31 @@ interface TeamMember {
 export default function TicketingPage() {
   const router = useRouter();
 
+  // --- Next.js Hydration Fix & Numeric Cryptographic Ticket ID ---
+  const [baseTicketId, setBaseTicketId] = useState<string>("ARC-LOADING");
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    // Generates a clean numeric ID like: ARC-849204
+    setBaseTicketId(`ARC-${Math.floor(100000 + Math.random() * 900000)}`);
+    setIsMounted(true);
+  }, []);
+
   // --- Core State ---
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
-  const [isEarlyBird, setIsEarlyBird] = useState(true); // Toggle this to false when Phase 1 ends
-  const [ticketType, setTicketType] = useState<string>("Early Bird");
-  const [ticketPrice, setTicketPrice] = useState<number>(399);
+  // Default to Alumni Solo for this phase
+  const [ticketType, setTicketType] = useState<string>("Alumni Solo");
+  const [ticketPrice, setTicketPrice] = useState<number>(549); 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-  // --- Payment State ---
+  // --- Payment State (Cash Removed, strictly UPI) ---
   const [formData, setFormData] = useState({
-    paymentType: 'upi',
-    teamMemberName: '',
+    paymentType: 'upi', 
     upiTransactionId: '',
     paymentScreenshot: '',
     paymentScreenshotName: '',
   });
 
-  // --- Dynamic Team Array ---
   const createEmptyMember = (): TeamMember => ({
     name: '', email: '', phoneNo: '', usn: '', workStudy: '', workStudyCustom: '', department: '', semester: '', findUs: '', findUsCustom: ''
   });
@@ -53,6 +62,7 @@ export default function TicketingPage() {
   const rotateY = useTransform(springX, [0, 1], ["-15deg", "15deg"]);
   const glareX = useTransform(springX, [0, 1], ["-100%", "100%"]);
   const glareY = useTransform(springY, [0, 1], ["-100%", "100%"]);
+  const glareOpacity = useTransform(springX, [0, 1], [0, 0.15]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -68,12 +78,16 @@ export default function TicketingPage() {
   const handleTicketTypeChange = (selectedType: string) => {
     setTicketType(selectedType);
     let memberCount = 1;
-    let price = 399;
+    let price = 549; // Default price for Alumni/Faculty
 
-    if (selectedType === 'Early Bird') { memberCount = 1; price = 399; }
+    if (selectedType === 'Alumni Solo') { memberCount = 1; price = 549; }
+    else if (selectedType === 'CIT Faculty') { memberCount = 1; price = 549; }
+    /* --- UNCOMMENT NEXT WEEK FOR STUDENTS ---
+    else if (selectedType === 'Early Bird') { memberCount = 1; price = 399; }
     else if (selectedType === 'Solo') { memberCount = 1; price = 549; }
     else if (selectedType === 'Group of 3') { memberCount = 3; price = 1497; }
     else if (selectedType === 'Group of 5') { memberCount = 5; price = 2245; }
+    */
 
     setTicketPrice(price);
     setTeamMembers(Array(memberCount).fill(null).map(() => createEmptyMember()));
@@ -83,7 +97,6 @@ export default function TicketingPage() {
     const newTeamMembers = [...teamMembers];
     newTeamMembers[index] = { ...newTeamMembers[index], [field]: value };
     
-    // Auto-clear dependent fields
     if (field === 'workStudy' && value !== 'other') newTeamMembers[index].workStudyCustom = '';
     if (field === 'workStudy' && value !== 'College') {
       newTeamMembers[index].department = '';
@@ -97,13 +110,34 @@ export default function TicketingPage() {
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = () => {
-        setFormData(prev => ({ ...prev, paymentScreenshot: reader.result as string, paymentScreenshotName: file.name }));
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 800; 
+        const scaleSize = MAX_WIDTH / img.width;
+        
+        canvas.width = MAX_WIDTH;
+        canvas.height = img.height * scaleSize;
+        
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
+        
+        setFormData(prev => ({ 
+          ...prev, 
+          paymentScreenshot: compressedBase64, 
+          paymentScreenshotName: file.name 
+        }));
       };
-    }
+    };
   };
 
   const initiateSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -118,21 +152,77 @@ export default function TicketingPage() {
   const executeSubmit = async () => {
     setShowConfirmModal(false);
     setStatus("loading");
-    toast.loading('Encrypting and authenticating your submission...');
+    toast.loading('Encrypting and authenticating your submission...', { duration: 10000 });
 
-    // Integrate your real fetch logic here
-    setTimeout(() => {
-      setStatus("success");
-      toast.success('Clearance granted. Welcome to ARK 07.');
-      // router.push("/success?source=ticket");
-    }, 2000);
+    let paymentScreenshotLink = formData.paymentScreenshot;
+
+    if (paymentScreenshotLink) {
+      try {
+        const response = await fetch('/api/uploadToGoogleDrive', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            file: paymentScreenshotLink.split(',')[1], 
+            fileName: formData.upiTransactionId || baseTicketId,
+            mimeType: 'image/jpeg',
+          }),
+        });
+
+        if (response.ok) {
+          const { link } = await response.json();
+          paymentScreenshotLink = link;
+        } else {
+          toast.error('Failed to upload payment verification. Storage API Error.');
+          setStatus("idle");
+          return;
+        }
+      } catch (error) {
+        toast.error('Network Error: Storage API Unresponsive.');
+        setStatus("idle");
+        return;
+      }
+    }
+
+    const preparedFormData = teamMembers.map((member, index) => ({
+      ...member,
+      ...formData,
+      paymentScreenshot: paymentScreenshotLink,
+      ticketType: ticketType,
+      ticketId: teamMembers.length > 1 ? `${baseTicketId}-${index + 1}` : baseTicketId,
+    }));
+
+    try {
+      const sheetResponse = await fetch('/api/submitTicketForm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(preparedFormData),
+      });
+
+      if (sheetResponse.ok) {
+        toast.success('Clearance granted. Welcome to ARK 07.');
+        setStatus("success");
+      } else {
+        toast.error('Database rejection. Please try again.');
+        setStatus("idle");
+      }
+    } catch (error) {
+      toast.error('Critical systems error during data submission.');
+      setStatus("idle");
+    }
   };
+
+  if (!isMounted) {
+    return (
+      <main className="min-h-screen bg-[#050505] flex items-center justify-center text-[#E62B1E] animate-pulse font-mono tracking-widest text-sm">
+        INITIALIZING PROTOCOLS...
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#050505] text-white flex flex-col items-center pt-24 pb-32 px-4 md:px-6 relative overflow-hidden">
       <Toaster position="bottom-right" richColors theme="dark" />
       
-      {/* Background ambient glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-[#E62B1E] opacity-[0.03] blur-[120px] rounded-full pointer-events-none" />
 
       <div className="w-full max-w-7xl relative z-10 flex flex-col lg:flex-row gap-16 lg:gap-12 items-start justify-between">
@@ -163,26 +253,29 @@ export default function TicketingPage() {
           ) : (
             <form onSubmit={initiateSubmit} className="space-y-10">
               
-              {/* --- TIER SELECTION (LOCKED CAPABILITY) --- */}
+              {/* --- TIER SELECTION --- */}
               <div>
                 <label className="block text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4 ml-1">Select Access Tier</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
-                    { id: 'Early Bird', title: 'Early Bird', price: '₹399', desc: 'Limited to 30 Seats!', highlight: true, availableDuringEarlyBird: true },
-                    { id: 'Solo', title: 'General Admission', price: '₹549', desc: 'Solo standard access', highlight: false, availableDuringEarlyBird: false },
-                    { id: 'Group of 3', title: 'Group of 3', price: '₹1497', desc: 'Squad access (+ discount)', highlight: false, availableDuringEarlyBird: false },
-                    { id: 'Group of 5', title: 'Group of 5', price: '₹2245', desc: 'Full crew access (+ discount)', highlight: false, availableDuringEarlyBird: false }
+                    // --- ACTIVE TIERS ---
+                    { id: 'Alumni Solo', title: 'Alumni Pass (Solo)', price: '₹549', desc: 'Exclusive access for CIT Alumni', highlight: true },
+                    { id: 'CIT Faculty', title: 'Faculty Pass', price: '₹549', desc: 'Access for CIT Faculty', highlight: false },
+                    
+                    /* --- COMMENTED OUT FOR NEXT WEEK ---
+                    { id: 'Early Bird', title: 'Early Bird (Students)', price: '₹399', desc: 'Limited to 30 Seats!', highlight: true },
+                    { id: 'Solo', title: 'General Admission', price: '₹549', desc: 'Solo standard access', highlight: false },
+                    { id: 'Group of 3', title: 'Group of 3', price: '₹1497', desc: 'Squad access (+ discount)', highlight: false },
+                    { id: 'Group of 5', title: 'Group of 5', price: '₹2245', desc: 'Full crew access (+ discount)', highlight: false }
+                    */
                   ].map((tier) => {
-                    const isLocked = isEarlyBird && !tier.availableDuringEarlyBird;
                     const isSelected = ticketType === tier.id;
 
                     return (
                       <label 
                         key={tier.id}
-                        className={`block p-5 rounded-xl border relative overflow-hidden transition-all duration-300
-                          ${isLocked ? 'border-white/5 bg-white/[0.01] opacity-60 cursor-not-allowed grayscale' : 'cursor-pointer group'}
-                          ${isSelected && !isLocked ? 'border-[#E62B1E] bg-[#E62B1E]/5 shadow-[0_0_20px_rgba(230,43,30,0.1)]' : ''}
-                          ${!isSelected && !isLocked ? 'border-white/10 hover:border-white/30 bg-white/[0.03]' : ''}
+                        className={`block p-5 rounded-xl border relative overflow-hidden transition-all duration-300 cursor-pointer group
+                          ${isSelected ? 'border-[#E62B1E] bg-[#E62B1E]/5 shadow-[0_0_20px_rgba(230,43,30,0.1)]' : 'border-white/10 hover:border-white/30 bg-white/[0.03]'}
                           ${tier.highlight ? 'sm:col-span-2' : ''}
                         `}
                       >
@@ -191,31 +284,24 @@ export default function TicketingPage() {
                           name="tier" 
                           value={tier.id} 
                           className="hidden" 
-                          onChange={() => !isLocked && handleTicketTypeChange(tier.id)} 
+                          onChange={() => handleTicketTypeChange(tier.id)} 
                           checked={isSelected} 
-                          disabled={isLocked}
                         />
                         <div className="flex justify-between items-center relative z-10">
                           <div>
                             <h3 className="text-base font-bold text-white tracking-wide flex items-center gap-2">
                               {tier.title} 
-                              {tier.highlight && !isLocked && <span className="text-[9px] bg-[#E62B1E] text-white px-2 py-0.5 rounded-full uppercase tracking-widest animate-pulse">Hot</span>}
-                              {isLocked && (
-                                <span className="flex items-center gap-1 text-[9px] bg-white/10 text-gray-400 px-2 py-0.5 rounded-full uppercase tracking-widest border border-white/5">
-                                  <svg className="w-2 h-2" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" /></svg>
-                                  Locked
-                                </span>
-                              )}
+                              {tier.highlight && <span className="text-[9px] bg-[#E62B1E] text-white px-2 py-0.5 rounded-full uppercase tracking-widest animate-pulse">Live</span>}
                             </h3>
-                            <p className={`text-xs mt-1 transition-colors ${tier.highlight && !isLocked ? 'text-[#E62B1E]/80 font-medium' : 'text-gray-500 group-hover:text-gray-400'}`}>
+                            <p className={`text-xs mt-1 transition-colors ${tier.highlight ? 'text-[#E62B1E]/80 font-medium' : 'text-gray-500 group-hover:text-gray-400'}`}>
                               {tier.desc}
                             </p>
                           </div>
-                          <span className={`text-lg font-bold transition-colors ${isSelected && !isLocked ? 'text-[#E62B1E]' : isLocked ? 'text-gray-600' : 'text-white'}`}>
+                          <span className={`text-lg font-bold transition-colors ${isSelected ? 'text-[#E62B1E]' : 'text-white'}`}>
                             {tier.price}
                           </span>
                         </div>
-                        {isSelected && !isLocked && <div className="absolute inset-0 bg-gradient-to-r from-[#E62B1E]/10 to-transparent opacity-50 pointer-events-none" />}
+                        {isSelected && <div className="absolute inset-0 bg-gradient-to-r from-[#E62B1E]/10 to-transparent opacity-50 pointer-events-none" />}
                       </label>
                     );
                   })}
@@ -231,14 +317,12 @@ export default function TicketingPage() {
                         {index + 1}
                       </span>
                       <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-300">
-                        {ticketType === "Solo" || ticketType === "Early Bird" ? "Primary Identity Data" : `User Identity 0${index + 1}`}
+                        {teamMembers.length === 1 ? "Primary Identity Data" : `User Identity 0${index + 1}`}
                       </h3>
                     </div>
 
-                    {/* Basic Info (With Real-Time Validation) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-4">
                       
-                      {/* Name */}
                       <div className="relative group md:col-span-2">
                         <input type="text" required minLength={2} placeholder=" " value={member.name} onChange={(e) => handleTeamMemberChange(index, 'name', e.target.value)}
                           className="peer w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 pt-7 pb-3 text-base font-medium text-white focus:border-[#E62B1E]/50 focus:bg-white/[0.05] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
@@ -246,7 +330,6 @@ export default function TicketingPage() {
                         <p className="absolute -bottom-5 left-2 text-[10px] text-red-500 font-medium opacity-0 peer-invalid:peer-[&:not(:placeholder-shown)]:opacity-100 transition-opacity">Must be at least 2 characters.</p>
                       </div>
                       
-                      {/* Email */}
                       <div className="relative group">
                         <input type="email" required placeholder=" " value={member.email} onChange={(e) => handleTeamMemberChange(index, 'email', e.target.value)}
                           className="peer w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 pt-7 pb-3 text-base font-medium text-white focus:border-[#E62B1E]/50 focus:bg-white/[0.05] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
@@ -254,7 +337,6 @@ export default function TicketingPage() {
                         <p className="absolute -bottom-5 left-2 text-[10px] text-red-500 font-medium opacity-0 peer-invalid:peer-[&:not(:placeholder-shown)]:opacity-100 transition-opacity">Must be a valid email containing '@'.</p>
                       </div>
 
-                      {/* Phone */}
                       <div className="relative group">
                         <input type="tel" required pattern="^\d{10}$" placeholder=" " value={member.phoneNo} onChange={(e) => handleTeamMemberChange(index, 'phoneNo', e.target.value)}
                           className="peer w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 pt-7 pb-3 text-base font-medium text-white focus:border-[#E62B1E]/50 focus:bg-white/[0.05] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
@@ -263,14 +345,13 @@ export default function TicketingPage() {
                       </div>
                     </div>
 
-                    {/* Demographics */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-4 pt-2">
                       <div className="flex flex-col relative group">
                         <label className="text-[10px] uppercase tracking-widest text-gray-500 mb-2 ml-1">Current Base</label>
                         <select required value={member.workStudy} onChange={(e) => handleTeamMemberChange(index, 'workStudy', e.target.value)}
                           className="peer w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm font-medium text-gray-300 focus:border-[#E62B1E]/50 focus:outline-none invalid:border-red-500/50 transition-all duration-300 appearance-none">
                           <option value="" disabled className="bg-[#111]">Select Base</option>
-                          <option value="College" className="bg-[#111]">CIT Student</option>
+                          <option value="College" className="bg-[#111]">CIT (Student/Alumni/Faculty)</option>
                           <option value="other" className="bg-[#111]">Other Organization</option>
                         </select>
                       </div>
@@ -287,8 +368,8 @@ export default function TicketingPage() {
                           <div className="relative group md:col-span-2">
                             <input type="text" required minLength={5} placeholder=" " value={member.usn} onChange={(e) => handleTeamMemberChange(index, 'usn', e.target.value)}
                               className="peer w-full bg-white/[0.03] border border-[#E62B1E]/30 rounded-xl px-5 pt-7 pb-3 text-base font-mono uppercase text-white focus:border-[#E62B1E] focus:bg-white/[0.05] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
-                            <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">University USN / ID</label>
-                            <p className="absolute -bottom-5 left-2 text-[10px] text-red-500 font-medium opacity-0 peer-invalid:peer-[&:not(:placeholder-shown)]:opacity-100 transition-opacity">Please enter a valid USN.</p>
+                            <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">USN / Faculty ID</label>
+                            <p className="absolute -bottom-5 left-2 text-[10px] text-red-500 font-medium opacity-0 peer-invalid:peer-[&:not(:placeholder-shown)]:opacity-100 transition-opacity">Please enter a valid ID.</p>
                           </div>
                           <div className="flex flex-col">
                             <label className="text-[10px] uppercase tracking-widest text-gray-500 mb-2 ml-1">Department</label>
@@ -298,11 +379,14 @@ export default function TicketingPage() {
                               <option value="CSE" className="bg-[#111]">CSE</option>
                               <option value="ISE" className="bg-[#111]">ISE</option>
                               <option value="AIML" className="bg-[#111]">AIML</option>
+                              <option value="CS IOT" className="bg-[#111]">CS IOT</option>
+                              <option value="CS DS" className="bg-[#111]">CS DS</option>
                               <option value="ECE" className="bg-[#111]">ECE</option>
                               <option value="EEE" className="bg-[#111]">EEE</option>
                               <option value="ME/CV" className="bg-[#111]">ME/CV</option>
+                              <option value="MCA" className="bg-[#111]">MCA</option>
+                              <option value="Degree Block" className="bg-[#111]">Degree Block</option>
                               <option value="Faculty" className="bg-[#111]">Faculty</option>
-                              <option value="MBA/Commerce/Degree" className="bg-[#111]">MBA/Commerce</option>
                             </select>
                           </div>
                           <div className="flex flex-col">
@@ -310,7 +394,7 @@ export default function TicketingPage() {
                             <select required value={member.semester} onChange={(e) => handleTeamMemberChange(index, 'semester', e.target.value)}
                               className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm font-medium text-gray-300 focus:border-[#E62B1E]/50 focus:outline-none transition-all duration-300 appearance-none">
                               <option value="" disabled className="bg-[#111]">Select...</option>
-                              {['1','2','3','4','5','6','7','8','Alumni'].map(sem => <option key={sem} value={sem} className="bg-[#111]">{sem}</option>)}
+                              {['1','2','3','4','5','6','7','8','Alumni', 'N/A (Faculty)'].map(sem => <option key={sem} value={sem} className="bg-[#111]">{sem}</option>)}
                             </select>
                           </div>
                         </>
@@ -342,58 +426,47 @@ export default function TicketingPage() {
                 ))}
               </div>
 
-              {/* --- PAYMENT PROCESSING SECTION --- */}
+              {/* --- PAYMENT PROCESSING SECTION (Strictly UPI) --- */}
               <div className="p-6 md:p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.02] to-transparent space-y-8">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <h3 className="text-xl font-bold text-white tracking-wide flex items-center gap-3">
                       Cryptographic Payment <span className="text-xs px-3 py-1 rounded-full bg-[#E62B1E]/20 text-[#E62B1E] font-mono border border-[#E62B1E]/30">Total: ₹{ticketPrice}</span>
                     </h3>
-                    <p className="text-sm text-gray-500 mt-1">Select your deployment method.</p>
+                    <p className="text-sm text-gray-500 mt-1">Scan to authorize deployment.</p>
                   </div>
-                  
-                  <div className="flex gap-2 p-1 bg-black/40 rounded-lg border border-white/10 w-fit">
-                    <button type="button" onClick={() => setFormData({...formData, paymentType: 'upi'})} className={`px-4 py-2 rounded-md text-xs font-bold uppercase tracking-widest transition-all ${formData.paymentType === 'upi' ? 'bg-[#E62B1E] text-white' : 'text-gray-500 hover:text-white'}`}>UPI</button>
-                    <button type="button" onClick={() => setFormData({...formData, paymentType: 'cash'})} className={`px-4 py-2 rounded-md text-xs font-bold uppercase tracking-widest transition-all ${formData.paymentType === 'cash' ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-white'}`}>Cash</button>
+                  <div className="px-4 py-2 bg-[#E62B1E]/10 border border-[#E62B1E]/30 rounded-lg text-[#E62B1E] text-xs font-bold tracking-widest uppercase">
+                    UPI Verified
                   </div>
                 </div>
 
-                {formData.paymentType === 'cash' ? (
-                  <div className="relative group pb-2">
-                    <input type="text" required minLength={2} placeholder=" " value={formData.teamMemberName} onChange={(e) => setFormData({...formData, teamMemberName: e.target.value})}
-                      className="peer w-full bg-white/[0.05] border border-white/20 rounded-xl px-5 pt-7 pb-3 text-base font-medium text-white focus:border-[#E62B1E]/50 focus:bg-white/[0.08] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
-                    <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">Name of Organizer receiving cash</label>
-                    <p className="absolute -bottom-4 left-2 text-[10px] text-red-500 font-medium opacity-0 peer-invalid:peer-[&:not(:placeholder-shown)]:opacity-100 transition-opacity">Required field.</p>
+                <div className="flex flex-col md:flex-row gap-8 items-center md:items-start bg-black/40 p-6 rounded-xl border border-white/5">
+                  <div className="shrink-0 text-center">
+                    <div className="w-40 h-40 bg-white p-2 rounded-lg mx-auto overflow-hidden">
+                      <img src="/ticket/upi-id.jpeg" alt="UPI QR Code" className="w-full h-full object-cover rounded" />
+                    </div>
+                    <p className="font-mono text-xs text-gray-400 mt-3 select-all bg-white/5 py-1 px-2 rounded">aaronrohanraj7@okaxis</p>
                   </div>
-                ) : (
-                  <div className="flex flex-col md:flex-row gap-8 items-center md:items-start bg-black/40 p-6 rounded-xl border border-white/5">
-                    <div className="shrink-0 text-center">
-                      <div className="w-40 h-40 bg-white p-2 rounded-lg mx-auto overflow-hidden">
-                        <img src="/ticket/upi id.jpeg" alt="UPI QR Code" className="w-full h-full object-cover rounded" />
-                      </div>
-                      <p className="font-mono text-xs text-gray-400 mt-3 select-all bg-white/5 py-1 px-2 rounded">aaronrohanraj7@okaxis</p>
+                  
+                  <div className="w-full space-y-6">
+                    <div className="relative group">
+                      <input type="text" required pattern="^\d{12}$" placeholder=" " value={formData.upiTransactionId} onChange={(e) => setFormData({...formData, upiTransactionId: e.target.value})}
+                        className="peer w-full bg-white/[0.05] border border-white/20 rounded-xl px-5 pt-7 pb-3 text-base font-mono text-white focus:border-[#E62B1E]/50 focus:bg-white/[0.08] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
+                      <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">UPI Transaction ID (12 Digits)</label>
+                      <p className="absolute -bottom-5 left-2 text-[10px] text-red-500 font-medium opacity-0 peer-invalid:peer-[&:not(:placeholder-shown)]:opacity-100 transition-opacity">Must be exactly 12 numeric digits.</p>
                     </div>
                     
-                    <div className="w-full space-y-6">
-                      <div className="relative group">
-                        <input type="text" required pattern="^\d{12}$" placeholder=" " value={formData.upiTransactionId} onChange={(e) => setFormData({...formData, upiTransactionId: e.target.value})}
-                          className="peer w-full bg-white/[0.05] border border-white/20 rounded-xl px-5 pt-7 pb-3 text-base font-mono text-white focus:border-[#E62B1E]/50 focus:bg-white/[0.08] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
-                        <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">UPI Transaction ID (12 Digits)</label>
-                        <p className="absolute -bottom-5 left-2 text-[10px] text-red-500 font-medium opacity-0 peer-invalid:peer-[&:not(:placeholder-shown)]:opacity-100 transition-opacity">Must be exactly 12 numeric digits.</p>
+                    <label className={`flex flex-col items-center justify-center w-full h-28 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-300 mt-2 ${formData.paymentScreenshot ? 'border-green-500/50 bg-green-500/5' : 'border-white/20 hover:border-[#E62B1E]/50 bg-white/[0.02] hover:bg-white/[0.05]'}`}>
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <svg className={`w-6 h-6 mb-2 ${formData.paymentScreenshot ? 'text-green-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                        <p className="text-xs text-gray-400 font-mono">
+                          {formData.paymentScreenshotName ? <span className="text-green-400 font-bold">{formData.paymentScreenshotName}</span> : "Attach Payment Verification (Image)"}
+                        </p>
                       </div>
-                      
-                      <label className={`flex flex-col items-center justify-center w-full h-28 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-300 mt-2 ${formData.paymentScreenshot ? 'border-green-500/50 bg-green-500/5' : 'border-white/20 hover:border-[#E62B1E]/50 bg-white/[0.02] hover:bg-white/[0.05]'}`}>
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <svg className={`w-6 h-6 mb-2 ${formData.paymentScreenshot ? 'text-green-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-                          <p className="text-xs text-gray-400 font-mono">
-                            {formData.paymentScreenshotName ? <span className="text-green-400 font-bold">{formData.paymentScreenshotName}</span> : "Attach Payment Verification (Image)"}
-                          </p>
-                        </div>
-                        <input type="file" required={formData.paymentType === 'upi' && !formData.paymentScreenshot} className="hidden" accept="image/*" onChange={handleFileChange} />
-                      </label>
-                    </div>
+                      <input type="file" required className="hidden" accept="image/*" onChange={handleFileChange} />
+                    </label>
                   </div>
-                )}
+                </div>
               </div>
 
               <button
@@ -449,7 +522,7 @@ export default function TicketingPage() {
             >
               <motion.div 
                 className="absolute inset-0 z-30 pointer-events-none bg-gradient-to-tr from-transparent via-white to-transparent opacity-0"
-                style={{ opacity: useTransform(springX, [0, 1], [0, 0.15]), x: glareX, y: glareY, width: "200%", height: "200%" }}
+                style={{ opacity: glareOpacity, x: glareX, y: glareY, width: "200%", height: "200%" }}
               />
 
               <div className="h-28 bg-gradient-to-b from-[#E62B1E] to-[#991b14] p-6 flex flex-col items-center justify-between relative overflow-hidden">
@@ -476,23 +549,28 @@ export default function TicketingPage() {
                     </p>
                   </div>
 
+                  {/* REAL QR CODE CHECK-IN SYSTEM */}
                   <div className="pt-6 border-t border-white/10 flex items-center justify-between">
-                    <div className="flex flex-col gap-2">
-                      <span className="text-[7px] text-gray-500 tracking-[0.3em]">NETWORK STATUS</span>
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-1.5 h-1.5 rounded-none bg-[#E62B1E] animate-pulse" />
-                        <div className="w-1.5 h-1.5 rounded-none bg-[#E62B1E]" />
-                        <div className="w-1.5 h-1.5 rounded-none bg-[#E62B1E]/30" />
-                        <div className="w-6 h-1.5 rounded-none bg-[#E62B1E]/30" />
-                      </div>
+                    <div className="bg-white p-1.5 rounded-md shadow-lg">
+                      <QRCode 
+                        value={baseTicketId} 
+                        size={52} 
+                        bgColor="#ffffff" 
+                        fgColor="#000000" 
+                        level="L" 
+                      />
                     </div>
                     <div className="text-right">
                       <div className="font-mono text-[9px] text-gray-400">
-                        {teamMembers[0]?.usn ? `ID: ${teamMembers[0].usn}` : 'ID: TX-ARK07'}
+                        ID: {baseTicketId}
                       </div>
-                      <div className="text-[8px] text-[#E62B1E] tracking-widest mt-1 uppercase font-bold">Encrypted</div>
+                      <div className="text-[8px] text-[#E62B1E] tracking-widest mt-1 uppercase font-bold flex items-center justify-end gap-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#E62B1E] animate-pulse" />
+                        Live Node
+                      </div>
                     </div>
                   </div>
+
                 </div>
               </div>
             </motion.div>
