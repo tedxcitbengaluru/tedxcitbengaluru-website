@@ -185,7 +185,7 @@ const TEAMS_DATA: TeamsData = {
             { id: 4, name: "Bharatesh Patel", role: "Sponsorship Lead", members: [] },
             { id: 5, names: ["Ashvin", "Parijatha G S"], role: "Event Director", isDouble: true, members: [] },
         ],
-        ecpTeam: { name: "Elixir ECP Team", imageSrc: "/team/Elixir/Elixer ECP.jpg" }
+        ecpTeam: { name: "Elixir ECP Team", imageSrc: "/team/Elixir/Elixir ECP.jpeg" }
     },
     Thrive: {
         organizers: [
@@ -428,12 +428,12 @@ export default function Team() {
                                 ECP Team
                             </h2>
                             {/* Removed the forced ultra-wide aspect ratio and heavy padding. Now it tightly wraps the image. */}
-                            <div className="relative w-full max-w-5xl mx-auto rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl group bg-[#0a0a0a]">
+                            <div className="relative w-full max-w-2xl mx-auto rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl group bg-[#0a0a0a]">
                                 <Image
                                     src={currentEcpTeam.imageSrc}
                                     alt={currentEcpTeam.name}
-                                    width={1920}
-                                    height={1080}
+                                    width={1600}
+                                    height={900}
                                     className="w-full h-auto object-contain transition-transform duration-700 group-hover:scale-105"
                                 />
                                 {/* Soft glow effect behind the image */}
