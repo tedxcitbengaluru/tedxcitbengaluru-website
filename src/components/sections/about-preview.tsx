@@ -11,7 +11,7 @@ export default function AboutPreview() {
       {/* Background Red X with Bottom Fade Overlay */}
       <div className="absolute top-0 right-0 bottom-0 w-full md:w-1/2 pointer-events-none opacity-10 sm:opacity-15 md:opacity-25">
         <Image
-          src="/images/X1.svg"
+          src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1772474908/X1_vs2rkx.svg"
           alt="Red X background"
           fill
           className="object-cover object-right rotate-180"

@@ -197,7 +197,7 @@ const Page = () => {
                     isDouble:  true,
                     members: []
                 },
-                { id:  7, name: "Elixer ECP", role: "ECP Team", members: [] },
+                { id:  7, name: "Elixir ECP", role: "ECP Team", members: [] },
             ]
         },
         Thrive: {

@@ -26,13 +26,17 @@ interface Organizer {
 interface EventData {
     organizers: Organizer[];
     teamLeads: TeamLead[];
+    ecpTeam?: {
+        name: string;
+        imageSrc: string;
+    };
 }
 
 interface TeamsData {
     [key: string]: EventData;
 }
 
-// --- STATIC DATA (Moved outside component to prevent re-render loops) ---
+// --- STATIC DATA ---
 const EVENT_TYPES = ["Upcoming", "Epoch", "Aether", "Zenith", "Elixir", "Thrive", "Iridescence"];
 
 // Placeholder for missing images
@@ -50,10 +54,11 @@ const TEAMS_DATA: TeamsData = {
             { id: 2, name: "Coming Soon", role: "Lead Curator", members: [] },
             { id: 3, name: "Coming Soon", role: "Event Director", members: [] },
             { id: 4, name: "Coming Soon", role: "Media Lead", members: [] },
-            { id: 5, name: "Coming Soon", role: "Sponsorship Head", members: [] },
+            { id: 5, name: "Coming Soon", role: "Sponsorship Lead", members: [] },
             { id: 6, name: "Coming Soon", role: "Technical Lead", members: [] },
             { id: 7, name: "Coming Soon", role: "Design Lead", members: [] },
-        ]
+        ],
+        ecpTeam: { name: "Upcoming ECP Team", imageSrc: PLACEHOLDER_IMG }
     },
     Epoch: {
         organizers: [
@@ -135,50 +140,52 @@ const TEAMS_DATA: TeamsData = {
                     { name: "P L Vijaya Vittahal", role: "Volunteer" },
                 ]
             },
-        ]
+        ],
+        ecpTeam: { name: "Epoch ECP Team", imageSrc: "/team/Epoch/Epoch ECP.jpg" }
     },
     Aether: {
         organizers: [
             { name: "Bharatesh Patel", role: "Organizer" },
             { name: "Srinidhi GG", role: "Co-Organizer" },
-            { name: "Snehith Reddy", role: "Lead Co-ordinator" }, 
+            { name: "Snehith Reddy", role: "Lead Coordinator" }, 
         ],
         teamLeads: [
             { id: 1, name: "Mukul Singh", role: "Lead Creator" },
             { id: 2, name: "Aaron Rohan", role: "Lead Curator" },
             { id: 3, names: ["Prajna", "Bharath SBK"], role: "Event Director", isDouble: true },
             { id: 5, name: "Vishnu Singh", role: "Media Lead" },
-            { id: 6, name: "Neeraj", role: "Sponsorship Head" },
-        ]
+            { id: 6, name: "Neeraj", role: "Sponsorship Lead" },
+        ],
+        ecpTeam: { name: "Aether ECP Team", imageSrc: "/team/Aether/Aether ECP.jpg" }
     },
     Zenith: {
         organizers: [
             { name: "Imtiyaz Ahmed", role: "Organizer" },
             { name: "Hannah Thomas", role: "Co-Organizer" },
-            { name: "Bharatesh Patel", role: "Lead Co-ordinator" },
+            { name: "Bharatesh Patel", role: "Lead Coordinator" },
         ],
         teamLeads: [
             { id: 1, name: "Mukul Singh", role: "Creative Lead", members: [] },
-            { id: 2, name: "Kiran S", role: "Sponsorship Head", members: [] },
+            { id: 2, name: "Kiran S", role: "Sponsorship Lead", members: [] },
             { id: 3, names: ["Prajna", "Bhuvan L P"], role: "Event Director", isDouble: true, members: [] },
             { id: 5, name: "Akanksha", role: "Lead Curator", members: [] },
-            { id: 6, name: "Zenith ECP", role: "ECP Team", members: [] },
-        ]
+        ],
+        ecpTeam: { name: "Zenith ECP Team", imageSrc: "/team/Zenith/Zenith ECP.jpg" }
     },
     Elixir: {
         organizers: [
             { name: "Poojitha Prakash", role: "Organizer" },
             { name: "Karan Desai", role: "Co-Organizer" },
-            { name: "Uday Shankar", role: "Student Coordinator" },
+            { name: "Uday Shankar", role: "Lead Coordinator" },
         ],
         teamLeads: [
             { id: 1, name: "Sai Sanjana", role: "Lead Curator", members: [] },
             { id: 2, name: "Pranav Durai", role: "Lead Design", members: [] },
             { id: 3, name: "Himanshu Agarwal", role: "Technical Lead", members: [] },
-            { id: 4, name: "Bharatesh Patel", role: "Sponsorship Head", members: [] },
+            { id: 4, name: "Bharatesh Patel", role: "Sponsorship Lead", members: [] },
             { id: 5, names: ["Ashvin", "Parijatha G S"], role: "Event Director", isDouble: true, members: [] },
-            { id: 7, name: "Elixer ECP", role: "ECP Team", members: [] },
-        ]
+        ],
+        ecpTeam: { name: "Elixir ECP Team", imageSrc: "/team/Elixir/Elixer ECP.jpg" }
     },
     Thrive: {
         organizers: [
@@ -192,8 +199,8 @@ const TEAMS_DATA: TeamsData = {
             { id: 4, name: "Vanishree Kulkarni", role: "Social Media Manager", members: [] },
             { id: 5, name: "Bharatesh Patel", role: "Sponsorship Head", members: [] },
             { id: 6, names: ["Lennard Mario", "Parijatha G S"], role: "Event Director", isDouble: true, members: [] },
-            { id: 8, name: "Thrive ECP", role: "ECP Team", members: [] },
-        ]
+        ],
+        ecpTeam: { name: "Thrive ECP Team", imageSrc: "/team/Thrive/Thrive ECP.jpg" }
     },
     Iridescence: {
         organizers: [
@@ -205,9 +212,10 @@ const TEAMS_DATA: TeamsData = {
             { id: 2, name: "Uday Shankar", role: "Lead Creator", members: [] },
             { id: 3, name: "Ishan Dubey", role: "Technical Lead", members: [] },
             { id: 4, name: "Nikita Saha", role: "Social Media Manager", members: [] },
-            { id: 5, name: "Aditya M", role: "Sponsorship head", members: [] },
+            { id: 5, name: "Aditya M", role: "Sponsorship Lead", members: [] },
             { id: 6, names: ["S G Yashoda", "Poojitha Prakash"], role: "Event Director", isDouble: true, members: [] },
         ]
+        // Note: No ECP team for Iridescence
     },
 };
 
@@ -215,17 +223,20 @@ export default function Team() {
     const [selectedEvent, setSelectedEvent] = useState<string>("Upcoming"); 
     const [expandedTeam, setExpandedTeam] = useState<number | null>(null);
 
-    // Get current event's data using useMemo to prevent unnecessary recalculations
+    // Get current event's data
     const currentOrganizers = useMemo(() => TEAMS_DATA[selectedEvent]?.organizers || [], [selectedEvent]);
     const currentTeamLeads = useMemo(() => TEAMS_DATA[selectedEvent]?.teamLeads || [], [selectedEvent]);
+    const currentEcpTeam = useMemo(() => TEAMS_DATA[selectedEvent]?.ecpTeam || null, [selectedEvent]);
+
+    const shouldShowViewTeam = useMemo(() => {
+        return selectedEvent === "Epoch" || selectedEvent === "Upcoming";
+    }, [selectedEvent]);
 
     const handleTeamLeadClick = useCallback((teamId: number) => {
         const lead = currentTeamLeads.find((l: TeamLead) => l.id === teamId);
-        // Only allow clicking if they have members
         if (lead?.members && lead.members.length > 0) {
             setExpandedTeam(prev => {
                 const newValue = prev === teamId ? null : teamId;
-                // I added scroll to the top of the section so that its easy to navigate
                 if (newValue !== null) {
                     setTimeout(() => {
                         document.getElementById('team-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -241,13 +252,10 @@ export default function Team() {
         setExpandedTeam(null);
     }, []);
 
-    // Check if we should disable heavy effects (like tilt) to improve performance
-    // We disable it for "Upcoming" as there are many placeholders and no real interaction
     const isPerformanceMode = selectedEvent === "Upcoming";
 
     return (
         <section className="relative w-full bg-black text-white">
-            {/* CONTENT SECTION */}
             <div className="relative container mx-auto px-6 py-10 flex flex-col items-start -mt-32 z-10">
                 
                 {/* Main Heading */}
@@ -292,7 +300,6 @@ export default function Team() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
                             {currentOrganizers.map((organizer, idx) => (
                                 <div 
-                                    // Use stable key combining event and index to ensure clean remount on tab switch
                                     key={`${selectedEvent}-org-${idx}`} 
                                     style={{ animation: `slideUp 0.4s ease-out ${idx * 0.1}s both` }}
                                 >
@@ -301,9 +308,7 @@ export default function Team() {
                                         title={organizer.role}
                                         handle={selectedEvent}
                                         status="Organizer"
-                                        // Handle missing images for "Coming Soon"
                                         avatarUrl={organizer.name === "Coming Soon" ? PLACEHOLDER_IMG : `/team/${selectedEvent}/${organizer.name}.jpg`}
-                                        // Disable tilt for "Coming Soon" to fix lag
                                         enableTilt={!isPerformanceMode}
                                         enableMobileTilt={!isPerformanceMode}
                                         behindGlowEnabled={!isPerformanceMode}
@@ -322,7 +327,6 @@ export default function Team() {
                         </h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
                             {currentTeamLeads.map((lead, idx) => {
-                                // Logic for double names
                                 if (lead.isDouble && lead.names) {
                                     return (
                                         <React.Fragment key={`${selectedEvent}-lead-${lead.id}`}>
@@ -333,9 +337,8 @@ export default function Team() {
                                                     handle={selectedEvent}
                                                     status="Team Lead"
                                                     avatarUrl={`/team/${selectedEvent}/${lead.names[0]}.jpg`}
-                                                    contactText="View Team"
-                                                    // Removed "View Team" text toggle as requested
-                                                    onContactClick={() => handleTeamLeadClick(lead.id)}
+                                                    contactText={shouldShowViewTeam ? "View Team" : undefined}
+                                                    onContactClick={shouldShowViewTeam ? () => handleTeamLeadClick(lead.id) : undefined}
                                                     enableTilt={!isPerformanceMode}
                                                     enableMobileTilt={!isPerformanceMode}
                                                 />
@@ -347,8 +350,8 @@ export default function Team() {
                                                     handle={selectedEvent}
                                                     status="Team Lead"
                                                     avatarUrl={`/team/${selectedEvent}/${lead.names[1]}.jpg`}
-                                                    contactText="View Team"
-                                                    onContactClick={() => handleTeamLeadClick(lead.id)}
+                                                    contactText={shouldShowViewTeam ? "View Team" : undefined}
+                                                    onContactClick={shouldShowViewTeam ? () => handleTeamLeadClick(lead.id) : undefined}
                                                     enableTilt={!isPerformanceMode}
                                                     enableMobileTilt={!isPerformanceMode}
                                                 />
@@ -367,9 +370,8 @@ export default function Team() {
                                             handle={selectedEvent}
                                             status="Team Lead"
                                             avatarUrl={lead.name === "Coming Soon" ? PLACEHOLDER_IMG : `/team/${selectedEvent}/${lead.name}.jpg`}
-                                            contactText="View Team"
-                                            onContactClick={() => handleTeamLeadClick(lead.id)}
-                                            // Disable tilt for performance on placeholder items
+                                            contactText={shouldShowViewTeam ? "View Team" : undefined}
+                                            onContactClick={shouldShowViewTeam ? () => handleTeamLeadClick(lead.id) : undefined}
                                             enableTilt={!isPerformanceMode}
                                             enableMobileTilt={!isPerformanceMode}
                                             behindGlowEnabled={!isPerformanceMode}
@@ -408,7 +410,7 @@ export default function Team() {
                                             handle={selectedEvent}
                                             status="Member"
                                             avatarUrl={`/team/${selectedEvent}/${member.name}.jpg`}
-                                            enableTilt={false} // Disable tilt for smaller grid members to save performance
+                                            enableTilt={false} 
                                             enableMobileTilt={false}
                                             behindGlowEnabled={false}
                                         />
@@ -417,6 +419,29 @@ export default function Team() {
                             </div>
                         </div>
                     )}
+
+{/* ECP TEAM IMAGE SECTION */}
+{currentEcpTeam && (
+                        <div className="w-full mt-24 mb-16 animate-fadeIn" style={{ animationDelay: '0.4s' }}>
+                            <h2 className="text-2xl md:text-3xl font-bold text-[#EB0028] mb-8 uppercase tracking-wider flex items-center gap-3">
+                                <span className="w-2 h-8 bg-[#EB0028] rounded-full"></span>
+                                ECP Team
+                            </h2>
+                            {/* Removed the forced ultra-wide aspect ratio and heavy padding. Now it tightly wraps the image. */}
+                            <div className="relative w-full max-w-5xl mx-auto rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl group bg-[#0a0a0a]">
+                                <Image
+                                    src={currentEcpTeam.imageSrc}
+                                    alt={currentEcpTeam.name}
+                                    width={1920}
+                                    height={1080}
+                                    className="w-full h-auto object-contain transition-transform duration-700 group-hover:scale-105"
+                                />
+                                {/* Soft glow effect behind the image */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-40 pointer-events-none"></div>
+                            </div>
+                        </div>
+                    )}
+
                 </div>
             </div>
 

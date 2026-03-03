@@ -26,7 +26,7 @@ export default function AboutUs() {
                         {/* Title Column */}
                         <div className="lg:col-span-7">
                             <h2 className="text-6xl md:text-8xl lg:text-9xl font-black text-white leading-[0.85] tracking-tighter uppercase">
-                                About <br />
+                                About
                                 <span className='text-[#EB0028]'>Us</span>
                             </h2>
                         </div>
@@ -47,11 +47,12 @@ export default function AboutUs() {
                 <div className="w-full">
                     <LuxuryGallery 
                         images={[
-                            '/about/image1.jpg',
-                            '/about/image1.jpg',
-                            '/about/image1.jpg',
-                            '/about/image1.jpg',
-                            '/about/image1.jpg',
+                            '/about/IRIDESCENCE.webp',
+                            '/about/Thrive.webp',
+                            '/about/Elixir.webp',
+                            '/about/Zenith.webp',
+                            '/about/Aether.webp',
+                            '/about/Epoch.webp',
                         ]} 
                     />
                 </div>
