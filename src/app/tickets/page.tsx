@@ -76,7 +76,11 @@ export default function TicketingPage() {
 
   const handleTicketTypeChange = (selectedType: string) => {
     setTicketType(selectedType);
-    let price = selectedType === 'Early Bird' ? 399 : 599;
+    let price = 399;
+    if (selectedType === 'Solo Access') price = 599;
+    else if (selectedType === 'Group of 3') price = 1497;
+    else if (selectedType === 'Group of 5') price = 2245;
+    
     setTicketPrice(price);
     setTeamMembers([createEmptyMember(selectedType === 'Early Bird')]);
   };
@@ -127,10 +131,42 @@ export default function TicketingPage() {
 
   const initiateSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (e.currentTarget.checkValidity()) {
+    const form = e.currentTarget;
+
+    // Manual validation for hidden file input to avoid breaking focus
+    if (!formData.paymentScreenshot) {
+      toast.error('Authentication Error: Payment verification screenshot is missing.');
+      const fileInputLabel = document.getElementById('payment-upload-zone');
+      if (fileInputLabel) {
+        fileInputLabel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Flash border for visual feedback
+        fileInputLabel.classList.add('border-red-500', 'bg-red-500/5');
+        setTimeout(() => fileInputLabel.classList.remove('border-red-500', 'bg-red-500/5'), 2000);
+      }
+      return;
+    }
+
+    if (form.checkValidity()) {
       setShowConfirmModal(true);
     } else {
-      toast.error('Form contains errors. Please correct the highlighted fields.');
+      // Find the first invalid element for smooth UX
+      const firstInvalid = form.querySelector(':invalid') as HTMLElement;
+      if (firstInvalid) {
+        firstInvalid.focus();
+        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        let fieldName = 'Required field';
+        const siblingLabel = firstInvalid.parentElement?.querySelector('label')?.innerText;
+        if (siblingLabel) {
+          fieldName = siblingLabel.replace(' *', '').replace(/ \(.+\)/, '');
+        }
+        
+        toast.error(`Incomplete credentials: Check the "${fieldName}" field.`);
+      } else {
+        toast.error('Form contains errors. Please correct the highlighted fields.');
+      }
+      
+      form.reportValidity();
     }
   };
 
@@ -239,23 +275,27 @@ export default function TicketingPage() {
               <p className="text-gray-400 text-sm">Your encrypted payment module has been dispatched.</p>
             </motion.div>
           ) : (
-            <form onSubmit={initiateSubmit} className="space-y-10">
+            <form onSubmit={initiateSubmit} noValidate className="space-y-10">
               
               {/* --- TIER SELECTION --- */}
               <div>
                 <label className="block text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4 ml-1">Select Access Tier</label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {[
-                    { id: 'Early Bird', title: 'Early Bird', price: '₹399', desc: 'Exclusive for CIT Students Only', highlight: true },
-                    { id: 'Solo Access', title: 'Solo Access', price: '₹599', desc: 'Alumni, Faculty, & Other Orgs', highlight: false },
+                    { id: 'Early Bird', title: 'Early Bird', price: '₹399', desc: 'Exclusive for CIT Students Only', highlight: true, locked: false },
+                    { id: 'Solo Access', title: 'Solo Access', price: '₹599', desc: 'Alumni, Faculty, & Other Orgs', highlight: false, locked: false },
+                    { id: 'Group of 3', title: 'Squad (Group of 3)', price: '₹1497', highlight: false, locked: true },
+                    { id: 'Group of 5', title: 'Legion (Group of 5)', price: '₹2245', highlight: false, locked: true },
                   ].map((tier) => {
                     const isSelected = ticketType === tier.id;
 
                     return (
                       <label 
                         key={tier.id}
-                        className={`block p-5 rounded-xl border relative overflow-hidden transition-all duration-300 cursor-pointer group
-                          ${isSelected ? 'border-[#E62B1E] bg-[#E62B1E]/5 shadow-[0_0_20px_rgba(230,43,30,0.1)]' : 'border-white/10 hover:border-white/30 bg-white/[0.03]'}
+                        className={`block p-5 rounded-xl border relative overflow-hidden transition-all duration-300 group
+                          ${tier.locked ? 'border-white/5 bg-white/[0.01] opacity-50 cursor-not-allowed' : 
+                            isSelected ? 'border-[#E62B1E] bg-[#E62B1E]/5 shadow-[0_0_20px_rgba(230,43,30,0.1)] cursor-pointer' : 
+                            'border-white/10 hover:border-white/30 bg-white/[0.03] cursor-pointer'}
                         `}
                       >
                         <input 
@@ -263,24 +303,26 @@ export default function TicketingPage() {
                           name="tier" 
                           value={tier.id} 
                           className="hidden" 
+                          disabled={tier.locked}
                           onChange={() => handleTicketTypeChange(tier.id)} 
                           checked={isSelected} 
                         />
-                        <div className="flex justify-between items-center relative z-10">
-                          <div>
-                            <h3 className="text-base font-bold text-white tracking-wide flex items-center gap-2">
+                        <div className="flex flex-col gap-2 relative z-10">
+                          <div className="flex justify-between items-start gap-3">
+                            <h3 className="text-base font-bold text-white tracking-wide flex flex-wrap items-center gap-2">
                               {tier.title} 
-                              {tier.highlight && <span className="text-[9px] bg-[#E62B1E] text-white px-2 py-0.5 rounded-full uppercase tracking-widest animate-pulse">Live</span>}
+                              {tier.highlight && <span className="text-[9px] bg-[#E62B1E] text-white px-2 py-0.5 rounded-full uppercase tracking-widest animate-pulse whitespace-nowrap">Live</span>}
+                              {tier.locked && <span className="text-[9px] bg-gray-800 text-gray-300 px-2 py-0.5 rounded-full uppercase tracking-widest whitespace-nowrap">Locked</span>}
                             </h3>
-                            <p className={`text-xs mt-1 transition-colors ${tier.highlight ? 'text-[#E62B1E]/80 font-medium' : 'text-gray-500 group-hover:text-gray-400'}`}>
-                              {tier.desc}
-                            </p>
+                            <span className={`text-lg font-bold shrink-0 transition-colors ${isSelected ? 'text-[#E62B1E]' : 'text-white'}`}>
+                              {tier.price}
+                            </span>
                           </div>
-                          <span className={`text-lg font-bold transition-colors ${isSelected ? 'text-[#E62B1E]' : 'text-white'}`}>
-                            {tier.price}
-                          </span>
+                          <p className={`text-xs transition-colors ${tier.highlight ? 'text-[#E62B1E]/80 font-medium' : 'text-gray-500'}`}>
+                            {tier.desc}
+                          </p>
                         </div>
-                        {isSelected && <div className="absolute inset-0 bg-gradient-to-r from-[#E62B1E]/10 to-transparent opacity-50 pointer-events-none" />}
+                        {isSelected && !tier.locked && <div className="absolute inset-0 bg-gradient-to-r from-[#E62B1E]/10 to-transparent opacity-50 pointer-events-none" />}
                       </label>
                     );
                   })}
@@ -327,9 +369,11 @@ export default function TicketingPage() {
                         </div>
                         
                         <div className="relative group">
-                          <input type="email" required placeholder=" " value={member.email} onChange={(e) => handleTeamMemberChange(index, 'email', e.target.value)}
+                          {/* Regex added to specifically check for valid gmail and cambridge domains to prevent typos */}
+                          <input type="email" required pattern="^[a-zA-Z0-9._%+\-]+@(gmail\.com|cambridge\.edu\.in)$" placeholder=" " value={member.email} onChange={(e) => handleTeamMemberChange(index, 'email', e.target.value)}
                             className="peer w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 pt-7 pb-3 text-base font-medium text-white focus:border-[#E62B1E]/50 focus:bg-white/[0.05] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
                           <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">Email Address</label>
+                          <p className="absolute -bottom-5 left-2 text-[10px] text-red-500 font-medium opacity-0 peer-invalid:peer-[&:not(:placeholder-shown)]:opacity-100 transition-opacity leading-tight max-w-[95%]">Use a valid @gmail.com or @cambridge.edu.in</p>
                         </div>
 
                         <div className="relative group">
@@ -344,7 +388,7 @@ export default function TicketingPage() {
                           <label className="text-[10px] uppercase tracking-widest text-gray-500 mb-2 ml-1">Current Base</label>
                           {isEarlyBird ? (
                             <select required disabled value="College" className="peer w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm font-medium text-gray-400 opacity-80 cursor-not-allowed appearance-none">
-                              <option value="College">CIT Student (Batches 22-25)</option>
+                              <option value="College">Student</option>
                             </select>
                           ) : (
                             <select required value={member.workStudy} onChange={(e) => handleTeamMemberChange(index, 'workStudy', e.target.value)}
@@ -361,7 +405,7 @@ export default function TicketingPage() {
                           <div className="flex flex-col relative group">
                             <label className="text-[10px] uppercase tracking-widest text-gray-500 mb-2 ml-1">Department</label>
                             <select required value={member.department} onChange={(e) => handleTeamMemberChange(index, 'department', e.target.value)}
-                              className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm font-medium text-gray-300 focus:border-[#E62B1E]/50 focus:outline-none transition-all duration-300 appearance-none">
+                              className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm font-medium text-gray-300 focus:border-[#E62B1E]/50 focus:outline-none invalid:border-red-500/50 transition-all duration-300 appearance-none">
                               <option value="" disabled className="bg-[#111]">Select...</option>
                               <option value="CSE" className="bg-[#111]">CSE</option>
                               <option value="ISE" className="bg-[#111]">ISE</option>
@@ -386,7 +430,7 @@ export default function TicketingPage() {
                           <div className="flex flex-col relative group">
                             <label className="text-[10px] uppercase tracking-widest text-gray-500 mb-2 ml-1">Department</label>
                             <select required value={member.department} onChange={(e) => handleTeamMemberChange(index, 'department', e.target.value)}
-                              className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm font-medium text-gray-300 focus:border-[#E62B1E]/50 focus:outline-none transition-all duration-300 appearance-none">
+                              className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm font-medium text-gray-300 focus:border-[#E62B1E]/50 focus:outline-none invalid:border-red-500/50 transition-all duration-300 appearance-none">
                               <option value="" disabled className="bg-[#111]">Select...</option>
                               <option value="CSE" className="bg-[#111]">CSE</option>
                               <option value="ISE" className="bg-[#111]">ISE</option>
@@ -410,7 +454,7 @@ export default function TicketingPage() {
                             <div className="flex flex-col relative group">
                               <label className="text-[10px] uppercase tracking-widest text-gray-500 mb-2 ml-1">Semester</label>
                               <select required value={member.semester} onChange={(e) => handleTeamMemberChange(index, 'semester', e.target.value)}
-                                className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm font-medium text-gray-300 focus:border-[#E62B1E]/50 focus:outline-none transition-all duration-300 appearance-none">
+                                className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm font-medium text-gray-300 focus:border-[#E62B1E]/50 focus:outline-none invalid:border-red-500/50 transition-all duration-300 appearance-none">
                                 <option value="" disabled className="bg-[#111]">Select...</option>
                                 {['1','2','3','4','5','6','7','8'].map(sem => <option key={sem} value={sem} className="bg-[#111]">{sem}</option>)}
                               </select>
@@ -427,8 +471,9 @@ export default function TicketingPage() {
                           )}
                         </div>
                       )}
-{/* --- THE IDEA INPUT (Redesigned) --- */}
-<div className="pt-6 border-t border-white/5">
+                      
+                      {/* --- THE IDEA INPUT (Redesigned) --- */}
+                      <div className="pt-6 border-t border-white/5 relative group">
                         <label className="block text-xs uppercase tracking-widest text-[#E62B1E] mb-3 font-semibold">
                           The Core Prompt
                         </label>
@@ -443,7 +488,7 @@ export default function TicketingPage() {
                             placeholder="Your idea..." 
                             value={member.idea || ""} 
                             onChange={(e) => handleTeamMemberChange(index, 'idea', e.target.value)}
-                            className="w-full bg-white/[0.02] border-b-2 border-white/10 px-4 py-4 text-base font-serif italic text-white placeholder:text-gray-600 focus:border-[#E62B1E] focus:bg-white/[0.05] focus:outline-none transition-all duration-300" 
+                            className="peer w-full bg-white/[0.02] border-b-2 border-white/10 px-4 py-4 text-base font-serif italic text-white placeholder:text-gray-600 focus:border-[#E62B1E] focus:bg-white/[0.05] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" 
                           />
                           <div className={`absolute right-0 -bottom-6 text-[10px] font-mono tracking-widest transition-colors ${member.idea?.length === 60 ? 'text-[#E62B1E]' : 'text-gray-600'}`}>
                             {member.idea?.length || 0}/60
@@ -452,10 +497,10 @@ export default function TicketingPage() {
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-4 pt-2">
-                        <div className="flex flex-col">
+                        <div className="flex flex-col relative group">
                           <label className="text-[10px] uppercase tracking-widest text-gray-500 mb-2 ml-1">Origin Node</label>
                           <select required value={member.findUs} onChange={(e) => handleTeamMemberChange(index, 'findUs', e.target.value)}
-                            className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm font-medium text-gray-300 focus:border-[#E62B1E]/50 focus:outline-none transition-all duration-300 appearance-none">
+                            className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm font-medium text-gray-300 focus:border-[#E62B1E]/50 focus:outline-none invalid:border-red-500/50 transition-all duration-300 appearance-none">
                             <option value="" disabled className="bg-[#111]">How did you find us?</option>
                             <option value="College" className="bg-[#111]">College Campus</option>
                             <option value="Social Media" className="bg-[#111]">Social Media</option>
@@ -507,14 +552,14 @@ export default function TicketingPage() {
                       <p className="absolute -bottom-5 left-2 text-[10px] text-red-500 font-medium opacity-0 peer-invalid:peer-[&:not(:placeholder-shown)]:opacity-100 transition-opacity">Must be exactly 12 numeric digits.</p>
                     </div>
                     
-                    <label className={`flex flex-col items-center justify-center w-full h-28 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-300 mt-2 ${formData.paymentScreenshot ? 'border-green-500/50 bg-green-500/5' : 'border-white/20 hover:border-[#E62B1E]/50 bg-white/[0.02] hover:bg-white/[0.05]'}`}>
+                    <label id="payment-upload-zone" className={`flex flex-col items-center justify-center w-full h-28 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-300 mt-2 ${formData.paymentScreenshot ? 'border-green-500/50 bg-green-500/5' : 'border-white/20 hover:border-[#E62B1E]/50 bg-white/[0.02] hover:bg-white/[0.05]'}`}>
                       <div className="flex flex-col items-center justify-center pt-5 pb-6">
                         <svg className={`w-6 h-6 mb-2 ${formData.paymentScreenshot ? 'text-green-500' : 'text-gray-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                         <p className="text-xs text-gray-400 font-mono">
                           {formData.paymentScreenshotName ? <span className="text-green-400 font-bold">{formData.paymentScreenshotName}</span> : "Attach Payment Verification (Image)"}
                         </p>
                       </div>
-                      <input type="file" required className="hidden" accept="image/*" onChange={handleFileChange} />
+                      <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
                     </label>
                   </div>
                 </div>
@@ -549,10 +594,10 @@ export default function TicketingPage() {
               <path d="M 120 -20 Q 60 80 155 150" stroke="#E62B1E" strokeWidth="3" strokeOpacity="0.4" fill="none" />
               <path d="M 220 -20 Q 280 80 185 150" stroke="#E62B1E" strokeWidth="3" strokeOpacity="0.4" fill="none" />
               <text fontSize="9" fill="#555" fontWeight="bold" letterSpacing="2" className="select-none pointer-events-none">
-                <textPath href="#leftStrap" startOffset="10%">TEDxCIT • ARC 07 • TEDxCIT</textPath>
+                <textPath href="#leftStrap" startOffset="10%">TEDxCITBengaluru • ARC 07 • TEDxCITBengaluru</textPath>
               </text>
               <text fontSize="9" fill="#555" fontWeight="bold" letterSpacing="2" className="select-none pointer-events-none">
-                <textPath href="#rightStrap" startOffset="15%">ARC 07 • TEDxCIT • ARC 07</textPath>
+                <textPath href="#rightStrap" startOffset="15%">ARC 07 • TEDxCITBengaluru • ARC 07</textPath>
               </text>
               <rect x="145" y="4" width="50" height="26" rx="4" fill="url(#metalGrad)" stroke="#333" strokeWidth="1" />
               <rect x="150" y="11" width="40" height="6" rx="2" fill="#111" />
@@ -576,7 +621,7 @@ export default function TicketingPage() {
                 <div className="w-16 h-3 rounded-full bg-[#050505] shadow-inner absolute top-4 z-10" />
                 <div className="absolute -right-4 -top-8 text-7xl font-black text-white opacity-10 select-none tracking-tighter">ARC</div>
                 <div className="mt-auto w-full flex justify-between items-end">
-                  <span className="text-white text-xl font-black tracking-tighter">TED<sup className="text-sm">x</sup>CIT</span>
+                  <span className="text-white text-xl font-black tracking-tighter">TED<sup className="text-sm">x</sup>CITBengaluru</span>
                   <span className="text-white/80 text-[10px] font-bold tracking-[0.3em]">ARC 07</span>
                 </div>
               </div>
