@@ -282,7 +282,7 @@ export default function TicketingPage() {
                 <label className="block text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4 ml-1">Select Access Tier</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {[
-                    { id: 'Early Bird', title: 'Early Bird', price: '₹399', desc: 'Exclusive for CIT Students Only', highlight: true, locked: false },
+                    { id: 'Early Bird', title: 'Early Bird', price: '₹399', desc: 'Exclusive for Students Only', highlight: true, locked: false },
                     { id: 'Solo Access', title: 'Solo Access', price: '₹599', desc: 'Alumni, Faculty, & Other Orgs', highlight: false, locked: false },
                     { id: 'Group of 3', title: 'Squad (Group of 3)', price: '₹1497', highlight: false, locked: true },
                     { id: 'Group of 5', title: 'Legion (Group of 5)', price: '₹2245', highlight: false, locked: true },
