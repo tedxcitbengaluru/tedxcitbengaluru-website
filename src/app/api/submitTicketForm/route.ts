@@ -10,7 +10,7 @@ export async function POST(req: Request) {
       throw new Error("Missing crucial Google Environment Variables in .env.local");
     }
 
-    // Authenticate with Google Sheets (Updated to remove deprecation warning)
+    // Authenticate with Google Sheets
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_CLIENT_EMAIL,
@@ -34,29 +34,30 @@ export async function POST(req: Request) {
       const qrImageFormula = `=IMAGE("https://quickchart.io/qr?text=${member.ticketId}&size=200")`;
 
       return [
-        new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }), 
-        member.ticketId,                                                  
-        member.ticketType,                                                
-        sanitize(member.name),                                            
-        sanitize(member.email),                                           
-        sanitize(member.phoneNo),                                         
-        sanitize(member.usn),                                             
-        sanitize(member.workStudy === 'other' ? member.workStudyCustom : member.workStudy), 
-        sanitize(member.department),                                      
-        sanitize(member.semester),                                        
-        sanitize(member.findUs === 'other' ? member.findUsCustom : member.findUs),  
-        member.paymentType ? member.paymentType.toUpperCase() : 'UPI',                                 
-        sanitize(member.paymentType === 'upi' ? member.upiTransactionId : member.teamMemberName), 
-        member.paymentScreenshot || 'N/A',                                
-        'FALSE',                                                          
-        qrImageFormula                                                    
+        new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }), // A: Timestamp
+        member.ticketId,                                                  // B: Ticket ID
+        member.ticketType,                                                // C: Ticket Tier
+        sanitize(member.name),                                            // D: Name
+        sanitize(member.email),                                           // E: Email
+        sanitize(member.phoneNo),                                         // F: Phone
+        sanitize(member.usn),                                             // G: USN / Roll No
+        sanitize(member.workStudy === 'other' ? member.workStudyCustom : member.workStudy), // H: Base
+        sanitize(member.department),                                      // I: Department
+        sanitize(member.semester),                                        // J: Semester
+        sanitize(member.findUs === 'other' ? member.findUsCustom : member.findUs),          // K: Origin Node
+        sanitize(member.idea),                                            // L: <--- NEW: THE IDEA
+        member.paymentType ? member.paymentType.toUpperCase() : 'UPI',    // M: Payment Type
+        sanitize(member.paymentType === 'upi' ? member.upiTransactionId : member.teamMemberName), // N: Transaction ID
+        member.paymentScreenshot || 'N/A',                                // O: Screenshot Link
+        'FALSE',                                                          // P: Verification Status
+        qrImageFormula                                                    // Q: Visual QR Code
       ];
     });
 
     // Append all rows to the Sheet
     await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: 'Sheet1!A:P', // Make sure your Google Sheet tab is named 'Sheet1'
+      range: 'Sheet1!A:Q', // <-- CHANGED: Expanded to column Q to fit the new idea field
       valueInputOption: 'USER_ENTERED', // Critical: Allows the =IMAGE() formula to evaluate
       requestBody: {
         values: rows,

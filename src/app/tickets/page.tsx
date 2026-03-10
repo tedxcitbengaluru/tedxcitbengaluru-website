@@ -16,29 +16,25 @@ interface TeamMember {
   semester: string;
   findUs: string;
   findUsCustom: string;
+  idea: string; 
 }
 
 export default function TicketingPage() {
   const router = useRouter();
 
-  // --- Next.js Hydration Fix & Numeric Cryptographic Ticket ID ---
   const [baseTicketId, setBaseTicketId] = useState<string>("ARC-LOADING");
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    // Generates a clean numeric ID like: ARC-849204
     setBaseTicketId(`ARC-${Math.floor(100000 + Math.random() * 900000)}`);
     setIsMounted(true);
   }, []);
 
-  // --- Core State ---
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
-  // Default to Solo Access
-  const [ticketType, setTicketType] = useState<string>("Solo Access");
-  const [ticketPrice, setTicketPrice] = useState<number>(599); 
+  const [ticketType, setTicketType] = useState<string>("Early Bird");
+  const [ticketPrice, setTicketPrice] = useState<number>(399); 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-  // --- Payment State (Cash Removed, strictly UPI) ---
   const [formData, setFormData] = useState({
     paymentType: 'upi', 
     upiTransactionId: '',
@@ -46,11 +42,14 @@ export default function TicketingPage() {
     paymentScreenshotName: '',
   });
 
-  const createEmptyMember = (): TeamMember => ({
-    name: '', email: '', phoneNo: '', usn: '', workStudy: '', workStudyCustom: '', department: '', semester: '', findUs: '', findUsCustom: ''
+  const createEmptyMember = (isEarly: boolean = true): TeamMember => ({
+    name: '', email: '', phoneNo: '', usn: '', 
+    workStudy: isEarly ? 'College' : '', 
+    workStudyCustom: '', department: '', semester: '', findUs: '', findUsCustom: '',
+    idea: '' 
   });
   
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([createEmptyMember()]);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([createEmptyMember(true)]);
 
   // --- 3D Physics (Framer Motion) ---
   const mouseX = useMotionValue(0.5);
@@ -77,30 +76,20 @@ export default function TicketingPage() {
 
   const handleTicketTypeChange = (selectedType: string) => {
     setTicketType(selectedType);
-    let memberCount = 1;
-    let price = 599; // Default price
-
-    if (selectedType === 'Solo Access') { memberCount = 1; price = 599; }
-    /* --- UNCOMMENT NEXT WEEK FOR STUDENTS ---
-    else if (selectedType === 'Early Bird') { memberCount = 1; price = 399; }
-    else if (selectedType === 'Solo') { memberCount = 1; price = 599; }
-    else if (selectedType === 'Group of 3') { memberCount = 3; price = 1497; }
-    else if (selectedType === 'Group of 5') { memberCount = 5; price = 2245; }
-    */
-
+    let price = selectedType === 'Early Bird' ? 399 : 599;
     setTicketPrice(price);
-    setTeamMembers(Array(memberCount).fill(null).map(() => createEmptyMember()));
+    setTeamMembers([createEmptyMember(selectedType === 'Early Bird')]);
   };
 
   const handleTeamMemberChange = (index: number, field: keyof TeamMember, value: string) => {
     const newTeamMembers = [...teamMembers];
     newTeamMembers[index] = { ...newTeamMembers[index], [field]: value };
     
-    if (field === 'workStudy' && value !== 'other') newTeamMembers[index].workStudyCustom = '';
-    if (field === 'workStudy' && value !== 'College') {
+    if (field === 'workStudy') {
       newTeamMembers[index].department = '';
       newTeamMembers[index].semester = '';
       newTeamMembers[index].usn = '';
+      newTeamMembers[index].workStudyCustom = '';
     }
     if (field === 'findUs' && value !== 'other') newTeamMembers[index].findUsCustom = '';
 
@@ -121,13 +110,10 @@ export default function TicketingPage() {
         const canvas = document.createElement('canvas');
         const MAX_WIDTH = 800; 
         const scaleSize = MAX_WIDTH / img.width;
-        
         canvas.width = MAX_WIDTH;
         canvas.height = img.height * scaleSize;
-        
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
-        
         const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
         
         setFormData(prev => ({ 
@@ -152,9 +138,7 @@ export default function TicketingPage() {
     setShowConfirmModal(false);
     setStatus("loading");
     
-    // 1. Capture the ID of the loading toast
     const toastId = toast.loading('Encrypting and authenticating your submission...', { duration: 10000 });
-
     let paymentScreenshotLink = formData.paymentScreenshot;
 
     if (paymentScreenshotLink) {
@@ -220,6 +204,9 @@ export default function TicketingPage() {
     );
   }
 
+  const isEarlyBird = ticketType === 'Early Bird';
+  const isSoloAccess = ticketType === 'Solo Access';
+
   return (
     <main className="min-h-screen bg-[#050505] text-white flex flex-col items-center pt-24 pb-32 px-4 md:px-6 relative overflow-hidden">
       <Toaster position="bottom-right" richColors theme="dark" />
@@ -259,14 +246,8 @@ export default function TicketingPage() {
                 <label className="block text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4 ml-1">Select Access Tier</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
-                    // --- ACTIVE TIERS ---
-                    { id: 'Solo Access', title: 'Solo Access Pass', price: '₹599', desc: 'Standard individual access pass', highlight: true },
-                    
-                    /* --- COMMENTED OUT FOR NEXT WEEK ---
-                    { id: 'Early Bird', title: 'Early Bird (Students)', price: '₹399', desc: 'Limited to 30 Seats!', highlight: true },
-                    { id: 'Group of 3', title: 'Group of 3', price: '₹1497', desc: 'Squad access (+ discount)', highlight: false },
-                    { id: 'Group of 5', title: 'Group of 5', price: '₹2245', desc: 'Full crew access (+ discount)', highlight: false }
-                    */
+                    { id: 'Early Bird', title: 'Early Bird', price: '₹399', desc: 'Exclusive for CIT Students Only', highlight: true },
+                    { id: 'Solo Access', title: 'Solo Access', price: '₹599', desc: 'Alumni, Faculty, & Other Orgs', highlight: false },
                   ].map((tier) => {
                     const isSelected = ticketType === tier.id;
 
@@ -275,7 +256,6 @@ export default function TicketingPage() {
                         key={tier.id}
                         className={`block p-5 rounded-xl border relative overflow-hidden transition-all duration-300 cursor-pointer group
                           ${isSelected ? 'border-[#E62B1E] bg-[#E62B1E]/5 shadow-[0_0_20px_rgba(230,43,30,0.1)]' : 'border-white/10 hover:border-white/30 bg-white/[0.03]'}
-                          ${tier.highlight ? 'sm:col-span-2' : ''}
                         `}
                       >
                         <input 
@@ -309,68 +289,76 @@ export default function TicketingPage() {
 
               {/* --- DYNAMIC TEAM MEMBER INPUTS --- */}
               <div className="space-y-8">
-                {teamMembers.map((member, index) => (
-                  <div key={index} className="space-y-6 bg-white/[0.01] p-6 md:p-8 rounded-2xl border border-white/5 relative">
-                    <div className="flex items-center gap-3 mb-6">
-                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#E62B1E]/20 text-[#E62B1E] text-xs font-bold border border-[#E62B1E]/30">
-                        {index + 1}
-                      </span>
-                      <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-300">
-                        {teamMembers.length === 1 ? "Primary Identity Data" : `User Identity 0${index + 1}`}
-                      </h3>
-                    </div>
+                {teamMembers.map((member, index) => {
+                  
+                  let idLabel = "ID Number";
+                  let idPattern = undefined;
+                  let idError = "Please enter a valid ID.";
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-4">
-                      
-                      <div className="relative group md:col-span-2">
-                        <input type="text" required minLength={2} placeholder=" " value={member.name} onChange={(e) => handleTeamMemberChange(index, 'name', e.target.value)}
-                          className="peer w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 pt-7 pb-3 text-base font-medium text-white focus:border-[#E62B1E]/50 focus:bg-white/[0.05] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
-                        <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">Full Legal Name</label>
-                        <p className="absolute -bottom-5 left-2 text-[10px] text-red-500 font-medium opacity-0 peer-invalid:peer-[&:not(:placeholder-shown)]:opacity-100 transition-opacity">Must be at least 2 characters.</p>
-                      </div>
-                      
-                      <div className="relative group">
-                        <input type="email" required placeholder=" " value={member.email} onChange={(e) => handleTeamMemberChange(index, 'email', e.target.value)}
-                          className="peer w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 pt-7 pb-3 text-base font-medium text-white focus:border-[#E62B1E]/50 focus:bg-white/[0.05] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
-                        <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">Email Address</label>
-                        <p className="absolute -bottom-5 left-2 text-[10px] text-red-500 font-medium opacity-0 peer-invalid:peer-[&:not(:placeholder-shown)]:opacity-100 transition-opacity">Must be a valid email containing '@'.</p>
-                      </div>
+                  if (isEarlyBird) {
+                    if (member.department === 'Degree Block') idLabel = "Roll Number";
+                    else if (member.department === 'PU College') idLabel = "PU Roll Number";
+                    else {
+                      idLabel = "USN";
+                      idPattern = "^[1-9][a-zA-Z]{2}(22|23|24|25)[a-zA-Z]{2}[0-9]{3}$";
+                      idError = "Denied: Only CIT Batches 22, 23, 24, and 25 eligible. Others use Solo Access.";
+                    }
+                  } else if (isSoloAccess) {
+                    if (member.workStudy === 'Alumni') idLabel = "Former USN / Roll Number";
+                    else if (member.workStudy === 'Faculty') idLabel = "Faculty ID";
+                  }
 
-                      <div className="relative group">
-                        <input type="tel" required pattern="^\d{10}$" placeholder=" " value={member.phoneNo} onChange={(e) => handleTeamMemberChange(index, 'phoneNo', e.target.value)}
-                          className="peer w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 pt-7 pb-3 text-base font-medium text-white focus:border-[#E62B1E]/50 focus:bg-white/[0.05] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
-                        <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">Phone (10 Digits)</label>
-                        <p className="absolute -bottom-5 left-2 text-[10px] text-red-500 font-medium opacity-0 peer-invalid:peer-[&:not(:placeholder-shown)]:opacity-100 transition-opacity">Must be exactly 10 numeric digits.</p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-4 pt-2">
-                      <div className="flex flex-col relative group">
-                        <label className="text-[10px] uppercase tracking-widest text-gray-500 mb-2 ml-1">Current Base</label>
-                        <select required value={member.workStudy} onChange={(e) => handleTeamMemberChange(index, 'workStudy', e.target.value)}
-                          className="peer w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm font-medium text-gray-300 focus:border-[#E62B1E]/50 focus:outline-none invalid:border-red-500/50 transition-all duration-300 appearance-none">
-                          <option value="" disabled className="bg-[#111]">Select Base</option>
-                          <option value="College" className="bg-[#111]">CIT (Student/Alumni/Faculty)</option>
-                          <option value="other" className="bg-[#111]">Other Organization</option>
-                        </select>
+                  return (
+                    <div key={index} className="space-y-6 bg-white/[0.01] p-6 md:p-8 rounded-2xl border border-white/5 relative">
+                      <div className="flex items-center gap-3 mb-6">
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#E62B1E]/20 text-[#E62B1E] text-xs font-bold border border-[#E62B1E]/30">
+                          {index + 1}
+                        </span>
+                        <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-300">
+                          Primary Identity Data
+                        </h3>
                       </div>
 
-                      {member.workStudy === 'other' ? (
-                         <div className="relative group self-end">
-                           <input type="text" required minLength={2} placeholder=" " value={member.workStudyCustom} onChange={(e) => handleTeamMemberChange(index, 'workStudyCustom', e.target.value)}
-                             className="peer w-full bg-white/[0.03] border border-[#E62B1E]/50 rounded-xl px-5 pt-7 pb-3 text-sm font-medium text-white focus:border-[#E62B1E] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
-                           <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">Specify Organization</label>
-                           <p className="absolute -bottom-5 left-2 text-[10px] text-red-500 font-medium opacity-0 peer-invalid:peer-[&:not(:placeholder-shown)]:opacity-100 transition-opacity">Organization name required.</p>
-                         </div>
-                      ) : member.workStudy === 'College' ? (
-                        <>
-                          <div className="relative group md:col-span-2">
-                            <input type="text" required minLength={5} placeholder=" " value={member.usn} onChange={(e) => handleTeamMemberChange(index, 'usn', e.target.value)}
-                              className="peer w-full bg-white/[0.03] border border-[#E62B1E]/30 rounded-xl px-5 pt-7 pb-3 text-base font-mono uppercase text-white focus:border-[#E62B1E] focus:bg-white/[0.05] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
-                            <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">USN / Faculty ID</label>
-                            <p className="absolute -bottom-5 left-2 text-[10px] text-red-500 font-medium opacity-0 peer-invalid:peer-[&:not(:placeholder-shown)]:opacity-100 transition-opacity">Please enter a valid ID.</p>
-                          </div>
-                          <div className="flex flex-col">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-4">
+                        <div className="relative group md:col-span-2">
+                          <input type="text" required minLength={2} placeholder=" " value={member.name} onChange={(e) => handleTeamMemberChange(index, 'name', e.target.value)}
+                            className="peer w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 pt-7 pb-3 text-base font-medium text-white focus:border-[#E62B1E]/50 focus:bg-white/[0.05] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
+                          <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">Full Legal Name</label>
+                        </div>
+                        
+                        <div className="relative group">
+                          <input type="email" required placeholder=" " value={member.email} onChange={(e) => handleTeamMemberChange(index, 'email', e.target.value)}
+                            className="peer w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 pt-7 pb-3 text-base font-medium text-white focus:border-[#E62B1E]/50 focus:bg-white/[0.05] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
+                          <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">Email Address</label>
+                        </div>
+
+                        <div className="relative group">
+                          <input type="tel" required pattern="^\d{10}$" placeholder=" " value={member.phoneNo} onChange={(e) => handleTeamMemberChange(index, 'phoneNo', e.target.value)}
+                            className="peer w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 pt-7 pb-3 text-base font-medium text-white focus:border-[#E62B1E]/50 focus:bg-white/[0.05] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
+                          <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">Phone (10 Digits)</label>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-4 pt-2">
+                        <div className="flex flex-col relative group">
+                          <label className="text-[10px] uppercase tracking-widest text-gray-500 mb-2 ml-1">Current Base</label>
+                          {isEarlyBird ? (
+                            <select required disabled value="College" className="peer w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm font-medium text-gray-400 opacity-80 cursor-not-allowed appearance-none">
+                              <option value="College">CIT Student (Batches 22-25)</option>
+                            </select>
+                          ) : (
+                            <select required value={member.workStudy} onChange={(e) => handleTeamMemberChange(index, 'workStudy', e.target.value)}
+                              className="peer w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm font-medium text-gray-300 focus:border-[#E62B1E]/50 focus:outline-none invalid:border-red-500/50 transition-all duration-300 appearance-none">
+                              <option value="" disabled className="bg-[#111]">Select Base</option>
+                              <option value="Alumni" className="bg-[#111]">CIT Alumni</option>
+                              <option value="Faculty" className="bg-[#111]">CIT Faculty</option>
+                              <option value="other" className="bg-[#111]">Other Organization</option>
+                            </select>
+                          )}
+                        </div>
+
+                        {isEarlyBird ? (
+                          <div className="flex flex-col relative group">
                             <label className="text-[10px] uppercase tracking-widest text-gray-500 mb-2 ml-1">Department</label>
                             <select required value={member.department} onChange={(e) => handleTeamMemberChange(index, 'department', e.target.value)}
                               className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm font-medium text-gray-300 focus:border-[#E62B1E]/50 focus:outline-none transition-all duration-300 appearance-none">
@@ -384,47 +372,109 @@ export default function TicketingPage() {
                               <option value="EEE" className="bg-[#111]">EEE</option>
                               <option value="ME/CV" className="bg-[#111]">ME/CV</option>
                               <option value="MCA" className="bg-[#111]">MCA</option>
-                              <option value="MBA" className="bg-[#111]">MBA</option>
-                              <option value="MBA" className="bg-[#111]">PU College</option>
                               <option value="Degree Block" className="bg-[#111]">Degree Block</option>
-                              <option value="Faculty" className="bg-[#111]">Faculty</option>
+                              <option value="PU College" className="bg-[#111]">PU College</option>
                             </select>
                           </div>
-                          <div className="flex flex-col">
-                            <label className="text-[10px] uppercase tracking-widest text-gray-500 mb-2 ml-1">Semester</label>
-                            <select required value={member.semester} onChange={(e) => handleTeamMemberChange(index, 'semester', e.target.value)}
+                        ) : isSoloAccess && member.workStudy === 'other' ? (
+                          <div className="relative group self-end">
+                            <input type="text" required minLength={2} placeholder=" " value={member.workStudyCustom} onChange={(e) => handleTeamMemberChange(index, 'workStudyCustom', e.target.value)}
+                              className="peer w-full bg-white/[0.03] border border-[#E62B1E]/50 rounded-xl px-5 pt-7 pb-3 text-sm font-medium text-white focus:border-[#E62B1E] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
+                            <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">Specify Organization</label>
+                          </div>
+                        ) : isSoloAccess && (member.workStudy === 'Alumni' || member.workStudy === 'Faculty') ? (
+                          <div className="flex flex-col relative group">
+                            <label className="text-[10px] uppercase tracking-widest text-gray-500 mb-2 ml-1">Department</label>
+                            <select required value={member.department} onChange={(e) => handleTeamMemberChange(index, 'department', e.target.value)}
                               className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm font-medium text-gray-300 focus:border-[#E62B1E]/50 focus:outline-none transition-all duration-300 appearance-none">
                               <option value="" disabled className="bg-[#111]">Select...</option>
-                              {['1','2','3','4','5','6','7','8','Alumni', 'N/A (Faculty)'].map(sem => <option key={sem} value={sem} className="bg-[#111]">{sem}</option>)}
+                              <option value="CSE" className="bg-[#111]">CSE</option>
+                              <option value="ISE" className="bg-[#111]">ISE</option>
+                              <option value="AIML" className="bg-[#111]">AIML</option>
+                              <option value="CS IOT" className="bg-[#111]">CS IOT</option>
+                              <option value="CS DS" className="bg-[#111]">CS DS</option>
+                              <option value="ECE" className="bg-[#111]">ECE</option>
+                              <option value="EEE" className="bg-[#111]">EEE</option>
+                              <option value="ME/CV" className="bg-[#111]">ME/CV</option>
+                              <option value="MCA" className="bg-[#111]">MCA</option>
+                              <option value="Degree Block" className="bg-[#111]">Degree Block</option>
+                              <option value="PU College" className="bg-[#111]">PU College</option>
                             </select>
                           </div>
-                        </>
-                      ) : null}
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-4 pt-2">
-                      <div className="flex flex-col">
-                        <label className="text-[10px] uppercase tracking-widest text-gray-500 mb-2 ml-1">Origin Node</label>
-                        <select required value={member.findUs} onChange={(e) => handleTeamMemberChange(index, 'findUs', e.target.value)}
-                          className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm font-medium text-gray-300 focus:border-[#E62B1E]/50 focus:outline-none transition-all duration-300 appearance-none">
-                          <option value="" disabled className="bg-[#111]">How did you find us?</option>
-                          <option value="College" className="bg-[#111]">College Campus</option>
-                          <option value="Social Media" className="bg-[#111]">Social Media</option>
-                          <option value="Friends" className="bg-[#111]">Friends / Word of Mouth</option>
-                          <option value="other" className="bg-[#111]">Other</option>
-                        </select>
+                        ) : null}
                       </div>
-                      {member.findUs === 'other' && (
-                        <div className="relative group self-end">
-                          <input type="text" required minLength={2} placeholder=" " value={member.findUsCustom} onChange={(e) => handleTeamMemberChange(index, 'findUsCustom', e.target.value)}
-                            className="peer w-full bg-white/[0.03] border border-[#E62B1E]/50 rounded-xl px-5 pt-7 pb-3 text-sm font-medium text-white focus:border-[#E62B1E] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
-                          <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">Specify Node</label>
-                          <p className="absolute -bottom-5 left-2 text-[10px] text-red-500 font-medium opacity-0 peer-invalid:peer-[&:not(:placeholder-shown)]:opacity-100 transition-opacity">Please specify origin.</p>
+
+                      {(isEarlyBird || (isSoloAccess && (member.workStudy === 'Alumni' || member.workStudy === 'Faculty'))) && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-4 pt-2">
+                          {isEarlyBird && (
+                            <div className="flex flex-col relative group">
+                              <label className="text-[10px] uppercase tracking-widest text-gray-500 mb-2 ml-1">Semester</label>
+                              <select required value={member.semester} onChange={(e) => handleTeamMemberChange(index, 'semester', e.target.value)}
+                                className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm font-medium text-gray-300 focus:border-[#E62B1E]/50 focus:outline-none transition-all duration-300 appearance-none">
+                                <option value="" disabled className="bg-[#111]">Select...</option>
+                                {['1','2','3','4','5','6','7','8'].map(sem => <option key={sem} value={sem} className="bg-[#111]">{sem}</option>)}
+                              </select>
+                            </div>
+                          )}
+
+                          {member.department && (
+                            <div className={`relative group ${isSoloAccess ? 'md:col-span-2' : ''}`}>
+                              <input type="text" required minLength={5} pattern={idPattern} placeholder=" " value={member.usn} onChange={(e) => handleTeamMemberChange(index, 'usn', e.target.value)}
+                                className="peer w-full bg-white/[0.03] border border-[#E62B1E]/30 rounded-xl px-5 pt-7 pb-3 text-base font-mono uppercase text-white focus:border-[#E62B1E] focus:bg-white/[0.05] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
+                              <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">{idLabel}</label>
+                              <p className="absolute -bottom-5 left-2 text-[10px] text-red-500 font-medium opacity-0 peer-invalid:peer-[&:not(:placeholder-shown)]:opacity-100 transition-opacity leading-tight break-words max-w-[95%]">{idError}</p>
+                            </div>
+                          )}
                         </div>
                       )}
+{/* --- THE IDEA INPUT (Redesigned) --- */}
+<div className="pt-6 border-t border-white/5">
+                        <label className="block text-xs uppercase tracking-widest text-[#E62B1E] mb-3 font-semibold">
+                          The Core Prompt
+                        </label>
+                        <p className="text-gray-300 text-sm mb-4 leading-relaxed">
+                          If you could share one idea with the world, what would it be?
+                        </p>
+                        <div className="relative">
+                          <input 
+                            type="text"
+                            required 
+                            maxLength={60} 
+                            placeholder="Your idea..." 
+                            value={member.idea || ""} 
+                            onChange={(e) => handleTeamMemberChange(index, 'idea', e.target.value)}
+                            className="w-full bg-white/[0.02] border-b-2 border-white/10 px-4 py-4 text-base font-serif italic text-white placeholder:text-gray-600 focus:border-[#E62B1E] focus:bg-white/[0.05] focus:outline-none transition-all duration-300" 
+                          />
+                          <div className={`absolute right-0 -bottom-6 text-[10px] font-mono tracking-widest transition-colors ${member.idea?.length === 60 ? 'text-[#E62B1E]' : 'text-gray-600'}`}>
+                            {member.idea?.length || 0}/60
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-4 pt-2">
+                        <div className="flex flex-col">
+                          <label className="text-[10px] uppercase tracking-widest text-gray-500 mb-2 ml-1">Origin Node</label>
+                          <select required value={member.findUs} onChange={(e) => handleTeamMemberChange(index, 'findUs', e.target.value)}
+                            className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-sm font-medium text-gray-300 focus:border-[#E62B1E]/50 focus:outline-none transition-all duration-300 appearance-none">
+                            <option value="" disabled className="bg-[#111]">How did you find us?</option>
+                            <option value="College" className="bg-[#111]">College Campus</option>
+                            <option value="Social Media" className="bg-[#111]">Social Media</option>
+                            <option value="Friends" className="bg-[#111]">Friends / Word of Mouth</option>
+                            <option value="other" className="bg-[#111]">Other</option>
+                          </select>
+                        </div>
+                        {member.findUs === 'other' && (
+                          <div className="relative group self-end">
+                            <input type="text" required minLength={2} placeholder=" " value={member.findUsCustom} onChange={(e) => handleTeamMemberChange(index, 'findUsCustom', e.target.value)}
+                              className="peer w-full bg-white/[0.03] border border-[#E62B1E]/50 rounded-xl px-5 pt-7 pb-3 text-sm font-medium text-white focus:border-[#E62B1E] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
+                            <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">Specify Node</label>
+                            <p className="absolute -bottom-5 left-2 text-[10px] text-red-500 font-medium opacity-0 peer-invalid:peer-[&:not(:placeholder-shown)]:opacity-100 transition-opacity">Please specify origin.</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* --- PAYMENT PROCESSING SECTION (Strictly UPI) --- */}
@@ -514,7 +564,7 @@ export default function TicketingPage() {
 
             {/* 3D Framer Motion Badge */}
             <motion.div 
-              className="relative -mt-10 mx-auto w-[340px] h-[480px] rounded-none bg-[#0A0A0A] border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.8),_0_0_40px_rgba(230,43,30,0.1)] overflow-hidden [transform-style:preserve-3d]"
+              className="relative -mt-10 mx-auto w-[340px] h-[520px] rounded-none bg-[#0A0A0A] border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.8),_0_0_40px_rgba(230,43,30,0.1)] overflow-hidden [transform-style:preserve-3d]"
               style={{ rotateX, rotateY }}
             >
               <motion.div 
@@ -532,22 +582,31 @@ export default function TicketingPage() {
               </div>
 
               <div className="p-8 h-[calc(100%-7rem)] flex flex-col relative [transform:translateZ(30px)]">
-                <div className="mb-auto">
+                <div className="mb-6">
                   <p className="text-[9px] uppercase tracking-[0.3em] text-[#E62B1E] font-bold mb-2">Authenticated User</p>
                   <p className="text-3xl font-bold leading-none tracking-tight text-white line-clamp-2">
                     {teamMembers[0]?.name || "GUEST PROTOCOL"}
                   </p>
                 </div>
 
-                <div className="space-y-6">
-                  <div className="inline-block px-4 py-2 bg-white/5 border border-white/10 rounded-none backdrop-blur-sm">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-300">
-                      {ticketType}
+                <div className="space-y-6 flex-grow flex flex-col justify-between">
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="inline-block px-4 py-2 bg-white/5 border border-white/10 rounded-none backdrop-blur-sm">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-300">
+                        {ticketType}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* --- NEW: CINEMATIC IDEA DISPLAY ON BADGE --- */}
+                  <div className="relative border-l-2 border-[#E62B1E]/50 pl-4 py-1 my-auto">
+                    <p className="text-xl leading-snug text-white/70 font-serif italic line-clamp-2">
+                      "{teamMembers[0]?.idea || "An idea waiting to be shared..."}"
                     </p>
                   </div>
 
                   {/* REAL QR CODE CHECK-IN SYSTEM */}
-                  <div className="pt-6 border-t border-white/10 flex items-center justify-between">
+                  <div className="pt-6 border-t border-white/10 flex items-center justify-between mt-auto">
                     <div className="bg-white p-1.5 rounded-md shadow-lg">
                       <QRCode 
                         value={baseTicketId} 
@@ -573,7 +632,7 @@ export default function TicketingPage() {
             </motion.div>
           </div>
 
-          <div className="absolute bottom-[-2rem] text-center text-[10px] uppercase text-gray-600 tracking-[0.3em] pointer-events-none">
+          <div className="absolute bottom-[-3rem] text-center text-[10px] uppercase text-gray-600 tracking-[0.3em] pointer-events-none">
             Interact to inspect badge
           </div>
         </div>
