@@ -196,7 +196,13 @@ const Page = () => {
         <div className="bg-[#050505]">
             {/* HERO SECTION */}
             <section className="relative w-full h-screen overflow-hidden bg-white">
-                <Header />
+                
+                {/* --- HEADER CONTROLS --- */}
+                {/* Added a subtle vignette at the top to pop the original white logo colors */}
+                <div className="absolute top-0 left-0 w-full z-50">
+                    <div className="absolute inset-0 h-32 bg-gradient-to-b from-black/40 to-transparent pointer-events-none" />
+                    <Header />
+                </div>
                 
                 {/* --- Full-width Mountain Background --- */}
                 <div className="absolute inset-0">
@@ -283,7 +289,7 @@ const Page = () => {
                                                     </div>
                                                 </div>
 
-                                                {/* Desktop overlay button (Hidden on mobile) */}
+                                                {/* Desktop overlay button */}
                                                 <div className="hidden md:flex absolute inset-0 items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                                     <button 
                                                         onClick={() => setSelectedEvent(event)}
@@ -294,7 +300,7 @@ const Page = () => {
                                                 </div>
                                             </div>
 
-                                            {/* Mobile bottom bar (Hidden on desktop) */}
+                                            {/* Mobile bottom bar */}
                                             <div className="md:hidden w-full p-4 bg-[#111] border-t border-white/5">
                                                  <button 
                                                     onClick={() => setSelectedEvent(event)}
@@ -321,12 +327,10 @@ const Page = () => {
                                             variants={itemVariants}
                                             viewport={{ once: true }}
                                         >
-                                            {/* Circles - Redesigned to use object-contain with a bottom bar */}
                                             <div 
                                                 className="relative w-full aspect-[3/4] md:aspect-[4/5] rounded-3xl overflow-hidden shadow-xl border border-white/10 bg-[#0a0a0a] group cursor-pointer flex flex-col hover:border-white/20 transition-colors"
                                                 onClick={() => setSelectedCircle(circle)}
                                             >
-                                                {/* Image Container with Padding */}
                                                 <div className="relative w-full flex-grow p-4 md:p-6 flex items-center justify-center">
                                                     <Image
                                                         src={circle.src}
@@ -336,7 +340,6 @@ const Page = () => {
                                                     />
                                                 </div>
                                                 
-                                                {/* Sleek Bottom Bar */}
                                                 <div className="w-full p-4 md:p-5 bg-[#111] border-t border-white/5 z-10 flex flex-col items-center justify-center">
                                                     <p className="text-white text-center font-bold text-sm md:text-base uppercase tracking-widest">
                                                         {circle.name}
@@ -363,7 +366,7 @@ const Page = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        onClick={() => setSelectedEvent(null)} // Close on background click
+                        onClick={() => setSelectedEvent(null)}
                     >
                         <motion.div
                             className="bg-[#111] w-full max-w-5xl rounded-3xl border border-white/10 overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col"
@@ -371,9 +374,8 @@ const Page = () => {
                             initial="hidden"
                             animate="visible"
                             exit="exit"
-                            onClick={(e) => e.stopPropagation()} // Prevent close on modal click
+                            onClick={(e) => e.stopPropagation()}
                         >
-                            {/* Modal Header */}
                             <div className="flex justify-between items-center p-6 border-b border-white/10 bg-[#1a1a1a] shrink-0">
                                 <div>
                                     <h3 className="text-2xl md:text-3xl font-black text-white uppercase tracking-wider">{selectedEvent.name}</h3>
@@ -389,10 +391,7 @@ const Page = () => {
                                 </button>
                             </div>
 
-                            {/* Modal Content - Scrollable Area */}
                             <div className="p-6 overflow-y-auto custom-scrollbar">
-                                
-                                {/* 1. Theme Description (Displays First) */}
                                 <div className="mb-8 bg-[#1a1a1a] border-l-4 border-[#EB0028] p-5 md:p-6 rounded-r-xl shadow-md">
                                     <h4 className="text-[#EB0028] text-[11px] md:text-xs font-bold tracking-[0.2em] uppercase mb-3">
                                         The Meaning of {selectedEvent.name}
@@ -402,13 +401,11 @@ const Page = () => {
                                     </p>
                                 </div>
 
-                                {/* 2. Videos Header */}
                                 <h4 className="text-white text-lg font-bold mb-6 flex items-center gap-3">
                                     <span className="w-4 h-4 rounded-full bg-[#EB0028] inline-block animate-pulse"></span>
                                     Talks & Performances
                                 </h4>
 
-                                {/* 3. Video Grid */}
                                 {selectedEvent.videos.length > 0 ? (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         {selectedEvent.videos.map((video, idx) => (
@@ -457,7 +454,6 @@ const Page = () => {
                             exit="exit"
                             onClick={(e) => e.stopPropagation()} 
                         >
-                            {/* Modal Header */}
                             <div className="flex justify-between items-center p-6 border-b border-white/10 bg-[#1a1a1a] shrink-0">
                                 <div>
                                     <h3 className="text-2xl md:text-3xl font-black text-white uppercase tracking-wider">{selectedCircle.name}</h3>
@@ -473,9 +469,7 @@ const Page = () => {
                                 </button>
                             </div>
 
-                            {/* Modal Content */}
                             <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar flex flex-col sm:flex-row gap-6 md:gap-10 items-start">
-                                {/* Left Side: Small Poster Preview */}
                                 <div className="w-full sm:w-1/3 shrink-0 rounded-2xl overflow-hidden border border-white/5 bg-[#050505] p-4 flex items-center justify-center">
                                      <Image 
                                         src={selectedCircle.src} 
@@ -486,7 +480,6 @@ const Page = () => {
                                     />
                                 </div>
 
-                                {/* Right Side: Description Text */}
                                 <div className="w-full sm:w-2/3">
                                     <h4 className="text-[#EB0028] text-[11px] md:text-xs font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
                                         <span className="w-2 h-2 rounded-full bg-[#EB0028] animate-pulse"></span>

@@ -62,44 +62,31 @@ export default function CinematicJourneyHero() {
     return () => clearInterval(interval);
   }, []);
 
-  // --- SCROLL PHYSICS ---
+  // --- SCROLL PHYSICS (The Anchor Line & Depth) ---
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
   });
 
-  // --- HELM (STEERING WHEEL) PHYSICS ---
-  const rawRotation = useTransform(scrollYProgress, [0, 1], [0, 1080]);
-  const smoothRotation = useSpring(rawRotation, { damping: 40, stiffness: 80, mass: 1.5 });
+  const smoothScroll = useSpring(scrollYProgress, { damping: 30, stiffness: 60, mass: 1 });
+  const anchorLineHeight = useTransform(smoothScroll, [0, 0.9], ["0%", "100%"]);
 
-  const helmOpacity = useTransform(scrollYProgress, [0.8, 0.85], [1, 0]);
-  const helmY = useTransform(scrollYProgress, [0.8, 0.85], [0, 150]);
-
-  // --- CINEMATIC LIGHTING & BACKGROUND ---
-  const oceanBackground = useTransform(
-    scrollYProgress,
-    [0, 0.2, 0.4, 0.6, 0.8],
-    [
-      "radial-gradient(circle at 50% 0%, #082d40 0%, #01070a 80%)", 
-      "radial-gradient(circle at 50% 20%, #051b26 0%, #000405 80%)", 
-      "radial-gradient(circle at 50% 40%, #0f0404 0%, #000000 80%)", 
-      "radial-gradient(circle at 50% 60%, #000000 0%, #000000 100%)", 
-      "radial-gradient(circle at 50% 100%, #1a1403 0%, #000000 100%)", 
-    ]
-  );
+  // --- ENVIRONMENTAL FADES (The Submersion Effect) ---
+  // The surface light and waves fade to pitch black by 40% scroll (Forge/Obscura)
+  const surfaceOpacity = useTransform(smoothScroll, [0, 0.4], [1, 0]);
 
   // --- INTRO SCREEN FADE ---
-  const introOpacity = useTransform(scrollYProgress, [0, 0.05], [1, 0]);
-  const introY = useTransform(scrollYProgress, [0, 0.05], [0, -100]);
-  const introScale = useTransform(scrollYProgress, [0, 0.05], [1, 1.05]);
+  const introOpacity = useTransform(smoothScroll, [0, 0.05], [1, 0]);
+  const introY = useTransform(smoothScroll, [0, 0.05], [0, -100]);
+  const introScale = useTransform(smoothScroll, [0, 0.05], [1, 1.05]);
 
   return (
-    <main ref={containerRef} className="relative w-full h-[700vh] bg-black text-white font-sans selection:bg-[#E62B1E] selection:text-white">
+    <main ref={containerRef} className="relative w-full h-[700vh] bg-[#010305] text-white font-sans selection:bg-[#E62B1E] selection:text-white">
       
       {/* =========================================
-          THE HEADER WRAPPER
+          NATIVE HEADER (Untouched)
       ========================================= */}
-      <div className="fixed top-0 left-0 w-full z-[100] pointer-events-auto force-header-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)]">
+      <div className="fixed top-0 left-0 w-full z-[100] pointer-events-auto bg-black">
         <Header />
       </div>
 
@@ -108,159 +95,188 @@ export default function CinematicJourneyHero() {
       ========================================= */}
       <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center">
         
-        {/* Dynamic Ocean Atmosphere & Hyper-Realistic Caustics */}
-        <motion.div
-          className="absolute inset-0 w-full h-full z-0"
-          style={{ background: oceanBackground }}
+        {/* =========================================
+            BACKGROUND 1: THE ABYSSAL VOID
+        ========================================= */}
+        <div className="absolute inset-0 w-full h-full z-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#081a24] via-[#020608] to-[#000000]">
+          {/* High-End Editorial Noise Texture */}
+          <div className="absolute inset-0 opacity-[0.05] mix-blend-screen bg-[url('https://grainy-gradients.vercel.app/noise.svg')] pointer-events-none"></div>
+          
+          {/* Ascending Marine Snow (Makes you feel like you are sinking) */}
+          <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
+            <div className="marine-snow layer-1"></div>
+            <div className="marine-snow layer-2"></div>
+            <div className="marine-snow layer-3"></div>
+          </div>
+        </div>
+
+        {/* =========================================
+            BACKGROUND 2: HYPER-REALISTIC SURFACE WATER
+        ========================================= */}
+        <motion.div 
+          style={{ opacity: surfaceOpacity }}
+          className="absolute inset-0 z-10 pointer-events-none"
         >
-          <div className="absolute inset-0 opacity-[0.15] mix-blend-color-dodge animate-caustics pointer-events-none"></div>
-          <div className="absolute inset-0 opacity-[0.06] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-10 pointer-events-none"></div>
-          <div className="absolute inset-0 shadow-[inset_0_0_300px_rgba(0,0,0,1)] z-10 pointer-events-none"></div>
+          {/* Volumetric God Rays */}
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+            <div className="absolute top-[-10%] left-[10%] w-[30%] h-[150%] bg-gradient-to-b from-cyan-200/10 to-transparent blur-[60px] animate-sway-1 origin-top"></div>
+            <div className="absolute top-[-10%] left-[50%] w-[40%] h-[150%] bg-gradient-to-b from-blue-300/10 to-transparent blur-[80px] animate-sway-2 origin-top"></div>
+            <div className="absolute top-[-10%] left-[80%] w-[20%] h-[150%] bg-gradient-to-b from-teal-200/10 to-transparent blur-[50px] animate-sway-1 origin-top" style={{ animationDelay: '-3s' }}></div>
+          </div>
+
+          {/* SVG Fractal Water Ripple (The true water texture) — NOW FULL-SCREEN */}
+          <div className="absolute top-0 left-0 w-full h-full opacity-40 mix-blend-color-dodge">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
+              <filter id="water-ripple">
+                <feTurbulence type="fractalNoise" baseFrequency="0.015 0.05" numOctaves="3" result="noise">
+                  <animate attributeName="baseFrequency" values="0.015 0.05; 0.02 0.07; 0.015 0.05" dur="15s" repeatCount="indefinite" />
+                </feTurbulence>
+                <feColorMatrix type="matrix" values="0 0 0 0 0.2   0 0 0 0 0.6   0 0 0 0 0.8   0 0 0 1 0" in="noise" />
+              </filter>
+              <rect width="100%" height="100%" filter="url(#water-ripple)" />
+            </svg>
+          </div>
+          
+          {/* Surface Gradient Mask */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0e3b52]/40 via-transparent to-transparent mix-blend-overlay"></div>
         </motion.div>
 
-        {/* --- 0. THE INTRO SCREEN --- */}
-        <motion.div
-          className="absolute inset-0 flex flex-col items-center justify-start pt-[15vh] md:pt-[18vh] z-20 pointer-events-none px-4 w-full"
-          style={{ opacity: introOpacity, y: introY, scale: introScale }}
-        >
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-[25vh] bg-gradient-to-b from-cyan-200/30 to-transparent blur-[2px] -z-10"></div>
-          
-          <h1 className="text-7xl sm:text-8xl md:text-[10rem] lg:text-[12rem] font-serif text-white tracking-widest drop-shadow-[0_20px_50px_rgba(255,255,255,0.1)] leading-none mix-blend-screen text-center">
-            ARC
-          </h1>
-          <p className="mt-4 md:mt-2 text-lg sm:text-2xl md:text-3xl lg:text-4xl text-[#e0e0e0] font-serif italic tracking-[0.3em] uppercase drop-shadow-2xl text-center">
-            The Wayfarer's Map
-          </p>
+        {/* The Anchor Line (Center line indicating depth/lack of control) */}
+        <motion.div 
+          style={{ height: anchorLineHeight }}
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[1px] bg-gradient-to-b from-cyan-300/50 via-white/20 to-white/0 z-10 pointer-events-none"
+        />
 
-          {/* SLEEK COUNTDOWN TIMER */}
-          <div className="mt-12 md:mt-16 flex flex-col items-center max-w-full">
-            <div className="flex items-center justify-center gap-3 sm:gap-6 md:gap-8 backdrop-blur-xl bg-white/5 border border-white/10 px-4 sm:px-8 md:px-10 py-4 md:py-6 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
+        {/* THE DRIFTING WRAPPER
+          This applies a slow, continuous mathematical sine-wave bob to the entire content,
+          simulating a helpless stranded boat on open water. 
+        */}
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center animate-drift">
+          
+          {/* --- 0. THE INTRO SCREEN --- */}
+          <motion.div
+            className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-4"
+            style={{ opacity: introOpacity, y: introY, scale: introScale }}
+          >
+            <p className="text-[#E62B1E] font-mono text-[10px] md:text-xs tracking-[0.5em] uppercase mb-6 opacity-80 animate-pulse">
+              Adrift in the unknown
+            </p>
+            <h1 className="text-7xl sm:text-8xl md:text-[12rem] lg:text-[15rem] font-serif text-white tracking-tight drop-shadow-[0_20px_60px_rgba(0,180,255,0.2)] leading-none text-center mix-blend-screen">
+              ARC
+            </h1>
+            <p className="mt-4 md:mt-0 text-xl md:text-3xl lg:text-4xl text-cyan-50 font-serif italic tracking-[0.2em] text-center drop-shadow-xl">
+              The Wayfarer's Map
+            </p>
+
+            {/* Ultra-Minimalist Editorial Timer */}
+            <div className="mt-16 md:mt-24 flex items-center justify-center gap-6 md:gap-12">
               {Object.entries(timeLeft).map(([unit, value]) => (
-                <div key={unit} className="flex flex-col items-center justify-center w-10 sm:w-14 md:w-16">
-                  <span className="text-2xl sm:text-4xl md:text-5xl font-serif text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] tabular-nums">
+                <div key={unit} className="flex flex-col items-center justify-center">
+                  <span className="text-4xl md:text-6xl font-light text-white tabular-nums tracking-tighter drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
                     {value.toString().padStart(2, '0')}
                   </span>
-                  <span className="text-[7px] sm:text-[9px] md:text-[10px] font-bold tracking-[0.3em] uppercase text-[#E62B1E] mt-2">
+                  <span className="text-[8px] md:text-[10px] font-bold tracking-[0.4em] uppercase text-cyan-200/60 mt-3">
                     {unit}
                   </span>
                 </div>
               ))}
             </div>
             
-            <p className="mt-6 text-[9px] sm:text-[10px] md:text-xs font-bold uppercase tracking-[0.5em] text-white/60 text-center leading-relaxed">
-              27th March 2026 | 11 AM<br/>
-              <span className="opacity-70 text-[8px] sm:text-[9px] md:text-[10px] text-white/50">Cambridge Institute of Technology, Bengaluru</span>
+            <p className="mt-16 text-[9px] md:text-[11px] font-bold uppercase tracking-[0.4em] text-white/60 text-center leading-relaxed">
+              27th March 2026 <span className="mx-3 text-[#E62B1E]">|</span> 11 AM<br/>
+              <span className="opacity-50 text-[8px] md:text-[9px] mt-2 block tracking-[0.5em]">Cambridge Institute of Technology</span>
             </p>
-          </div>
-        </motion.div>
-
-        {/* --- 1-5. THE WAYPOINTS (The Descent) --- */}
-        {SUB_THEMES.map((theme, index) => (
-          <Waypoint 
-            key={theme.id} 
-            text={theme} 
-            index={index} 
-            scrollYProgress={scrollYProgress} 
-            total={SUB_THEMES.length} 
-          />
-        ))}
-
-        {/* --- 6. THE TREASURE REVEAL (Poster & Final CTA) --- */}
-        <PosterReveal scrollYProgress={scrollYProgress} />
-
-        {/* =========================================
-            THE LUXURY MAHOGANY & BRASS HELM
-        ========================================= */}
-        <motion.div 
-          style={{ y: helmY, opacity: helmOpacity }}
-          className="absolute bottom-[-10%] md:bottom-[-15%] left-1/2 -translate-x-1/2 z-40 pointer-events-none drop-shadow-[0_-30px_60px_rgba(0,0,0,1)]"
-        >
-          <motion.div
-            style={{ rotate: smoothRotation }}
-            className="relative w-[75vw] max-w-[320px] md:w-[450px] aspect-square will-change-transform"
-          >
-            <svg viewBox="0 0 200 200" className="w-full h-full object-contain">
-              <defs>
-                <linearGradient id="brass" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#d4af37" />
-                  <stop offset="25%" stopColor="#aa8222" />
-                  <stop offset="50%" stopColor="#f9df9f" />
-                  <stop offset="75%" stopColor="#856414" />
-                  <stop offset="100%" stopColor="#d4af37" />
-                </linearGradient>
-                <linearGradient id="wood" x1="0%" y1="100%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#1a0a04" />
-                  <stop offset="50%" stopColor="#3d1d0c" />
-                  <stop offset="100%" stopColor="#0f0502" />
-                </linearGradient>
-                <filter id="shadow-heavy">
-                  <feDropShadow dx="0" dy="15" stdDeviation="10" floodColor="#000" floodOpacity="0.9"/>
-                  <feDropShadow dx="0" dy="-2" stdDeviation="2" floodColor="#fff" floodOpacity="0.1"/>
-                </filter>
-              </defs>
-
-              <g filter="url(#shadow-heavy)">
-                <circle cx="100" cy="100" r="75" fill="none" stroke="url(#wood)" strokeWidth="18" />
-                <circle cx="100" cy="100" r="84" fill="none" stroke="url(#brass)" strokeWidth="1.5" opacity="0.9" />
-                <circle cx="100" cy="100" r="66" fill="none" stroke="url(#brass)" strokeWidth="1.5" opacity="0.9" />
-
-                {[0, 60, 120, 180, 240, 300].map((deg) => (
-                  <g key={`spoke-${deg}`} transform={`rotate(${deg} 100 100)`}>
-                    <path d="M 96 15 L 104 15 L 101 66 L 99 66 Z" fill="url(#wood)" />
-                    <rect x="95" y="35" width="10" height="4" fill="url(#brass)" rx="1" />
-                    <path d="M 97 2 L 103 2 L 105 15 L 95 15 Z" fill="url(#wood)" />
-                    <circle cx="100" cy="2" r="3" fill="url(#brass)" />
-                  </g>
-                ))}
-
-                <circle cx="100" cy="100" r="18" fill="url(#wood)" stroke="#000" strokeWidth="2" />
-                <circle cx="100" cy="100" r="10" fill="url(#brass)" />
-                <circle cx="100" cy="100" r="4" fill="#111" />
-              </g>
-            </svg>
           </motion.div>
-        </motion.div>
 
+          {/* --- 1-5. THE WAYPOINTS (The Descent) --- */}
+          {SUB_THEMES.map((theme, index) => (
+            <Waypoint 
+              key={theme.id} 
+              text={theme} 
+              index={index} 
+              scrollYProgress={smoothScroll} 
+              total={SUB_THEMES.length} 
+            />
+          ))}
+
+          {/* --- 6. THE TREASURE REVEAL (Poster & Final CTA) --- */}
+          <PosterReveal scrollYProgress={smoothScroll} />
+
+        </div>
       </div>
 
       {/* =========================================
-          GLOBAL STYLES & OVERRIDES
+          GLOBAL STYLES & PHYSICS
       ========================================= */}
       <style dangerouslySetInnerHTML={{__html: `
-        .force-header-white a, 
-        .force-header-white p, 
-        .force-header-white span, 
-        .force-header-white button {
-          color: #ffffff !important;
+        /* The Helpless Drift (Simulates being on a boat without oars) */
+        @keyframes drift {
+          0% { transform: translateY(0px) rotate(0deg); }
+          33% { transform: translateY(-12px) rotate(0.5deg); }
+          66% { transform: translateY(8px) rotate(-0.5deg); }
+          100% { transform: translateY(0px) rotate(0deg); }
         }
-        .force-header-white svg:not(.ignore-override) {
-          stroke: #ffffff;
+        .animate-drift {
+          animation: drift 14s ease-in-out infinite;
         }
-        @keyframes energy {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
+
+        /* God Rays Swaying underwater */
+        @keyframes sway {
+          0% { transform: rotate(15deg); opacity: 0.6; }
+          50% { transform: rotate(10deg); opacity: 0.8; }
+          100% { transform: rotate(15deg); opacity: 0.6; }
         }
-        .animate-energy {
-          animation: energy 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        @keyframes sway-reverse {
+          0% { transform: rotate(-12deg); opacity: 0.5; }
+          50% { transform: rotate(-18deg); opacity: 0.9; }
+          100% { transform: rotate(-12deg); opacity: 0.5; }
         }
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-15px) rotate(1.5deg); }
+        .animate-sway-1 { animation: sway 12s ease-in-out infinite alternate; }
+        .animate-sway-2 { animation: sway-reverse 15s ease-in-out infinite alternate; }
+
+        /* Subtle Poster Floating */
+        @keyframes gentle-float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-15px); }
         }
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
+        .animate-gentle-float {
+          animation: gentle-float 8s ease-in-out infinite;
         }
-        .animate-caustics {
-          background-image: 
-            radial-gradient(ellipse at 20% 30%, rgba(255,255,255,0.15) 0%, transparent 50%),
-            radial-gradient(ellipse at 80% 70%, rgba(255,255,255,0.1) 0%, transparent 50%);
-          background-size: 200% 200%;
-          animation: causticsMove 15s ease-in-out infinite alternate;
+
+        /* CTA Button Shimmer */
+        @keyframes shimmer {
+          0% { transform: translateX(-150%) skewX(-15deg); }
+          100% { transform: translateX(150%) skewX(-15deg); }
         }
-        @keyframes causticsMove {
-          0% { background-position: 0% 0%; opacity: 0.1; }
-          50% { opacity: 0.2; }
-          100% { background-position: 100% 100%; opacity: 0.1; }
+        .animate-shimmer {
+          animation: shimmer 3s infinite;
+        }
+
+        /* Parallax Marine Snow (Ascending Particles) */
+        .marine-snow {
+          position: absolute;
+          width: 2px;
+          height: 2px;
+          background: transparent;
+          border-radius: 50%;
+        }
+        .layer-1 {
+          animation: driftUp 25s linear infinite;
+          box-shadow: 10vw 110vh 1px 0px rgba(255,255,255,0.4), 30vw 150vh 2px 1px rgba(255,255,255,0.2), 60vw 120vh 1px 0px rgba(255,255,255,0.3), 80vw 180vh 2px 0px rgba(255,255,255,0.2), 90vw 130vh 1px 1px rgba(255,255,255,0.4);
+        }
+        .layer-2 {
+          width: 3px; height: 3px;
+          animation: driftUp 35s linear infinite;
+          box-shadow: 15vw 120vh 2px 1px rgba(255,255,255,0.15), 45vw 160vh 1px 0px rgba(255,255,255,0.3), 75vw 110vh 2px 1px rgba(255,255,255,0.1), 20vw 190vh 1px 0px rgba(255,255,255,0.3);
+        }
+        .layer-3 {
+          width: 1px; height: 1px;
+          animation: driftUp 45s linear infinite;
+          box-shadow: 5vw 105vh 1px 0px rgba(255,255,255,0.2), 25vw 145vh 1px 0px rgba(255,255,255,0.3), 55vw 185vh 1px 0px rgba(255,255,255,0.15), 85vw 125vh 1px 0px rgba(255,255,255,0.4);
+        }
+        @keyframes driftUp {
+          0% { transform: translateY(0); }
+          100% { transform: translateY(-100vh); }
         }
       `}} />
     </main>
@@ -268,7 +284,7 @@ export default function CinematicJourneyHero() {
 }
 
 // -----------------------------------------------------------------
-// WAYPOINT COMPONENT (With Locking "Plateau" Physics)
+// WAYPOINT COMPONENT (Cinematic Typography Reveal)
 // -----------------------------------------------------------------
 function Waypoint({ text, index, scrollYProgress, total }: { text: any, index: number, scrollYProgress: any, total: number }) {
   const usableScroll = 0.70;
@@ -277,8 +293,9 @@ function Waypoint({ text, index, scrollYProgress, total }: { text: any, index: n
   const start = 0.08 + (index * segmentLength);
   const end = start + segmentLength;
   
-  const fadeInEnd = start + (segmentLength * 0.2);
-  const fadeOutStart = end - (segmentLength * 0.2);
+  // Creates a "Plateau" -> Fades in, stays at 100% clarity, then fades out
+  const fadeInEnd = start + (segmentLength * 0.25);
+  const fadeOutStart = end - (segmentLength * 0.25);
 
   const opacity = useTransform(
     scrollYProgress, 
@@ -289,44 +306,45 @@ function Waypoint({ text, index, scrollYProgress, total }: { text: any, index: n
   const scale = useTransform(
     scrollYProgress, 
     [start, fadeInEnd, fadeOutStart, end], 
-    [0.9, 1, 1, 1.1]
+    [0.95, 1, 1, 1.05]
   );
   
   const blur = useTransform(
     scrollYProgress, 
     [start, fadeInEnd, fadeOutStart, end], 
-    ["blur(15px)", "blur(0px)", "blur(0px)", "blur(15px)"]
+    ["blur(20px)", "blur(0px)", "blur(0px)", "blur(20px)"]
   );
   
+  // Slower, heavier Y-axis movement for realism
   const y = useTransform(
     scrollYProgress, 
     [start, fadeInEnd, fadeOutStart, end], 
-    [50, 0, 0, -50]
+    [80, 0, 0, -80]
   );
 
   return (
     <motion.div
       style={{ opacity, scale, filter: blur, y }}
-      className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 md:px-8 pointer-events-none z-20"
+      className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 md:px-12 pointer-events-none"
     >
-      <div className="max-w-4xl flex flex-col items-center mt-[-10vh] md:mt-[-15vh]">
-        <div className="flex items-center gap-4 mb-6 md:mb-8 opacity-70">
-          <span className="w-8 md:w-12 h-px bg-white"></span>
-          <p className="text-[#E62B1E] font-mono tracking-[0.4em] text-[9px] md:text-[10px] uppercase">
-            MARKER 0{index + 1}
+      <div className="max-w-4xl flex flex-col items-center">
+        <div className="flex flex-col items-center gap-3 mb-8 md:mb-12">
+          {/* Depth Marker Line */}
+          <div className="w-[1px] h-12 bg-gradient-to-b from-transparent to-[#E62B1E]"></div>
+          <p className="text-[#E62B1E] font-mono tracking-[0.5em] text-[9px] md:text-[10px] uppercase drop-shadow-[0_0_10px_rgba(230,43,30,0.5)]">
+            Marker 0{index + 1}
           </p>
-          <span className="w-8 md:w-12 h-px bg-white"></span>
         </div>
         
-        <h2 className="text-5xl sm:text-6xl md:text-8xl lg:text-[8rem] font-serif text-white uppercase tracking-[0.1em] drop-shadow-[0_0_40px_rgba(255,255,255,0.15)] mb-3 md:mb-4">
+        <h2 className="text-5xl sm:text-7xl md:text-8xl lg:text-[9rem] font-serif text-white tracking-tight leading-none mb-4 md:mb-6 mix-blend-screen drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)]">
           {text.title}
         </h2>
         
-        <h3 className="text-lg sm:text-xl md:text-3xl text-[#d4af37] font-serif italic tracking-[0.2em] mb-6 md:mb-10 drop-shadow-md">
+        <h3 className="text-lg sm:text-xl md:text-3xl text-white/70 font-serif italic tracking-[0.15em] mb-8 md:mb-12">
           {text.subtitle}
         </h3>
         
-        <p className="text-gray-400 text-[10px] sm:text-xs md:text-sm leading-loose md:leading-loose tracking-[0.2em] md:tracking-[0.3em] uppercase max-w-[90%] md:max-w-2xl mx-auto border-t border-white/10 pt-6 md:pt-8 px-2 md:px-4">
+        <p className="text-white/50 text-[11px] md:text-sm leading-loose md:leading-loose tracking-[0.25em] uppercase max-w-[85%] md:max-w-2xl mx-auto drop-shadow-xl">
           {text.desc}
         </p>
       </div>
@@ -335,77 +353,67 @@ function Waypoint({ text, index, scrollYProgress, total }: { text: any, index: n
 }
 
 // -----------------------------------------------------------------
-// POSTER REVEAL & FINAL CTA (The "Treasure")
+// POSTER REVEAL & FINAL CTA (The Discovered Masterpiece)
 // -----------------------------------------------------------------
 function PosterReveal({ scrollYProgress }: { scrollYProgress: any }) {
-  const revealStart = 0.85;
+  const revealStart = 0.82;
   const revealEnd = 0.98;
 
   const opacity = useTransform(scrollYProgress, [revealStart, revealEnd], [0, 1]);
-  const y = useTransform(scrollYProgress, [revealStart, revealEnd], [150, 0]);
-  const glowOpacity = useTransform(scrollYProgress, [revealStart, revealEnd], [0, 0.5]);
-  const scale = useTransform(scrollYProgress, [revealStart, revealEnd], [0.9, 1]);
+  const y = useTransform(scrollYProgress, [revealStart, revealEnd], [100, 0]);
+  const glowOpacity = useTransform(scrollYProgress, [revealStart, revealEnd], [0, 0.4]);
 
   return (
     <motion.div
-      style={{ opacity, y, scale }}
+      style={{ opacity, y }}
       className="absolute inset-0 z-50 flex flex-col items-center justify-center pointer-events-none"
     >
-      <div className="relative flex flex-col items-center justify-center mt-12 pointer-events-auto w-full px-4">
+      <div className="relative flex flex-col items-center justify-center pointer-events-auto w-full px-4 mt-8">
         
+        {/* Soft Architectural Glow */}
         <motion.div 
           style={{ opacity: glowOpacity }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[500px] bg-[radial-gradient(ellipse,#d4af37_0%,transparent_60%)] blur-[120px] pointer-events-none"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[500px] bg-[#d4af37] blur-[180px] pointer-events-none mix-blend-screen"
         />
 
-        <div className="relative z-10 p-2 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,1)] animate-float mb-10 md:mb-12 group cursor-pointer w-[80vw] max-w-[280px] md:max-w-[380px] lg:max-w-[420px]">
-          <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-20 rounded-xl"></div>
-          
+        {/* The Poster Artifact (Editorial framing) */}
+        <div className="relative z-10 p-1 bg-white/5 border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.9)] animate-gentle-float mb-12 md:mb-16 group w-[80vw] max-w-[280px] md:max-w-[360px] lg:max-w-[400px]">
+          <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-20"></div>
           <img 
-            src="/poster.jpg" 
+            src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1773165730/Group_47741_ka5hcm.png" 
             alt="ARC The Wayfarer's Map" 
-            className="w-full h-auto aspect-auto object-contain rounded-lg shadow-inner"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "https://res.cloudinary.com/dkbvknwcu/image/upload/v1773165730/Group_47741_ka5hcm.png";
-            }}
+            className="w-full h-auto aspect-auto object-contain"
           />
         </div>
 
-        <div className="relative group z-20">
-          <div className="absolute -inset-4 rounded-full opacity-50 blur-2xl bg-[radial-gradient(circle,rgba(230,43,30,0.7),transparent_70%)] group-hover:opacity-100 transition duration-700 pointer-events-none" />
-
+        {/* Ultra-Premium Minimalist CTA */}
+        <div className="relative z-20">
           <Link
             href="/tickets"
             className="
-              relative flex items-center justify-center gap-3 md:gap-4
-              px-8 py-4 sm:px-12 md:py-5 lg:px-16 lg:py-6
-              rounded-full
-              text-white
-              font-black uppercase tracking-[0.3em] md:tracking-[0.4em] text-xs md:text-sm
-              overflow-hidden
-              bg-gradient-to-r from-[#7a0c05] via-[#E62B1E] to-[#7a0c05]
-              shadow-[0_10px_50px_rgba(230,43,30,0.5)]
+              group relative flex items-center justify-center gap-4
+              px-10 py-4 md:px-14 md:py-5
+              bg-white text-black
+              font-bold uppercase tracking-[0.3em] md:tracking-[0.4em] text-[10px] md:text-xs
               transition-all duration-500 ease-out
-              hover:scale-105
-              hover:shadow-[0_20px_80px_rgba(230,43,30,0.8)]
-              active:scale-95
+              hover:bg-[#E62B1E] hover:text-white
+              hover:shadow-[0_0_40px_rgba(230,43,30,0.5)]
+              overflow-hidden
             "
           >
-            <span className="absolute inset-0 rounded-full overflow-hidden pointer-events-none">
-              <span className="absolute inset-0 bg-[linear-gradient(120deg,transparent,rgba(255,255,255,0.5),transparent)] animate-energy" />
-            </span>
-            <span className="absolute inset-0 rounded-full border border-white/40 pointer-events-none" />
+            {/* Shimmer Effect */}
+            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-shimmer pointer-events-none"></div>
             
-            <span className="relative drop-shadow-lg whitespace-nowrap">
+            <span className="relative whitespace-nowrap">
               Secure Passage
             </span>
 
             <svg
-              className="relative w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-2 drop-shadow-lg"
+              className="relative w-3 h-3 md:w-4 md:h-4 transition-transform duration-500 group-hover:translate-x-2"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
-              strokeWidth={3}
+              strokeWidth={2}
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
