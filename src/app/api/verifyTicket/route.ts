@@ -24,7 +24,8 @@ export async function POST(req: Request) {
     // 1. Fetch all rows to find the ticket
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'Sheet1!A:O', // Fetching up to Column O (Checked In status)
+      // CHANGED: Fetching up to Column P (where "Checked In" lives now)
+      range: 'Sheet1!A:P', 
     });
 
     const rows = response.data.values;
@@ -42,7 +43,9 @@ export async function POST(req: Request) {
     const row = rows[rowIndex];
     const attendeeName = row[3]; // Column D
     const ticketTier = row[2];   // Column C
-    const isCheckedIn = row[14]; // Column O
+    
+    // CHANGED: "Checked In" is now Column P, which is array index 15
+    const isCheckedIn = row[15]; 
 
     // 3. Check if they already entered
     if (isCheckedIn === 'TRUE') {
@@ -54,13 +57,14 @@ export async function POST(req: Request) {
       }, { status: 403 });
     }
 
-    // 4. Update the "Checked In" cell (Column O) for this specific row to 'TRUE'
+    // 4. Update the "Checked In" cell (Column P) for this specific row to 'TRUE'
     // Note: Google Sheets rows are 1-indexed. So array index 0 is row 1.
     const sheetRowNumber = rowIndex + 1; 
     
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: `Sheet1!O${sheetRowNumber}`,
+      // CHANGED: Update specifically Column P
+      range: `Sheet1!P${sheetRowNumber}`,
       valueInputOption: 'USER_ENTERED',
       requestBody: {
         values: [['TRUE']],

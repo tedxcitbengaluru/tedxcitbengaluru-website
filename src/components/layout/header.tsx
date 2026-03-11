@@ -135,7 +135,7 @@ export default function Header() {
       {/* ------------------------------- */}
       <div className="absolute top-4 md:top-4 left-1/2 -translate-x-1/2 z-40 hover:cursor-pointer transition-transform hover:scale-105 duration-300">
         <img 
-          src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1766846025/1c4a732edd17da65e8739683d472d6fa5ed0162c_plrnph.png" 
+          src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760616545/TEDxCITBengaluruWomenblack_300x_2_t42vvk.png" 
           alt="TEDxCITBengaluru Logo" 
           className="h-8 sm:h-10 md:h-12" 
           onClick={() => router.push('/')} 

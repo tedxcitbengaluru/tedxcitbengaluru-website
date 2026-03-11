@@ -97,7 +97,11 @@ const Page = () => {
             src: '/events/Zenith.jpg',
             description: "Zenith: The summit of one's potential. As young adults, we are at our prime of energy. This vigour, when consistent and put to use in the right way, will act as a driving force for one to attain their Zenith! The next event of TEDxCITBENGALURU will bring upon speakers who achieved their Zenith at a young age. With this event, we aspire to inspire our audience to find the ignition within them to achieve their Zenith!",
             videos: [
-                { title: "Pursuing Excellence | Saptarshi Prakash", url: "https://www.youtube.com/embed/GVNvrxoZW8k?autoplay=0", thumbnail: "https://img.youtube.com/vi/GVNvrxoZW8k/0.jpg" }
+                { title: "Pursuing Excellence | Saptarshi Prakash", url: "https://www.youtube.com/embed/GVNvrxoZW8k?autoplay=0", thumbnail: "https://img.youtube.com/vi/GVNvrxoZW8k/0.jpg" },
+                { title:"Coward to courageous: Learnings from the Journey of a startup founder | Adarsha K",url: "https://www.youtube.com/embed/ek9KTbr4AAw?autoplay=0", thumbnail: "https://img.youtube.com/vi/ek9KTbr4AAw/0.jpg"},
+                { title: "Turning your creativity into cash | Shraddha Mishra", url: "https://www.youtube.com/embed/_LcK1CuPnz0?autoplay=0", thumbnail: "https://img.youtube.com/vi/_LcK1CuPnz0/0.jpg" },
+                { title:"The Transformative Power of Your First Courageous Move | Rahul Rawat", url: "https://www.youtube.com/embed/v3LbVdNBOrg?autoplay=0", thumbnail: "https://img.youtube.com/vi/v3LbVdNBOrg/0.jpg"},
+                { title:"Journey from one Zenith to another : Learning never stops. | Subhash Choudhary", url: "https://www.youtube.com/embed/9dNRBTqWLBs?autoplay=0", thumbnail: "https://img.youtube.com/vi/9dNRBTqWLBs/0.jpg" },
             ]
         },
         { 
@@ -106,7 +110,12 @@ const Page = () => {
             src: '/events/Elixir.jpg',
             description: "Elixir; a magical potion that grants us everlasting life. Though realistically impossible, it exists in each of our lives. It takes the form of those we love, that which we love to do, and that which defines us. Your elixir is what you live for, and what you continue to live for. Our event is a showcase for people to share the Elixir in their lives, thereby sharing hope, meaning, and allowing you to find your own Elixir.",
             videos: [
-                { title: "Consistency and Excellence | Reshi Magada", url: "https://www.youtube.com/embed/h6olKX9BajA?autoplay=0", thumbnail: "https://img.youtube.com/vi/h6olKX9BajA/0.jpg" }
+                { title: "Consistency and Excellence | Reshi Magada", url: "https://www.youtube.com/embed/h6olKX9BajA?autoplay=0", thumbnail: "https://img.youtube.com/vi/h6olKX9BajA/0.jpg" },
+                { title: "The lifesaving act of Living Organ Donation | Manya Hasija", url: "https://www.youtube.com/embed/VnADbAiX-w4?autoplay=0", thumbnail: "https://img.youtube.com/vi/VnADbAiX-w4/0.jpg" },
+                { title: "Challenging yourself is the key to achieving your endeavours | Spoorthi Vishwas", url: "https://www.youtube.com/embed/VU7VIcd_i68?autoplay=0", thumbnail: "https://img.youtube.com/vi/VU7VIcd_i68/0.jpg" },
+                { title: "The Elixir that has kept us going for 26 years | Thermal And A Quarter", url: "https://www.youtube.com/embed/DArkM7GaaQ0?autoplay=0", thumbnail: "https://img.youtube.com/vi/DArkM7GaaQ0/0.jpg" },
+                { title: "Ecology and Environment are the Elixir of one's living | Prakash Belawadi", url: "https://www.youtube.com/embed/ZGAEG36C8m8?autoplay=0", thumbnail: "https://img.youtube.com/vi/ZGAEG36C8m8/0.jpg" },
+                { title: "The secrets of modern time management | Hitesh Choudhary", url : "https://www.youtube.com/embed/s1KrFy_3LYQ?autoplay=0", thumbnail: "https://img.youtube.com/vi/s1KrFy_3LYQ/0.jpg" }
             ]
         },
         { 
@@ -115,7 +124,12 @@ const Page = () => {
             src: '/events/Thrive.jpg',
             description: "Thriving while developing is a beautiful phenomenon in itself. When the whole mass joins hands to progress towards a goal, irrespective of differences and circumstances, the amalgamation of values takes place, and the results leave us spellbound. This is the first step towards flourshing! To thrive in a changing world, makes the virtues like integrity, compassion and trust thrive too . It also makes sure social norms are weighted and balanced. Thrive, is a woman's view of the world we live in, through her own window, while making it a more peaceful and achieving place. A place for our (she) change makers, their power, their ability and the spark they ignite wherever they go. The goal of our event is to explore the various fields encircling the female community, from empowerment to education, from dignity to rights and everything in between. It is going to be a call to the world, letting them know how powerful and capable women are, always ready to take on the world and to influence social change for themselves as well as others. An event that narrates stories where we see individuals flourishing, learning from their flaws, deepening the roots of their values and emerging victorious. Voicing out how we all thrive!",
             videos: [
-                { title: "Struggles of Women & Sexual Minorities | Akkai Padmashali", url: "https://www.youtube.com/embed/5y7Ek2sDMu4?autoplay=0", thumbnail: "https://img.youtube.com/vi/5y7Ek2sDMu4/0.jpg" }
+                { title: "Struggles of Women & Sexual Minorities | Akkai Padmashali", url: "https://www.youtube.com/embed/5y7Ek2sDMu4?autoplay=0", thumbnail: "https://img.youtube.com/vi/5y7Ek2sDMu4/0.jpg" },
+                { title:"Educate a woman, Educate a generation. | Dr. Anupama K Malaghur", url: "https://www.youtube.com/embed/AlAT5Wor30k?autoplay=0", thumbnail: "https://img.youtube.com/vi/AlAT5Wor30k/0.jpg" },
+                { title: "Thriving in the VUCA world. | Bhavana B P", url: "https://www.youtube.com/embed/YwxR5hUarjY?autoplay=0", thumbnail: "https://img.youtube.com/vi/YwxR5hUarjY/0.jpg" },
+                { title: "How love shows us how to THRIVE! | Divya Madhur", url: "https://www.youtube.com/embed/nYbl-qHWl0Y?autoplay=0", thumbnail: "https://img.youtube.com/vi/nYbl-qHWl0Y/0.jpg" },
+                { title: "From WHY to WOW- breaking the stereotypes. | Sonali Swami", url: "https://www.youtube.com/embed/wXmXE6_0eKE?autoplay=0", thumbnail: "https://img.youtube.com/vi/wXmXE6_0eKE/0.jpg" },
+                { title: "How 'SHE' became a RIDER. | Pragathi Gowda ", url: "https://www.youtube.com/embed/a2ZahHba26c?autoplay=0", thumbnail: "https://img.youtube.com/vi/a2ZahHba26c/0.jpg" }
             ]
         },
         { 
@@ -124,7 +138,14 @@ const Page = () => {
             src: '/events/Iridescence.jpg',
             description: "The idea behind exploring your paths and thinking about something out of the box is nothing but taking yourself beyond the limits, ignoring every negative aspect that pulls you down and finally reaching that particular destination of yours by carrying all the positive vibes. This is exactly what the theme, \"IRIDESCENCE\" is, an allusion to the intriguing natural phenomenon, where an object shines with bright colors, that appear different when seen from different angles. Your hurdles, failures, confusions, everything will make sense when seen from a different perspective, filled with hopes and commitment. Nobody has super powers to deal with their issues or problems. It's just will power and self motivation, that eventually becomes a weapon for their success or achievements. Iridescence, the beauty of splitting light is that, we see colors that were once hidden, just like the hidden talents in each one of us. The beauty of life is that perspective opens up things that were camouflaged since ages. The goal of our event is to explore the numerous dimensions of life and how we can shine through each one of them, differently, yet splendidly!!",
             videos: [
-                { title: "Thinking from Another Perspective | Wilfred Shreyas", url: "https://www.youtube.com/embed/r4UeEGmOATA?autoplay=0", thumbnail: "https://img.youtube.com/vi/r4UeEGmOATA/0.jpg" }
+                { title: "Thinking from Another Perspective | Wilfred Shreyas", url: "https://www.youtube.com/embed/r4UeEGmOATA?autoplay=0", thumbnail: "https://img.youtube.com/vi/r4UeEGmOATA/0.jpg" },
+                { title: "How our mind prevents us from thinking from another perspective | Wilfred Shreyas", url: "https://www.youtube.com/embed/Oy2kZTYhFVI?autoplay=0", thumbnail: "https://img.youtube.com/vi/Oy2kZTYhFVI/0.jpg" },
+                { title: "Create a life you are proud of! | Nehal Kasliwal", url: "https://www.youtube.com/embed/ANxtx62_TSo?autoplay=0", thumbnail: "https://img.youtube.com/vi/ANxtx62_TSo/0.jpg" },
+                { title: "Life through the eyes of a Coder | Yogesh Ojha ", url: "https://www.youtube.com/embed/z7t7PfzEzcw?autoplay=0", thumbnail: "https://img.youtube.com/vi/z7t7PfzEzcw/0.jpg" },
+                { title: "The 5th 'R' of sustainability | Subramaniyan T.N.", url: "https://www.youtube.com/embed/ttU4-QFIFUc?autoplay=0", thumbnail: "https://img.youtube.com/vi/ttU4-QFIFUc/0.jpg" },
+                { title: "5 ways to make online classes more interesting | Aravindhan Anbazhagan", url: "https://www.youtube.com/embed/FJsGxP6f9xs?autoplay=0", thumbnail: "https://img.youtube.com/vi/FJsGxP6f9xs/0.jpg" },
+                { title: "Passion, inner fire & love for the game | Irfan Sait", url: "https://www.youtube.com/embed/emW9Wd32Vec?autoplay=0", thumbnail: "https://img.youtube.com/vi/emW9Wd32Vec/0.jpg" },
+                
             ]
         },
     ];
@@ -175,7 +196,13 @@ const Page = () => {
         <div className="bg-[#050505]">
             {/* HERO SECTION */}
             <section className="relative w-full h-screen overflow-hidden bg-white">
-                <Header />
+                
+                {/* --- HEADER CONTROLS --- */}
+                {/* Added a subtle vignette at the top to pop the original white logo colors */}
+                <div className="absolute top-0 left-0 w-full z-50">
+                    <div className="absolute inset-0 h-32 bg-gradient-to-b from-black/40 to-transparent pointer-events-none" />
+                    <Header />
+                </div>
                 
                 {/* --- Full-width Mountain Background --- */}
                 <div className="absolute inset-0">
@@ -262,7 +289,7 @@ const Page = () => {
                                                     </div>
                                                 </div>
 
-                                                {/* Desktop overlay button (Hidden on mobile) */}
+                                                {/* Desktop overlay button */}
                                                 <div className="hidden md:flex absolute inset-0 items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                                     <button 
                                                         onClick={() => setSelectedEvent(event)}
@@ -273,7 +300,7 @@ const Page = () => {
                                                 </div>
                                             </div>
 
-                                            {/* Mobile bottom bar (Hidden on desktop) */}
+                                            {/* Mobile bottom bar */}
                                             <div className="md:hidden w-full p-4 bg-[#111] border-t border-white/5">
                                                  <button 
                                                     onClick={() => setSelectedEvent(event)}
@@ -300,12 +327,10 @@ const Page = () => {
                                             variants={itemVariants}
                                             viewport={{ once: true }}
                                         >
-                                            {/* Circles - Redesigned to use object-contain with a bottom bar */}
                                             <div 
                                                 className="relative w-full aspect-[3/4] md:aspect-[4/5] rounded-3xl overflow-hidden shadow-xl border border-white/10 bg-[#0a0a0a] group cursor-pointer flex flex-col hover:border-white/20 transition-colors"
                                                 onClick={() => setSelectedCircle(circle)}
                                             >
-                                                {/* Image Container with Padding */}
                                                 <div className="relative w-full flex-grow p-4 md:p-6 flex items-center justify-center">
                                                     <Image
                                                         src={circle.src}
@@ -315,7 +340,6 @@ const Page = () => {
                                                     />
                                                 </div>
                                                 
-                                                {/* Sleek Bottom Bar */}
                                                 <div className="w-full p-4 md:p-5 bg-[#111] border-t border-white/5 z-10 flex flex-col items-center justify-center">
                                                     <p className="text-white text-center font-bold text-sm md:text-base uppercase tracking-widest">
                                                         {circle.name}
@@ -342,7 +366,7 @@ const Page = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        onClick={() => setSelectedEvent(null)} // Close on background click
+                        onClick={() => setSelectedEvent(null)}
                     >
                         <motion.div
                             className="bg-[#111] w-full max-w-5xl rounded-3xl border border-white/10 overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col"
@@ -350,9 +374,8 @@ const Page = () => {
                             initial="hidden"
                             animate="visible"
                             exit="exit"
-                            onClick={(e) => e.stopPropagation()} // Prevent close on modal click
+                            onClick={(e) => e.stopPropagation()}
                         >
-                            {/* Modal Header */}
                             <div className="flex justify-between items-center p-6 border-b border-white/10 bg-[#1a1a1a] shrink-0">
                                 <div>
                                     <h3 className="text-2xl md:text-3xl font-black text-white uppercase tracking-wider">{selectedEvent.name}</h3>
@@ -368,10 +391,7 @@ const Page = () => {
                                 </button>
                             </div>
 
-                            {/* Modal Content - Scrollable Area */}
                             <div className="p-6 overflow-y-auto custom-scrollbar">
-                                
-                                {/* 1. Theme Description (Displays First) */}
                                 <div className="mb-8 bg-[#1a1a1a] border-l-4 border-[#EB0028] p-5 md:p-6 rounded-r-xl shadow-md">
                                     <h4 className="text-[#EB0028] text-[11px] md:text-xs font-bold tracking-[0.2em] uppercase mb-3">
                                         The Meaning of {selectedEvent.name}
@@ -381,13 +401,11 @@ const Page = () => {
                                     </p>
                                 </div>
 
-                                {/* 2. Videos Header */}
                                 <h4 className="text-white text-lg font-bold mb-6 flex items-center gap-3">
                                     <span className="w-4 h-4 rounded-full bg-[#EB0028] inline-block animate-pulse"></span>
                                     Talks & Performances
                                 </h4>
 
-                                {/* 3. Video Grid */}
                                 {selectedEvent.videos.length > 0 ? (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         {selectedEvent.videos.map((video, idx) => (
@@ -436,7 +454,6 @@ const Page = () => {
                             exit="exit"
                             onClick={(e) => e.stopPropagation()} 
                         >
-                            {/* Modal Header */}
                             <div className="flex justify-between items-center p-6 border-b border-white/10 bg-[#1a1a1a] shrink-0">
                                 <div>
                                     <h3 className="text-2xl md:text-3xl font-black text-white uppercase tracking-wider">{selectedCircle.name}</h3>
@@ -452,9 +469,7 @@ const Page = () => {
                                 </button>
                             </div>
 
-                            {/* Modal Content */}
                             <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar flex flex-col sm:flex-row gap-6 md:gap-10 items-start">
-                                {/* Left Side: Small Poster Preview */}
                                 <div className="w-full sm:w-1/3 shrink-0 rounded-2xl overflow-hidden border border-white/5 bg-[#050505] p-4 flex items-center justify-center">
                                      <Image 
                                         src={selectedCircle.src} 
@@ -465,7 +480,6 @@ const Page = () => {
                                     />
                                 </div>
 
-                                {/* Right Side: Description Text */}
                                 <div className="w-full sm:w-2/3">
                                     <h4 className="text-[#EB0028] text-[11px] md:text-xs font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
                                         <span className="w-2 h-2 rounded-full bg-[#EB0028] animate-pulse"></span>

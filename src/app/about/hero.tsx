@@ -6,31 +6,32 @@ import Header from "@/components/layout/header";
 export default function Hero() {
     return (
         <section className="relative w-full h-screen overflow-hidden bg-white">
-            <Header />
+            
+            {/* --- HEADER SECTION --- */}
+            {/* We removed mix-blend-difference to keep the "Original" logo color.
+              Added a subtle gradient and blur to ensure the white logo is visible 
+              even if the background behind it is white.
+            */}
+            <div className="absolute top-0 left-0 w-full z-50">
+                {/* Subtle dark vignette at the top to pop the white logo */}
+                <div className="absolute inset-0 h-32 bg-gradient-to-b from-black/40 to-transparent pointer-events-none" />
+                <Header />
+            </div>
             
             {/* --- Image Layer --- */}
-                 {/* --- Full-width Mountain Background --- */}
-      <div className="absolute inset-0">
-        <Image
-          src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760513189/Mask_group_qwx8ys.svg"
-          alt="Mountain background"
-          fill
-          className="object-cover object-bottom w-full h-full"
-          priority
-          sizes="100vw"
-        />
+            <div className="absolute inset-0">
+                <Image
+                    src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760513189/Mask_group_qwx8ys.svg"
+                    alt="Mountain background"
+                    fill
+                    className="object-cover object-bottom w-full h-full"
+                    priority
+                    sizes="100vw"
+                />
 
-        {/* FADE GRADIENT - Fades mountain into the next section color */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#050505]"></div>
-      </div>
-
-            {/* Optional: A Hero Title if you want one (Uncomment to use) */}
-            {/* <div className="absolute inset-0 flex items-center justify-center z-10">
-                <h1 className="text-white text-6xl md:text-9xl font-bold tracking-tighter uppercase text-center mix-blend-overlay opacity-80">
-                    The Journey
-                </h1>
-            </div> 
-            */}
+                {/* FADE GRADIENT - Fades mountain into the next section color */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#050505]"></div>
+            </div>
         </section>
     );
 }
