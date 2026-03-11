@@ -62,7 +62,7 @@ export default function CinematicJourneyHero() {
     return () => clearInterval(interval);
   }, []);
 
-  // --- SCROLL PHYSICS (The Anchor Line & Depth) ---
+  // --- SCROLL PHYSICS (Hardware Accelerated) ---
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
@@ -72,7 +72,6 @@ export default function CinematicJourneyHero() {
   const anchorLineHeight = useTransform(smoothScroll, [0, 0.9], ["0%", "100%"]);
 
   // --- ENVIRONMENTAL FADES (The Submersion Effect) ---
-  // The surface light and waves fade to pitch black by 40% scroll (Forge/Obscura)
   const surfaceOpacity = useTransform(smoothScroll, [0, 0.4], [1, 0]);
 
   // --- INTRO SCREEN FADE ---
@@ -93,16 +92,14 @@ export default function CinematicJourneyHero() {
       {/* =========================================
           THE STICKY VIEWPORT (The Living Canvas)
       ========================================= */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center">
+      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center transform-gpu">
         
         {/* =========================================
             BACKGROUND 1: THE ABYSSAL VOID
         ========================================= */}
         <div className="absolute inset-0 w-full h-full z-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#081a24] via-[#020608] to-[#000000]">
-          {/* High-End Editorial Noise Texture */}
           <div className="absolute inset-0 opacity-[0.05] mix-blend-screen bg-[url('https://grainy-gradients.vercel.app/noise.svg')] pointer-events-none"></div>
           
-          {/* Ascending Marine Snow (Makes you feel like you are sinking) */}
           <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
             <div className="marine-snow layer-1"></div>
             <div className="marine-snow layer-2"></div>
@@ -115,16 +112,14 @@ export default function CinematicJourneyHero() {
         ========================================= */}
         <motion.div 
           style={{ opacity: surfaceOpacity }}
-          className="absolute inset-0 z-10 pointer-events-none"
+          className="absolute inset-0 z-10 pointer-events-none will-change-opacity transform-gpu"
         >
-          {/* Volumetric God Rays */}
           <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-            <div className="absolute top-[-10%] left-[10%] w-[30%] h-[150%] bg-gradient-to-b from-cyan-200/10 to-transparent blur-[60px] animate-sway-1 origin-top"></div>
-            <div className="absolute top-[-10%] left-[50%] w-[40%] h-[150%] bg-gradient-to-b from-blue-300/10 to-transparent blur-[80px] animate-sway-2 origin-top"></div>
-            <div className="absolute top-[-10%] left-[80%] w-[20%] h-[150%] bg-gradient-to-b from-teal-200/10 to-transparent blur-[50px] animate-sway-1 origin-top" style={{ animationDelay: '-3s' }}></div>
+            <div className="absolute top-[-10%] left-[10%] w-[30%] h-[150%] bg-gradient-to-b from-cyan-200/10 to-transparent blur-[60px] animate-sway-1 origin-top transform-gpu"></div>
+            <div className="absolute top-[-10%] left-[50%] w-[40%] h-[150%] bg-gradient-to-b from-blue-300/10 to-transparent blur-[80px] animate-sway-2 origin-top transform-gpu"></div>
+            <div className="absolute top-[-10%] left-[80%] w-[20%] h-[150%] bg-gradient-to-b from-teal-200/10 to-transparent blur-[50px] animate-sway-1 origin-top transform-gpu" style={{ animationDelay: '-3s' }}></div>
           </div>
 
-          {/* SVG Fractal Water Ripple (The true water texture) — NOW FULL-SCREEN */}
           <div className="absolute top-0 left-0 w-full h-full opacity-40 mix-blend-color-dodge">
             <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
               <filter id="water-ripple">
@@ -137,30 +132,30 @@ export default function CinematicJourneyHero() {
             </svg>
           </div>
           
-          {/* Surface Gradient Mask */}
           <div className="absolute inset-0 bg-gradient-to-b from-[#0e3b52]/40 via-transparent to-transparent mix-blend-overlay"></div>
         </motion.div>
 
-        {/* The Anchor Line (Center line indicating depth/lack of control) */}
+        {/* The Anchor Line */}
         <motion.div 
           style={{ height: anchorLineHeight }}
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[1px] bg-gradient-to-b from-cyan-300/50 via-white/20 to-white/0 z-10 pointer-events-none"
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[1px] bg-gradient-to-b from-cyan-300/50 via-white/20 to-white/0 z-10 pointer-events-none will-change-transform"
         />
 
-        {/* THE DRIFTING WRAPPER
-          This applies a slow, continuous mathematical sine-wave bob to the entire content,
-          simulating a helpless stranded boat on open water. 
-        */}
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center animate-drift">
+        {/* THE DRIFTING WRAPPER (Text Content) */}
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center animate-drift pointer-events-none">
           
           {/* --- 0. THE INTRO SCREEN --- */}
           <motion.div
             className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-4"
             style={{ opacity: introOpacity, y: introY, scale: introScale }}
           >
-            <p className="text-[#E62B1E] font-mono text-[10px] md:text-xs tracking-[0.5em] uppercase mb-6 opacity-80 animate-pulse">
-              Adrift in the unknown
-            </p>
+            {/* UPDATED: White text in a sleek glass pill */}
+            <div className="bg-white/10 border border-white/20 px-6 py-2.5 rounded-full mb-6 backdrop-blur-md shadow-xl">
+              <p className="text-white font-mono text-[10px] md:text-xs tracking-[0.5em] uppercase font-bold animate-pulse drop-shadow-md">
+                A drift in the unknown
+              </p>
+            </div>
+            
             <h1 className="text-7xl sm:text-8xl md:text-[12rem] lg:text-[15rem] font-serif text-white tracking-tight drop-shadow-[0_20px_60px_rgba(0,180,255,0.2)] leading-none text-center mix-blend-screen">
               ARC
             </h1>
@@ -182,10 +177,13 @@ export default function CinematicJourneyHero() {
               ))}
             </div>
             
-            <p className="mt-16 text-[9px] md:text-[11px] font-bold uppercase tracking-[0.4em] text-white/60 text-center leading-relaxed">
-              27th March 2026 <span className="mx-3 text-[#E62B1E]">|</span> 11 AM<br/>
-              <span className="opacity-50 text-[8px] md:text-[9px] mt-2 block tracking-[0.5em]">Cambridge Institute of Technology</span>
-            </p>
+            {/* UPDATED: Venue and Time inside a sleek box */}
+            <div className="mt-16 border border-white/10 bg-[#050505]/60 backdrop-blur-md px-8 md:px-12 py-5 md:py-6 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.8)] pointer-events-auto">
+              <p className="text-[9px] md:text-[11px] font-bold uppercase tracking-[0.4em] text-white text-center leading-relaxed">
+                27th March 2026 <span className="mx-3 text-[#E62B1E]">|</span> 11 AM<br/>
+                <span className="opacity-70 text-[8px] md:text-[9px] mt-2 block tracking-[0.5em]">Cambridge Institute of Technology</span>
+              </p>
+            </div>
           </motion.div>
 
           {/* --- 1-5. THE WAYPOINTS (The Descent) --- */}
@@ -198,11 +196,12 @@ export default function CinematicJourneyHero() {
               total={SUB_THEMES.length} 
             />
           ))}
-
-          {/* --- 6. THE TREASURE REVEAL (Poster & Final CTA) --- */}
-          <PosterReveal scrollYProgress={smoothScroll} />
-
         </div>
+
+        {/* --- 6. THE TREASURE REVEAL (Poster & Final CTA) --- */}
+        {/* UPDATED: Moved outside the drifting wrapper to prevent gaps and ensure full-screen lock */}
+        <PosterReveal scrollYProgress={smoothScroll} />
+
       </div>
 
       {/* =========================================
@@ -234,15 +233,6 @@ export default function CinematicJourneyHero() {
         .animate-sway-1 { animation: sway 12s ease-in-out infinite alternate; }
         .animate-sway-2 { animation: sway-reverse 15s ease-in-out infinite alternate; }
 
-        /* Subtle Poster Floating */
-        @keyframes gentle-float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-15px); }
-        }
-        .animate-gentle-float {
-          animation: gentle-float 8s ease-in-out infinite;
-        }
-
         /* CTA Button Shimmer */
         @keyframes shimmer {
           0% { transform: translateX(-150%) skewX(-15deg); }
@@ -252,7 +242,7 @@ export default function CinematicJourneyHero() {
           animation: shimmer 3s infinite;
         }
 
-        /* Parallax Marine Snow (Ascending Particles) */
+        /* Parallax Marine Snow */
         .marine-snow {
           position: absolute;
           width: 2px;
@@ -284,7 +274,7 @@ export default function CinematicJourneyHero() {
 }
 
 // -----------------------------------------------------------------
-// WAYPOINT COMPONENT (Cinematic Typography Reveal)
+// WAYPOINT COMPONENT (Optimized - Removed blur to fix lag)
 // -----------------------------------------------------------------
 function Waypoint({ text, index, scrollYProgress, total }: { text: any, index: number, scrollYProgress: any, total: number }) {
   const usableScroll = 0.70;
@@ -293,7 +283,6 @@ function Waypoint({ text, index, scrollYProgress, total }: { text: any, index: n
   const start = 0.08 + (index * segmentLength);
   const end = start + segmentLength;
   
-  // Creates a "Plateau" -> Fades in, stays at 100% clarity, then fades out
   const fadeInEnd = start + (segmentLength * 0.25);
   const fadeOutStart = end - (segmentLength * 0.25);
 
@@ -309,13 +298,6 @@ function Waypoint({ text, index, scrollYProgress, total }: { text: any, index: n
     [0.95, 1, 1, 1.05]
   );
   
-  const blur = useTransform(
-    scrollYProgress, 
-    [start, fadeInEnd, fadeOutStart, end], 
-    ["blur(20px)", "blur(0px)", "blur(0px)", "blur(20px)"]
-  );
-  
-  // Slower, heavier Y-axis movement for realism
   const y = useTransform(
     scrollYProgress, 
     [start, fadeInEnd, fadeOutStart, end], 
@@ -324,16 +306,18 @@ function Waypoint({ text, index, scrollYProgress, total }: { text: any, index: n
 
   return (
     <motion.div
-      style={{ opacity, scale, filter: blur, y }}
-      className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 md:px-12 pointer-events-none"
+      style={{ opacity, scale, y }}
+      className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 md:px-12 pointer-events-none will-change-transform transform-gpu"
     >
       <div className="max-w-4xl flex flex-col items-center">
         <div className="flex flex-col items-center gap-3 mb-8 md:mb-12">
-          {/* Depth Marker Line */}
-          <div className="w-[1px] h-12 bg-gradient-to-b from-transparent to-[#E62B1E]"></div>
-          <p className="text-[#E62B1E] font-mono tracking-[0.5em] text-[9px] md:text-[10px] uppercase drop-shadow-[0_0_10px_rgba(230,43,30,0.5)]">
-            Marker 0{index + 1}
-          </p>
+          <div className="w-[1px] h-12 bg-gradient-to-b from-transparent to-white"></div>
+          {/* UPDATED: White text in a sleek glass pill */}
+          <div className="bg-white/10 border border-white/20 px-5 py-2 rounded-full backdrop-blur-sm shadow-lg">
+            <p className="text-white font-mono tracking-[0.5em] text-[9px] md:text-[10px] uppercase font-bold drop-shadow-md">
+              Marker 0{index + 1}
+            </p>
+          </div>
         </div>
         
         <h2 className="text-5xl sm:text-7xl md:text-8xl lg:text-[9rem] font-serif text-white tracking-tight leading-none mb-4 md:mb-6 mix-blend-screen drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)]">
@@ -353,73 +337,60 @@ function Waypoint({ text, index, scrollYProgress, total }: { text: any, index: n
 }
 
 // -----------------------------------------------------------------
-// POSTER REVEAL & FINAL CTA (The Discovered Masterpiece)
+// POSTER REVEAL & FINAL CTA (Optimized for Full Screen & No Gaps)
 // -----------------------------------------------------------------
 function PosterReveal({ scrollYProgress }: { scrollYProgress: any }) {
   const revealStart = 0.82;
   const revealEnd = 0.98;
 
   const opacity = useTransform(scrollYProgress, [revealStart, revealEnd], [0, 1]);
-  const y = useTransform(scrollYProgress, [revealStart, revealEnd], [100, 0]);
-  const glowOpacity = useTransform(scrollYProgress, [revealStart, revealEnd], [0, 0.4]);
+  const y = useTransform(scrollYProgress, [revealStart, revealEnd], [50, 0]);
 
   return (
     <motion.div
       style={{ opacity, y }}
-      className="absolute inset-0 z-50 flex flex-col items-center justify-center pointer-events-none"
+      className="absolute inset-0 z-50 pointer-events-none will-change-transform transform-gpu bg-black"
     >
-      <div className="relative flex flex-col items-center justify-center pointer-events-auto w-full px-4 mt-8">
-        
-        {/* Soft Architectural Glow */}
-        <motion.div 
-          style={{ opacity: glowOpacity }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[500px] bg-[#d4af37] blur-[180px] pointer-events-none mix-blend-screen"
+      {/* UPDATED: Absolute full screen container to remove gaps */}
+      <div className="absolute inset-0 w-full h-full z-10">
+        <img 
+          src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1773212881/1920x1080_v5fr79.png" 
+          alt="ARC The Wayfarer's Map" 
+          className="w-full h-full object-scale-down object-center"
         />
+        {/* Gradient shadow to ensure button text is perfectly readable */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+      </div>
 
-        {/* The Poster Artifact (Editorial framing) */}
-        <div className="relative z-10 p-1 bg-white/5 border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.9)] animate-gentle-float mb-12 md:mb-16 group w-[80vw] max-w-[280px] md:max-w-[360px] lg:max-w-[400px]">
-          <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-20"></div>
-          <img 
-            src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1773165730/Group_47741_ka5hcm.png" 
-            alt="ARC The Wayfarer's Map" 
-            className="w-full h-auto aspect-auto object-contain"
-          />
-        </div>
+      {/* Button fixed to the bottom of the screen */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center pb-24 md:pb-32 z-20 pointer-events-auto">
+        <Link
+          href="/tickets"
+          className="
+            group relative flex items-center justify-center gap-4
+            px-12 py-5 md:px-16 md:py-6
+            bg-white text-black
+            font-bold uppercase tracking-[0.4em] text-xs md:text-sm
+            transition-all duration-500 ease-out
+            hover:bg-[#E62B1E] hover:text-white
+            hover:shadow-[0_0_40px_rgba(230,43,30,0.5)]
+            overflow-hidden
+          "
+        >
+          <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-shimmer pointer-events-none"></div>
+          
+          <span className="relative whitespace-nowrap">Secure Passage</span>
 
-        {/* Ultra-Premium Minimalist CTA */}
-        <div className="relative z-20">
-          <Link
-            href="/tickets"
-            className="
-              group relative flex items-center justify-center gap-4
-              px-10 py-4 md:px-14 md:py-5
-              bg-white text-black
-              font-bold uppercase tracking-[0.3em] md:tracking-[0.4em] text-[10px] md:text-xs
-              transition-all duration-500 ease-out
-              hover:bg-[#E62B1E] hover:text-white
-              hover:shadow-[0_0_40px_rgba(230,43,30,0.5)]
-              overflow-hidden
-            "
+          <svg
+            className="relative w-4 h-4 transition-transform duration-500 group-hover:translate-x-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
           >
-            {/* Shimmer Effect */}
-            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-shimmer pointer-events-none"></div>
-            
-            <span className="relative whitespace-nowrap">
-              Secure Passage
-            </span>
-
-            <svg
-              className="relative w-3 h-3 md:w-4 md:h-4 transition-transform duration-500 group-hover:translate-x-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </Link>
-        </div>
-
+            <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </Link>
       </div>
     </motion.div>
   );
