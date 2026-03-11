@@ -7,12 +7,9 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 
 // --- Custom Easing Curve (Strictly typed for Framer Motion) ---
-// Changed the last value to 1 to ensure it completely settles into place without snapping.
 const premiumEase: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 // --- Framer Motion Variants ---
-
-// The red background that creates the "pop" trailing effect
 const redWipeVariants: Variants = {
   hidden: { x: "100%" },
   visible: { 
@@ -25,22 +22,18 @@ const redWipeVariants: Variants = {
   }
 };
 
-// The main dark menu panel
 const menuVariants: Variants = {
   hidden: { x: "100%" },
   visible: { 
     x: "0%", 
-    // Slight delay so the red wipe leads the way
     transition: { duration: 0.85, ease: premiumEase, delay: 0.08 } 
   },
   exit: { 
     x: "100%", 
-    // Exits immediately so the red wipe follows it
     transition: { duration: 0.85, ease: premiumEase } 
   }
 };
 
-// Container to stagger the links
 const linkContainerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -53,7 +46,6 @@ const linkContainerVariants: Variants = {
   }
 };
 
-// Masked text reveal for individual links
 const linkItemVariants: Variants = {
   hidden: { y: "110%", opacity: 0 },
   visible: { 
@@ -111,7 +103,7 @@ export default function Header() {
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: -20, scale: 0.95 }}
               transition={{ duration: 0.3, ease: premiumEase }}
-              className="bg-black/90 backdrop-blur text-white rounded-2xl p-5 md:p-6 w-16 md:w-20 flex flex-col items-center gap-6 shadow-2xl border border-gray-800"
+              className="bg-black/90 backdrop-blur text-white rounded-2xl p-5 md:p-6 w-16 md:w-20 flex flex-col items-center gap-6 shadow-2xl border border-gray-800 will-change-transform"
             >
               <button
                 onClick={() => setSocialOpen(false)}
@@ -121,9 +113,9 @@ export default function Header() {
               </button>
               <div className="w-6 h-px bg-gray-700"></div>
               <nav className="flex flex-col items-center gap-5">
-                <a href="https://www.instagram.com/tedxcitbengaluru/" className="text-gray-400 hover:text-[#E62B1E] hover:scale-110 transition-all duration-200"><FaInstagram size={22} /></a>
-                <a href="https://www.linkedin.com/company/tedxcitbengaluru/" className="text-gray-400 hover:text-[#E62B1E] hover:scale-110 transition-all duration-200"><FaLinkedinIn size={22} /></a>
-                <a href="https://www.youtube.com/@TEDxCITBengaluru/playlists" className="text-gray-400 hover:text-[#E62B1E] hover:scale-110 transition-all duration-200"><FaYoutube size={22} /></a>
+                <a href="https://www.instagram.com/tedxcitbengaluru/" className="text-gray-400 hover:text-[#E62B1E] hover:scale-110 transition-transform duration-200 will-change-transform"><FaInstagram size={22} /></a>
+                <a href="https://www.linkedin.com/company/tedxcitbengaluru/" className="text-gray-400 hover:text-[#E62B1E] hover:scale-110 transition-transform duration-200 will-change-transform"><FaLinkedinIn size={22} /></a>
+                <a href="https://www.youtube.com/@TEDxCITBengaluru/playlists" className="text-gray-400 hover:text-[#E62B1E] hover:scale-110 transition-transform duration-200 will-change-transform"><FaYoutube size={22} /></a>
               </nav>
             </motion.div>
           )}
@@ -133,11 +125,11 @@ export default function Header() {
       {/* ------------------------------- */}
       {/* CENTER: LOGO                    */}
       {/* ------------------------------- */}
-      <div className="absolute top-4 md:top-4 left-1/2 -translate-x-1/2 z-40 hover:cursor-pointer transition-transform hover:scale-105 duration-300">
+      <div className="absolute top-4 md:top-4 left-1/2 -translate-x-1/2 z-40 hover:cursor-pointer transition-transform hover:scale-105 duration-300 will-change-transform">
         <img 
           src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1760616545/TEDxCITBengaluruWomenblack_300x_2_t42vvk.png" 
           alt="TEDxCITBengaluru Logo" 
-          className="h-8 sm:h-10 md:h-12" 
+          className="h-8 sm:h-10 md:h-12 drop-shadow-lg" 
           onClick={() => router.push('/')} 
         />
       </div>
@@ -146,12 +138,15 @@ export default function Header() {
       {/* RIGHT: HAMBURGER TRIGGER        */}
       {/* ------------------------------- */}
       <div className="absolute top-4 md:top-6 right-4 sm:right-6 md:right-8 z-50">
-        <button
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.9 }}
           onClick={() => setMenuOpen(true)}
-          className="text-black mix-blend-difference hover:text-[#E62B1E] transition p-2 rounded-xl active:scale-95"
+          className="text-white hover:text-[#E62B1E] p-2 rounded-xl transition-colors duration-200 drop-shadow-md will-change-transform"
+          aria-label="Open Menu"
         >
           <Menu size={32} />
-        </button>
+        </motion.button>
       </div>
 
       {/* ------------------------------- */}
@@ -164,41 +159,40 @@ export default function Header() {
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1, transition: { duration: 0.5 } }}
-              // Synced exit delay with the sliding panels so it doesn't vanish too early
               exit={{ opacity: 0, transition: { duration: 0.5, delay: 0.4 } }}
               onClick={() => setMenuOpen(false)}
               className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]"
               style={{ willChange: "opacity" }}
             />
 
-            {/* Red Trailing Wipe (GPU Accelerated) */}
+            {/* Red Trailing Wipe */}
             <motion.div
               variants={redWipeVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="fixed top-0 right-0 w-full md:w-1/2 h-screen bg-[#E62B1E] z-[61] shadow-2xl transform-gpu"
-              style={{ willChange: "transform" }}
+              className="fixed top-0 right-0 w-full md:w-1/2 h-screen bg-[#E62B1E] z-[61] shadow-2xl transform-gpu will-change-transform"
             />
 
-            {/* Main Dark Menu Panel (GPU Accelerated) */}
+            {/* Main Dark Menu Panel */}
             <motion.div
               variants={menuVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="fixed top-0 right-0 w-full md:w-1/2 h-screen bg-[#0A0A0A] z-[62] flex flex-col justify-center px-12 sm:px-20 border-l border-white/5 shadow-2xl transform-gpu"
-              style={{ willChange: "transform" }}
+              className="fixed top-0 right-0 w-full md:w-1/2 h-screen bg-[#0A0A0A] z-[62] flex flex-col justify-center px-12 sm:px-20 border-l border-white/5 shadow-2xl transform-gpu will-change-transform"
             >
               
               {/* Close Button Inside Menu */}
               <div className="absolute top-8 right-8 md:top-10 md:right-12">
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                   onClick={() => setMenuOpen(false)}
-                  className="text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 p-3 rounded-full transition-all duration-300 backdrop-blur-md border border-white/10 active:scale-90"
+                  className="text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 p-3 rounded-full transition-colors duration-300 backdrop-blur-md border border-white/10 will-change-transform"
                 >
                   <X size={28} />
-                </button>
+                </motion.button>
               </div>
 
               {/* Staggered Navigation Links */}
@@ -215,7 +209,7 @@ export default function Header() {
 
                   return (
                     <div key={link} className="overflow-hidden py-1">
-                      <motion.div variants={linkItemVariants}>
+                      <motion.div variants={linkItemVariants} className="will-change-transform">
                         <Link
                           href={href}
                           onClick={() => setMenuOpen(false)}
@@ -230,6 +224,36 @@ export default function Header() {
                     </div>
                   );
                 })}
+
+                {/* --- SECURE YOUR SEAT BUTTON (Right Below Contact) --- */}
+                <div className="overflow-hidden py-2 mt-4 md:mt-8">
+                  <motion.div variants={linkItemVariants} className="will-change-transform">
+                    <Link
+                      href="/tickets"
+                      onClick={() => setMenuOpen(false)}
+                      className="
+                        group relative inline-flex items-center justify-center gap-4
+                        px-8 py-4 md:px-10 md:py-5 w-fit
+                        bg-white text-black
+                        font-bold uppercase tracking-[0.3em] text-xs md:text-sm
+                        transition-all duration-500 ease-out
+                        hover:bg-[#E62B1E] hover:text-white
+                        hover:shadow-[0_0_40px_rgba(230,43,30,0.5)]
+                      "
+                    >
+                      <span className="relative whitespace-nowrap">Secure Your Seat</span>
+                      <svg
+                        className="relative w-4 h-4 transition-transform duration-500 group-hover:translate-x-2"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </Link>
+                  </motion.div>
+                </div>
               </motion.nav>
 
               {/* Bottom Footer Info in Menu */}
@@ -237,7 +261,7 @@ export default function Header() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0, transition: { delay: 0.6, duration: 0.6, ease: premiumEase } }}
                 exit={{ opacity: 0, y: 10, transition: { duration: 0.3 } }}
-                className="absolute bottom-10 left-12 sm:left-20 text-gray-500 text-sm font-medium tracking-wide"
+                className="absolute bottom-10 left-12 sm:left-20 text-gray-500 text-sm font-medium tracking-wide will-change-transform"
               >
                 © 2026 TEDxCITBengaluru
               </motion.div>
