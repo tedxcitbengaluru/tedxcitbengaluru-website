@@ -3,6 +3,7 @@ import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import { Toaster, toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import Header from "@/components/layout/header";
 import QRCode from 'react-qr-code';
 
 interface TeamMember {
@@ -245,6 +246,12 @@ export default function TicketingPage() {
 
   return (
     <main className="min-h-screen bg-[#050505] text-white flex flex-col items-center pt-24 pb-32 px-4 md:px-6 relative overflow-hidden">
+      
+      {/* --- ADDED HEADER HERE --- */}
+      <div className="fixed top-0 left-0 w-full z-[100]">
+        <Header />
+      </div>
+
       <Toaster position="bottom-right" richColors theme="dark" />
       
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-[#E62B1E] opacity-[0.03] blur-[120px] rounded-full pointer-events-none" />
@@ -574,6 +581,23 @@ export default function TicketingPage() {
               </button>
             </form>
           )}
+
+          {/* --- SUPPORT / CONTACT SECTION --- */}
+          <div className="mt-8 pt-8 border-t border-white/10">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4 text-center">For any queries or issues, contact</p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12">
+              <div className="text-center">
+                <p className="text-sm font-bold text-white tracking-wide">Aaron Rohan</p>
+                <a href="tel:8660689239" className="text-xs font-mono text-[#E62B1E] hover:text-red-400 transition-colors mt-1 block">8660689239</a>
+              </div>
+              <div className="hidden sm:block w-px h-8 bg-white/10"></div>
+              <div className="text-center">
+                <p className="text-sm font-bold text-white tracking-wide">Faisal</p>
+                <a href="tel:9608953402" className="text-xs font-mono text-[#E62B1E] hover:text-red-400 transition-colors mt-1 block">9608953402</a>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         {/* --- RIGHT: THE 3D HOLOGRAPHIC LANYARD --- */}
