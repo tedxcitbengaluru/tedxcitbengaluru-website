@@ -119,7 +119,7 @@ export default function TicketingPage() {
         canvas.height = img.height * scaleSize;
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
-        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
+        const compressedBase64 = canvas.toDataURL('qr/jpeg', 0.6);
         
         setFormData(prev => ({ 
           ...prev, 
@@ -186,7 +186,7 @@ export default function TicketingPage() {
           body: JSON.stringify({
             file: paymentScreenshotLink.split(',')[1], 
             fileName: formData.upiTransactionId || baseTicketId,
-            mimeType: 'image/jpeg',
+            mimeType: 'qr/jpeg',
           }),
         });
 
@@ -546,9 +546,9 @@ export default function TicketingPage() {
                 <div className="flex flex-col md:flex-row gap-8 items-center md:items-start bg-black/40 p-6 rounded-xl border border-white/5">
                   <div className="shrink-0 text-center">
                     <div className="w-60 h-60 bg-white p-2 rounded-lg mx-auto overflow-hidden">
-                      <img src="/images/image.png" alt="UPI QR Code" className="w-full h-full object-cover rounded" />
+                      <img src="/images/qr.jpeg" alt="UPI QR Code" className="w-full h-full object-cover rounded" />
                     </div>
-                    <p className="font-mono text-xl text-gray-400 mt-3 select-all bg-white/5 py-1 px-2 rounded">rohanraj7@indie</p>
+                    <p className="font-mono text-xl text-gray-400 mt-3 select-all bg-white/5 py-1 px-2 rounded">aaronrohanraj7@okicici</p>
                   </div>
                   
                   <div className="w-full space-y-6">
@@ -587,12 +587,12 @@ export default function TicketingPage() {
             <p className="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4 text-center">For any queries or issues, contact</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12">
               <div className="text-center">
-                <p className="text-sm font-bold text-white tracking-wide">Aaron Rohan</p>
+                <p className="text-xl font-bold text-white tracking-wide">Aaron Rohan</p>
                 <a href="tel:8660689239" className="text-xs font-mono text-[#E62B1E] hover:text-red-400 transition-colors mt-1 block">8660689239</a>
               </div>
               <div className="hidden sm:block w-px h-8 bg-white/10"></div>
               <div className="text-center">
-                <p className="text-sm font-bold text-white tracking-wide">Faisal</p>
+                <p className="text-xl font-bold text-white tracking-wide">Faisal</p>
                 <a href="tel:9608953402" className="text-xs font-mono text-[#E62B1E] hover:text-red-400 transition-colors mt-1 block">9608953402</a>
               </div>
             </div>
