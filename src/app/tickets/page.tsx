@@ -248,7 +248,7 @@ export default function TicketingPage() {
     <main className="min-h-screen bg-[#050505] text-white flex flex-col items-center pt-24 pb-32 px-4 md:px-6 relative overflow-hidden">
       
       {/* --- ADDED HEADER HERE --- */}
-      <div className="fixed top-0 left-0 w-full z-[100]">
+      <div className="div className=fixed top-0 left-0 w-full z-[100] text-white">
         <Header />
       </div>
 
