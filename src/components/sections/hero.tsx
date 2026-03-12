@@ -1,6 +1,7 @@
 "use client";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, memo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Header from "@/components/layout/header";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 
@@ -37,10 +38,11 @@ const SUB_THEMES = [
   },
 ];
 
-export default function CinematicJourneyHero() {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // --- COUNTDOWN TIMER LOGIC ---
+// =========================================
+// ISOLATED TIMER COMPONENT (Performance Fix)
+// Prevents the massive 3D page from re-rendering every second
+// =========================================
+const CountdownTimer = memo(() => {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -61,6 +63,26 @@ export default function CinematicJourneyHero() {
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  return (
+    <div className="mt-16 md:mt-24 flex items-center justify-center gap-6 md:gap-12">
+      {Object.entries(timeLeft).map(([unit, value]) => (
+        <div key={unit} className="flex flex-col items-center justify-center">
+          <span className="text-4xl md:text-6xl font-light text-white tabular-nums tracking-tighter drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+            {value.toString().padStart(2, '0')}
+          </span>
+          <span className="text-[8px] md:text-[10px] font-bold tracking-[0.4em] uppercase text-cyan-200/60 mt-3">
+            {unit}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+});
+CountdownTimer.displayName = "CountdownTimer";
+
+export default function CinematicJourneyHero() {
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // --- SCROLL PHYSICS (Hardware Accelerated) ---
   const { scrollYProgress } = useScroll({
@@ -83,7 +105,7 @@ export default function CinematicJourneyHero() {
     <main ref={containerRef} className="relative w-full h-[700vh] bg-[#010305] text-white font-sans selection:bg-[#E62B1E] selection:text-white">
       
       {/* =========================================
-          NATIVE HEADER (Untouched)
+          NATIVE HEADER
       ========================================= */}
       <div className="fixed top-0 left-0 w-full z-[100] pointer-events-auto bg-black">
         <Header />
@@ -97,7 +119,7 @@ export default function CinematicJourneyHero() {
         {/* =========================================
             BACKGROUND 1: THE ABYSSAL VOID
         ========================================= */}
-        <div className="absolute inset-0 w-full h-full z-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#081a24] via-[#020608] to-[#000000]">
+        <div className="absolute inset-0 w-full h-full z-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#081a24] via-[#020608] to-[#000000] transform-gpu">
           <div className="absolute inset-0 opacity-[0.05] mix-blend-screen bg-[url('https://grainy-gradients.vercel.app/noise.svg')] pointer-events-none"></div>
           
           <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
@@ -146,38 +168,29 @@ export default function CinematicJourneyHero() {
           
           {/* --- 0. THE INTRO SCREEN --- */}
           <motion.div
-            className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-4"
+            className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-4 will-change-transform"
             style={{ opacity: introOpacity, y: introY, scale: introScale }}
           >
-            {/* UPDATED: White text in a sleek glass pill */}
-            <div className="bg-white/10 border border-white/20 px-6 py-2.5 rounded-full mb-6 backdrop-blur-md shadow-xl">
+            <div className="bg-white/10 border border-white/20 px-6 py-2.5 rounded-full mb-6 md:mb-10 backdrop-blur-md shadow-xl">
               <p className="text-white font-mono text-[10px] md:text-xs tracking-[0.5em] uppercase font-bold animate-pulse drop-shadow-md">
                 A drift in the unknown
               </p>
             </div>
             
-            <h1 className="text-7xl sm:text-8xl md:text-[12rem] lg:text-[15rem] font-serif text-white tracking-tight drop-shadow-[0_20px_60px_rgba(0,180,255,0.2)] leading-none text-center mix-blend-screen">
-              ARC
-            </h1>
-            <p className="mt-4 md:mt-0 text-xl md:text-3xl lg:text-4xl text-cyan-50 font-serif italic tracking-[0.2em] text-center drop-shadow-xl">
-              The Wayfarer's Map
-            </p>
-
-            {/* Ultra-Minimalist Editorial Timer */}
-            <div className="mt-16 md:mt-24 flex items-center justify-center gap-6 md:gap-12">
-              {Object.entries(timeLeft).map(([unit, value]) => (
-                <div key={unit} className="flex flex-col items-center justify-center">
-                  <span className="text-4xl md:text-6xl font-light text-white tabular-nums tracking-tighter drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                    {value.toString().padStart(2, '0')}
-                  </span>
-                  <span className="text-[8px] md:text-[10px] font-bold tracking-[0.4em] uppercase text-cyan-200/60 mt-3">
-                    {unit}
-                  </span>
-                </div>
-              ))}
+            {/* OPTIMIZATION: Local SVG replacement using Next/Image */}
+            <div className="relative w-[85vw] max-w-[350px] md:max-w-[600px] lg:max-w-[800px] aspect-[2/1] drop-shadow-[0_20px_60px_rgba(0,180,255,0.3)] mix-blend-screen">
+              <Image 
+                src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1773288076/ARC_Title_upx1mb.svg" 
+                alt="ARC: The Wayfarer's Map"
+                fill
+                priority
+                className="object-contain object-center"
+              />
             </div>
+
+            {/* Isolated Timer Component */}
+            <CountdownTimer />
             
-            {/* UPDATED: Venue and Time inside a sleek box */}
             <div className="mt-16 border border-white/10 bg-[#050505]/60 backdrop-blur-md px-8 md:px-12 py-5 md:py-6 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.8)] pointer-events-auto">
               <p className="text-[9px] md:text-[11px] font-bold uppercase tracking-[0.4em] text-white text-center leading-relaxed">
                 27th March 2026 <span className="mx-3 text-[#E62B1E]">|</span> 11 AM<br/>
@@ -199,7 +212,6 @@ export default function CinematicJourneyHero() {
         </div>
 
         {/* --- 6. THE TREASURE REVEAL (Poster & Final CTA) --- */}
-        {/* UPDATED: Moved outside the drifting wrapper to prevent gaps and ensure full-screen lock */}
         <PosterReveal scrollYProgress={smoothScroll} />
 
       </div>
@@ -274,7 +286,7 @@ export default function CinematicJourneyHero() {
 }
 
 // -----------------------------------------------------------------
-// WAYPOINT COMPONENT (Optimized - Removed blur to fix lag)
+// WAYPOINT COMPONENT
 // -----------------------------------------------------------------
 function Waypoint({ text, index, scrollYProgress, total }: { text: any, index: number, scrollYProgress: any, total: number }) {
   const usableScroll = 0.70;
@@ -312,7 +324,6 @@ function Waypoint({ text, index, scrollYProgress, total }: { text: any, index: n
       <div className="max-w-4xl flex flex-col items-center">
         <div className="flex flex-col items-center gap-3 mb-8 md:mb-12">
           <div className="w-[1px] h-12 bg-gradient-to-b from-transparent to-white"></div>
-          {/* UPDATED: White text in a sleek glass pill */}
           <div className="bg-white/10 border border-white/20 px-5 py-2 rounded-full backdrop-blur-sm shadow-lg">
             <p className="text-white font-mono tracking-[0.5em] text-[9px] md:text-[10px] uppercase font-bold drop-shadow-md">
               Marker 0{index + 1}
@@ -337,7 +348,7 @@ function Waypoint({ text, index, scrollYProgress, total }: { text: any, index: n
 }
 
 // -----------------------------------------------------------------
-// POSTER REVEAL & FINAL CTA (Optimized for Full Screen & No Gaps)
+// POSTER REVEAL & FINAL CTA (Cinematic UI/UX Update)
 // -----------------------------------------------------------------
 function PosterReveal({ scrollYProgress }: { scrollYProgress: any }) {
   const revealStart = 0.82;
@@ -349,45 +360,47 @@ function PosterReveal({ scrollYProgress }: { scrollYProgress: any }) {
   return (
     <motion.div
       style={{ opacity, y }}
-      className="absolute inset-0 z-50 pointer-events-none will-change-transform transform-gpu bg-black"
+      className="absolute inset-0 z-50 pointer-events-none will-change-transform transform-gpu bg-[#010305]"
     >
-      {/* UPDATED: Absolute full screen container to remove gaps */}
+      {/* 1. SEAMLESS BACKGROUND IMAGE */}
       <div className="absolute inset-0 w-full h-full z-10">
-        <img 
+        <Image 
           src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1773212881/1920x1080_v5fr79.png" 
           alt="ARC The Wayfarer's Map" 
-          className="w-full h-full object-scale-down object-center"
+          fill
+          sizes="100vw"
+          quality={90}
+          /* Changed from scale-down to cover for edge-to-edge immersion */
+          className="object-cover object-center" 
         />
-        {/* Gradient shadow to ensure button text is perfectly readable */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+        
+        {/* 2. REFINED VIGNETTE 
+            Only darkens the bottom 40% for button contrast, leaves the art untouched 
+        */}
+        <div className="absolute bottom-0 left-0 w-full h-[40%] bg-gradient-to-t from-[#010305] via-[#010305]/60 to-transparent"></div>
       </div>
 
-      {/* Button fixed to the bottom of the screen */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center pb-24 md:pb-32 z-20 pointer-events-auto">
+      {/* 3. CENTERED, SLEEK CTA BUTTON */}
+      <div className="absolute inset-0 flex flex-col items-center justify-end pb-16 md:pb-28 z-20 pointer-events-auto">
         <Link
           href="/tickets"
           className="
             group relative flex items-center justify-center gap-4
-            px-12 py-5 md:px-16 md:py-6
-            bg-white text-black
-            font-bold uppercase tracking-[0.4em] text-xs md:text-sm
+            px-10 py-4 md:px-14 md:py-5
+            rounded-full
+            bg-white/5 backdrop-blur-md border border-white/10
+            text-white font-medium uppercase tracking-[0.3em] text-xs md:text-sm
             transition-all duration-500 ease-out
-            hover:bg-[#E62B1E] hover:text-white
-            hover:shadow-[0_0_40px_rgba(230,43,30,0.5)]
+            hover:bg-[#E62B1E] hover:border-[#E62B1E] hover:shadow-[0_0_40px_rgba(230,43,30,0.4)]
             overflow-hidden
           "
         >
-          <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-shimmer pointer-events-none"></div>
+          {/* Subtle sweep animation inside button */}
+          <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:animate-shimmer pointer-events-none"></div>
           
-          <span className="relative whitespace-nowrap">Secure Passage</span>
-
-          <svg
-            className="relative w-4 h-4 transition-transform duration-500 group-hover:translate-x-2"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
+          <span className="relative whitespace-nowrap drop-shadow-md">Secure Passage</span>
+          
+          <svg className="relative w-4 h-4 transition-transform duration-500 group-hover:translate-x-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
           </svg>
         </Link>
