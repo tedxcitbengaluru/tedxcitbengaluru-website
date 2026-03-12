@@ -32,8 +32,8 @@ export default function TicketingPage() {
   }, []);
 
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
-  const [ticketType, setTicketType] = useState<string>("Early Bird");
-  const [ticketPrice, setTicketPrice] = useState<number>(399); 
+  const [ticketType, setTicketType] = useState<string>("Solo Access");
+  const [ticketPrice, setTicketPrice] = useState<number>(599); 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -51,6 +51,9 @@ export default function TicketingPage() {
   });
   
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([createEmptyMember(true)]);
+  
+  // --- NEW: Badge Pagination State ---
+  const [currentBadgeIndex, setCurrentBadgeIndex] = useState(0);
 
   // --- 3D Physics (Framer Motion) ---
   const mouseX = useMotionValue(0.5);
@@ -78,12 +81,27 @@ export default function TicketingPage() {
   const handleTicketTypeChange = (selectedType: string) => {
     setTicketType(selectedType);
     let price = 399;
-    if (selectedType === 'Solo Access') price = 599;
-    else if (selectedType === 'Group of 3') price = 1497;
-    else if (selectedType === 'Group of 5') price = 2245;
+    let count = 1;
+
+    if (selectedType === 'Solo Access') {
+      price = 599;
+      count = 1;
+    } else if (selectedType === 'Group of 3') {
+      price = 1497;
+      count = 3;
+    } else if (selectedType === 'Group of 5') {
+      price = 2245;
+      count = 5;
+    }
     
     setTicketPrice(price);
-    setTeamMembers([createEmptyMember(selectedType === 'Early Bird')]);
+    
+    // Treat groups as standard students to render the correct form fields
+    const isStudentTier = selectedType !== 'Solo Access';
+    setTeamMembers(Array.from({ length: count }, () => createEmptyMember(isStudentTier)));
+    
+    // Reset badge view to the first member when changing tiers
+    setCurrentBadgeIndex(0);
   };
 
   const handleTeamMemberChange = (index: number, field: keyof TeamMember, value: string) => {
@@ -99,6 +117,11 @@ export default function TicketingPage() {
     if (field === 'findUs' && value !== 'other') newTeamMembers[index].findUsCustom = '';
 
     setTeamMembers(newTeamMembers);
+    
+    // Auto-focus the badge preview on the member currently being edited
+    if (currentBadgeIndex !== index) {
+      setCurrentBadgeIndex(index);
+    }
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -134,13 +157,11 @@ export default function TicketingPage() {
     e.preventDefault();
     const form = e.currentTarget;
 
-    // Manual validation for hidden file input to avoid breaking focus
     if (!formData.paymentScreenshot) {
       toast.error('Authentication Error: Payment verification screenshot is missing.');
       const fileInputLabel = document.getElementById('payment-upload-zone');
       if (fileInputLabel) {
         fileInputLabel.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        // Flash border for visual feedback
         fileInputLabel.classList.add('border-red-500', 'bg-red-500/5');
         setTimeout(() => fileInputLabel.classList.remove('border-red-500', 'bg-red-500/5'), 2000);
       }
@@ -150,7 +171,6 @@ export default function TicketingPage() {
     if (form.checkValidity()) {
       setShowConfirmModal(true);
     } else {
-      // Find the first invalid element for smooth UX
       const firstInvalid = form.querySelector(':invalid') as HTMLElement;
       if (firstInvalid) {
         firstInvalid.focus();
@@ -241,8 +261,12 @@ export default function TicketingPage() {
     );
   }
 
-  const isEarlyBird = ticketType === 'Early Bird';
+  const isEarlyBird = ticketType === 'Early Bird' || ticketType === 'Group of 3' || ticketType === 'Group of 5';
   const isSoloAccess = ticketType === 'Solo Access';
+  
+  // Setup logic for the currently viewed badge
+  const currentMember = teamMembers[currentBadgeIndex];
+  const currentBadgeId = teamMembers.length > 1 ? `${baseTicketId}-${currentBadgeIndex + 1}` : baseTicketId;
 
   return (
     <main className="min-h-screen bg-[#050505] text-white flex flex-col items-center pt-24 pb-32 px-4 md:px-6 relative overflow-hidden">
@@ -268,9 +292,9 @@ export default function TicketingPage() {
             <h1 className="text-4xl lg:text-5xl font-black tracking-tighter leading-tight mb-4 text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-500">
               Initialize Clearance.
             </h1>
-            <p className="text-gray-400 text-sm md:text-base max-w-md leading-relaxed">
-              Enter exact demographic credentials below to generate your virtual ARC 07 badge and proceed to payment.
-            </p>
+            <h3>
+              Please fill out the form only after succesfully completing your payment.
+            </h3>
           </div>
 
           {status === "success" ? (
@@ -278,8 +302,8 @@ export default function TicketingPage() {
               <div className="w-12 h-12 rounded-full bg-[#E62B1E]/10 flex items-center justify-center mb-6 border border-[#E62B1E]/30 shadow-[0_0_30px_rgba(230,43,30,0.2)]">
                 <svg className="w-5 h-5 text-[#E62B1E]" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
               </div>
-              <h2 className="text-3xl font-bold tracking-tight mb-2">Clearance Granted</h2>
-              <p className="text-gray-400 text-sm">Your encrypted payment module has been dispatched.</p>
+              <h2 className="text-3xl font-bold tracking-tight mb-2">Welcome to ARC 07</h2>
+              <p className="text-gray-400 text-sm">We have received your details. Please look into your registered email for your virtual ID card.</p>
             </motion.div>
           ) : (
             <form onSubmit={initiateSubmit} noValidate className="space-y-10">
@@ -288,11 +312,11 @@ export default function TicketingPage() {
               <div>
                 <label className="block text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-4 ml-1">Select Access Tier</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {[
-                    { id: 'Early Bird', title: 'Early Bird', price: '₹399', desc: 'Exclusive for Students Only', highlight: true, locked: false },
-                    { id: 'Solo Access', title: 'Solo Access', price: '₹599', desc: 'Alumni, Faculty, & Other Orgs', highlight: false, locked: false },
-                    { id: 'Group of 3', title: 'Squad (Group of 3)', price: '₹1497', highlight: false, locked: true },
-                    { id: 'Group of 5', title: 'Legion (Group of 5)', price: '₹2245', highlight: false, locked: true },
+                {[
+                    { id: 'Early Bird', title: 'Early Bird', price: '₹399', desc: 'Sold Out', highlight: false, locked: true },
+                    { id: 'Solo Access', title: 'Solo Access', price: '₹599', desc: 'Alumni, Faculty, & Other Orgs', highlight: true, locked: false },
+                    { id: 'Group of 3', title: 'Squad (Group of 3)', price: '₹1497', highlight: true, locked: false },
+                    { id: 'Group of 5', title: 'Legion (Group of 5)', price: '₹2245', highlight: true, locked: false },
                   ].map((tier) => {
                     const isSelected = ticketType === tier.id;
 
@@ -358,14 +382,30 @@ export default function TicketingPage() {
                   }
 
                   return (
-                    <div key={index} className="space-y-6 bg-white/[0.01] p-6 md:p-8 rounded-2xl border border-white/5 relative">
-                      <div className="flex items-center gap-3 mb-6">
-                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#E62B1E]/20 text-[#E62B1E] text-xs font-bold border border-[#E62B1E]/30">
-                          {index + 1}
-                        </span>
-                        <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-300">
-                          Primary Identity Data
-                        </h3>
+                    <div 
+                      key={index} 
+                      className={`space-y-6 bg-white/[0.01] p-6 md:p-8 rounded-2xl border transition-colors duration-500 relative
+                        ${currentBadgeIndex === index ? 'border-[#E62B1E]/30 shadow-[0_0_30px_rgba(230,43,30,0.05)]' : 'border-white/5'}
+                      `}
+                      onClick={() => setCurrentBadgeIndex(index)}
+                    >
+                      <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#E62B1E]/20 text-[#E62B1E] text-xs font-bold border border-[#E62B1E]/30">
+                            {index + 1}
+                          </span>
+                          <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-300">
+                            Identity Data {teamMembers.length > 1 && `(Node ${index + 1})`}
+                          </h3>
+                        </div>
+                        
+                        {/* Indicator if this is the currently viewed badge */}
+                        {currentBadgeIndex === index && teamMembers.length > 1 && (
+                          <span className="text-[9px] uppercase tracking-widest text-[#E62B1E] font-bold animate-pulse flex items-center gap-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#E62B1E]" />
+                            Active on Badge
+                          </span>
+                        )}
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-4">
@@ -376,7 +416,6 @@ export default function TicketingPage() {
                         </div>
                         
                         <div className="relative group">
-                          {/* Regex added to specifically check for valid gmail and cambridge domains to prevent typos */}
                           <input type="email" required pattern="^[a-zA-Z0-9._%+\-]+@(gmail\.com|cambridge\.edu\.in)$" placeholder=" " value={member.email} onChange={(e) => handleTeamMemberChange(index, 'email', e.target.value)}
                             className="peer w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 pt-7 pb-3 text-base font-medium text-white focus:border-[#E62B1E]/50 focus:bg-white/[0.05] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
                           <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">Email Address</label>
@@ -479,7 +518,6 @@ export default function TicketingPage() {
                         </div>
                       )}
                       
-                      {/* --- THE IDEA INPUT (Redesigned) --- */}
                       <div className="pt-6 border-t border-white/5 relative group">
                         <label className="block text-xs uppercase tracking-widest text-[#E62B1E] mb-3 font-semibold">
                           The Core Prompt
@@ -600,8 +638,43 @@ export default function TicketingPage() {
 
         </div>
 
-        {/* --- RIGHT: THE 3D HOLOGRAPHIC LANYARD --- */}
-        <div className="w-full lg:w-[40%] flex items-start justify-center pt-8 sticky top-24">
+        {/* --- RIGHT: THE 3D HOLOGRAPHIC LANYARD STACK --- */}
+        <div className="w-full lg:w-[40%] flex flex-col items-center justify-start pt-8 sticky top-24">
+          
+          {/* Badge Pagination Controls (Only show for Groups) */}
+          {teamMembers.length > 1 && (
+            <div className="mb-8 flex items-center justify-center gap-4 bg-white/5 backdrop-blur-md px-6 py-3 rounded-full border border-white/10">
+              <button 
+                onClick={() => setCurrentBadgeIndex(prev => Math.max(0, prev - 1))}
+                disabled={currentBadgeIndex === 0}
+                className="w-8 h-8 rounded-full bg-black/50 border border-white/10 flex items-center justify-center text-white disabled:opacity-30 hover:bg-[#E62B1E]/20 hover:border-[#E62B1E]/50 transition-all"
+                aria-label="Previous Badge"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+              </button>
+              
+              <div className="flex gap-2">
+                {teamMembers.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentBadgeIndex(idx)}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${currentBadgeIndex === idx ? 'w-6 bg-[#E62B1E]' : 'bg-white/30 hover:bg-white/60'}`}
+                    aria-label={`Go to badge ${idx + 1}`}
+                  />
+                ))}
+              </div>
+
+              <button 
+                onClick={() => setCurrentBadgeIndex(prev => Math.min(teamMembers.length - 1, prev + 1))}
+                disabled={currentBadgeIndex === teamMembers.length - 1}
+                className="w-8 h-8 rounded-full bg-black/50 border border-white/10 flex items-center justify-center text-white disabled:opacity-30 hover:bg-[#E62B1E]/20 hover:border-[#E62B1E]/50 transition-all"
+                aria-label="Next Badge"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+              </button>
+            </div>
+          )}
+
           <div 
             className="w-full max-w-[400px] relative cursor-grab active:cursor-grabbing [perspective:1200px]"
             onMouseMove={handleMouseMove}
@@ -631,77 +704,88 @@ export default function TicketingPage() {
               </linearGradient>
             </svg>
 
-            {/* 3D Framer Motion Badge */}
+            {/* 3D Framer Motion Badge container */}
             <motion.div 
-              className="relative -mt-10 mx-auto w-[340px] h-[520px] rounded-none bg-[#0A0A0A] border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.8),_0_0_40px_rgba(230,43,30,0.1)] overflow-hidden [transform-style:preserve-3d]"
+              className="relative -mt-10 mx-auto w-[340px] h-[520px] [transform-style:preserve-3d]"
               style={{ rotateX, rotateY }}
             >
-              <motion.div 
-                className="absolute inset-0 z-30 pointer-events-none bg-gradient-to-tr from-transparent via-white to-transparent opacity-0"
-                style={{ opacity: glareOpacity, x: glareX, y: glareY, width: "200%", height: "200%" }}
-              />
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentBadgeIndex}
+                  initial={{ opacity: 0, x: 50, rotateY: -10 }}
+                  animate={{ opacity: 1, x: 0, rotateY: 0 }}
+                  exit={{ opacity: 0, x: -50, rotateY: 10 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="absolute inset-0 rounded-none bg-[#0A0A0A] border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.8),_0_0_40px_rgba(230,43,30,0.1)] overflow-hidden"
+                >
+                  <motion.div 
+                    className="absolute inset-0 z-30 pointer-events-none bg-gradient-to-tr from-transparent via-white to-transparent opacity-0"
+                    style={{ opacity: glareOpacity, x: glareX, y: glareY, width: "200%", height: "200%" }}
+                  />
 
-              <div className="h-28 bg-gradient-to-b from-[#E62B1E] to-[#991b14] p-6 flex flex-col items-center justify-between relative overflow-hidden">
-                <div className="w-16 h-3 rounded-full bg-[#050505] shadow-inner absolute top-4 z-10" />
-                <div className="absolute -right-4 -top-8 text-7xl font-black text-white opacity-10 select-none tracking-tighter">ARC</div>
-                <div className="mt-auto w-full flex justify-between items-end">
-                  <span className="text-white text-xl font-black tracking-tighter">TED<sup className="text-sm">x</sup>CITBengaluru</span>
-                  <span className="text-white/80 text-[10px] font-bold tracking-[0.3em]">ARC 07</span>
-                </div>
-              </div>
+                  <div className="h-28 bg-gradient-to-b from-[#E62B1E] to-[#991b14] p-6 flex flex-col items-center justify-between relative overflow-hidden">
+                    <div className="w-16 h-3 rounded-full bg-[#050505] shadow-inner absolute top-4 z-10" />
+                    <div className="absolute -right-4 -top-8 text-7xl font-black text-white opacity-10 select-none tracking-tighter">ARC</div>
+                    <div className="mt-auto w-full flex justify-between items-end">
+                      <span className="text-white text-xl font-black tracking-tighter">TED<sup className="text-sm">x</sup>CITBengaluru</span>
+                      <span className="text-white/80 text-[10px] font-bold tracking-[0.3em]">ARC 07</span>
+                    </div>
+                  </div>
 
-              <div className="p-8 h-[calc(100%-7rem)] flex flex-col relative [transform:translateZ(30px)]">
-                <div className="mb-6">
-                  <p className="text-[9px] uppercase tracking-[0.3em] text-[#E62B1E] font-bold mb-2">Authenticated User</p>
-                  <p className="text-3xl font-bold leading-none tracking-tight text-white line-clamp-2">
-                    {teamMembers[0]?.name || "GUEST PROTOCOL"}
-                  </p>
-                </div>
-
-                <div className="space-y-6 flex-grow flex flex-col justify-between">
-                  <div className="flex justify-between items-start gap-4">
-                    <div className="inline-block px-4 py-2 bg-white/5 border border-white/10 rounded-none backdrop-blur-sm">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-300">
-                        {ticketType}
+                  <div className="p-8 h-[calc(100%-7rem)] flex flex-col relative">
+                    <div className="mb-6">
+                      <p className="text-[9px] uppercase tracking-[0.3em] text-[#E62B1E] font-bold mb-2">Authenticated User {teamMembers.length > 1 && `[${currentBadgeIndex + 1}/${teamMembers.length}]`}</p>
+                      <p className="text-3xl font-bold leading-none tracking-tight text-white line-clamp-2">
+                        {currentMember?.name || "GUEST PROTOCOL"}
                       </p>
                     </div>
-                  </div>
 
-                  {/* --- NEW: CINEMATIC IDEA DISPLAY ON BADGE --- */}
-                  <div className="relative border-l-2 border-[#E62B1E]/50 pl-4 py-1 my-auto">
-                    <p className="text-xl leading-snug text-white/70 font-serif italic line-clamp-2">
-                      "{teamMembers[0]?.idea || "An idea waiting to be shared..."}"
-                    </p>
-                  </div>
-
-                  {/* REAL QR CODE CHECK-IN SYSTEM */}
-                  <div className="pt-6 border-t border-white/10 flex items-center justify-between mt-auto">
-                    <div className="bg-white p-1.5 rounded-md shadow-lg">
-                      <QRCode 
-                        value={baseTicketId} 
-                        size={52} 
-                        bgColor="#ffffff" 
-                        fgColor="#000000" 
-                        level="L" 
-                      />
-                    </div>
-                    <div className="text-right">
-                      <div className="font-mono text-[9px] text-gray-400">
-                        ID: {baseTicketId}
+                    <div className="space-y-6 flex-grow flex flex-col justify-between">
+                      <div className="flex justify-between items-start gap-4">
+                        <div className="inline-block px-4 py-2 bg-white/5 border border-white/10 rounded-none backdrop-blur-sm">
+                          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-300">
+                            {ticketType}
+                          </p>
+                        </div>
                       </div>
-                      <div className="text-[8px] text-[#E62B1E] tracking-widest mt-1 uppercase font-bold flex items-center justify-end gap-1">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#E62B1E] animate-pulse" />
-                        Live Node
+
+                      {/* --- CINEMATIC IDEA DISPLAY ON BADGE --- */}
+                      <div className="relative border-l-2 border-[#E62B1E]/50 pl-4 py-1 my-auto">
+                        <p className="text-xl leading-snug text-white/70 font-serif italic line-clamp-2">
+                          "{currentMember?.idea || "An idea waiting to be shared..."}"
+                        </p>
                       </div>
+
+                      {/* REAL QR CODE CHECK-IN SYSTEM */}
+                      <div className="pt-6 border-t border-white/10 flex items-center justify-between mt-auto">
+                        <div className="bg-white p-1.5 rounded-md shadow-lg">
+                          <QRCode 
+                            value={currentBadgeId} 
+                            size={52} 
+                            bgColor="#ffffff" 
+                            fgColor="#000000" 
+                            level="L" 
+                          />
+                        </div>
+                        <div className="text-right">
+                          <div className="font-mono text-[9px] text-gray-400">
+                            ID: {currentBadgeId}
+                          </div>
+                          <div className="text-[8px] text-[#E62B1E] tracking-widest mt-1 uppercase font-bold flex items-center justify-end gap-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#E62B1E] animate-pulse" />
+                            Live Node
+                          </div>
+                        </div>
+                      </div>
+
                     </div>
                   </div>
-
-                </div>
-              </div>
+                </motion.div>
+              </AnimatePresence>
             </motion.div>
           </div>
 
-          <div className="absolute bottom-[-3rem] text-center text-[10px] uppercase text-gray-600 tracking-[0.3em] pointer-events-none">
+          <div className="mt-8 text-center text-[10px] uppercase text-gray-600 tracking-[0.3em] pointer-events-none">
             Interact to inspect badge
           </div>
         </div>
