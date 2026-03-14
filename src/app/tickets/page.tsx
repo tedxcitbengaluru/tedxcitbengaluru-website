@@ -272,7 +272,7 @@ export default function TicketingPage() {
     <main className="min-h-screen bg-[#050505] text-white flex flex-col items-center pt-24 pb-32 px-4 md:px-6 relative overflow-hidden">
       
       {/* --- ADDED HEADER HERE --- */}
-      <div className="div className=fixed top-0 left-0 w-full z-[100] text-white">
+      <div className="fixed top-0 left-0 w-full z-[100] text-white">
         <Header />
       </div>
 
@@ -292,8 +292,8 @@ export default function TicketingPage() {
             <h1 className="text-4xl lg:text-5xl font-black tracking-tighter leading-tight mb-4 text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-500">
               Initialize Clearance.
             </h1>
-            <h3>
-              Please fill out the form only after succesfully completing your payment.
+            <h3 className="text-gray-400">
+              Please fill out the form only after successfully completing your payment.
             </h3>
           </div>
 
@@ -315,15 +315,15 @@ export default function TicketingPage() {
                 {[
                     { id: 'Early Bird', title: 'Early Bird', price: '₹399', desc: 'Sold Out', highlight: false, locked: true },
                     { id: 'Solo Access', title: 'Solo Access', price: '₹599', desc: 'Alumni, Faculty, & Other Orgs', highlight: true, locked: false },
-                    { id: 'Group of 3', title: 'Squad (Group of 3)', price: '₹1497', highlight: true, locked: false },
-                    { id: 'Group of 5', title: 'Legion (Group of 5)', price: '₹2245', highlight: true, locked: false },
+                    { id: 'Group of 3', title: 'Squad (Group of 3)', price: '₹1497', math: '₹599 × 3', oldPrice: '₹1797', save: '₹300', desc: 'Discounted Group Price', highlight: true, locked: false },
+                    { id: 'Group of 5', title: 'Legion (Group of 5)', price: '₹2245', math: '₹599 × 5', oldPrice: '₹2995', save: '₹750', desc: 'Discounted Legion Price', highlight: true, locked: false },
                   ].map((tier) => {
                     const isSelected = ticketType === tier.id;
 
                     return (
                       <label 
                         key={tier.id}
-                        className={`block p-5 rounded-xl border relative overflow-hidden transition-all duration-300 group
+                        className={`block p-5 rounded-xl border relative overflow-hidden transition-all duration-300 group flex flex-col
                           ${tier.locked ? 'border-white/5 bg-white/[0.01] opacity-50 cursor-not-allowed' : 
                             isSelected ? 'border-[#E62B1E] bg-[#E62B1E]/5 shadow-[0_0_20px_rgba(230,43,30,0.1)] cursor-pointer' : 
                             'border-white/10 hover:border-white/30 bg-white/[0.03] cursor-pointer'}
@@ -338,20 +338,36 @@ export default function TicketingPage() {
                           onChange={() => handleTicketTypeChange(tier.id)} 
                           checked={isSelected} 
                         />
-                        <div className="flex flex-col gap-2 relative z-10">
-                          <div className="flex justify-between items-start gap-3">
-                            <h3 className="text-base font-bold text-white tracking-wide flex flex-wrap items-center gap-2">
-                              {tier.title} 
-                              {tier.highlight && <span className="text-[9px] bg-[#E62B1E] text-white px-2 py-0.5 rounded-full uppercase tracking-widest animate-pulse whitespace-nowrap">Live</span>}
-                              {tier.locked && <span className="text-[9px] bg-gray-800 text-gray-300 px-2 py-0.5 rounded-full uppercase tracking-widest whitespace-nowrap">Locked</span>}
-                            </h3>
-                            <span className={`text-lg font-bold shrink-0 transition-colors ${isSelected ? 'text-[#E62B1E]' : 'text-white'}`}>
-                              {tier.price}
-                            </span>
+                        <div className="flex flex-col relative z-10 h-full justify-between">
+                          <div>
+                            <div className="flex justify-between items-start gap-3">
+                              <h3 className="text-base font-bold text-white tracking-wide flex flex-wrap items-center gap-2">
+                                {tier.title} 
+                                {tier.highlight && <span className="text-[9px] bg-[#E62B1E] text-white px-2 py-0.5 rounded-full uppercase tracking-widest animate-pulse whitespace-nowrap">Live</span>}
+                                {tier.locked && <span className="text-[9px] bg-gray-800 text-gray-300 px-2 py-0.5 rounded-full uppercase tracking-widest whitespace-nowrap">Locked</span>}
+                              </h3>
+                              <span className={`text-xl font-black shrink-0 transition-colors ${isSelected ? 'text-[#E62B1E]' : 'text-white'}`}>
+                                {tier.price}
+                              </span>
+                            </div>
+                            <p className={`text-xs mt-1 transition-colors ${tier.highlight ? 'text-[#E62B1E]/80 font-medium' : 'text-gray-500'}`}>
+                              {tier.desc}
+                            </p>
                           </div>
-                          <p className={`text-xs transition-colors ${tier.highlight ? 'text-[#E62B1E]/80 font-medium' : 'text-gray-500'}`}>
-                            {tier.desc}
-                          </p>
+
+                          {/* --- Pricing Breakdown / Savings Badge --- */}
+                          {tier.oldPrice && (
+                            <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
+                              <div className="flex items-center gap-1.5 text-xs font-mono">
+                                <span className="text-gray-400">{tier.math}</span>
+                                <span className="text-gray-600">=</span>
+                                <span className="text-gray-500 line-through decoration-[#E62B1E] decoration-2">{tier.oldPrice}</span>
+                              </div>
+                              <div className="text-[9px] uppercase tracking-widest text-[#E62B1E] font-bold bg-[#E62B1E]/10 border border-[#E62B1E]/20 px-2 py-1 rounded-sm">
+                                Save {tier.save}
+                              </div>
+                            </div>
+                          )}
                         </div>
                         {isSelected && !tier.locked && <div className="absolute inset-0 bg-gradient-to-r from-[#E62B1E]/10 to-transparent opacity-50 pointer-events-none" />}
                       </label>
