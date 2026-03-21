@@ -312,7 +312,7 @@ export default function TicketingPage() {
                 27th March 2026
               </p>
               <p className="text-sm text-gray-300 mt-2">
-                11:00 AM onwards @ Cambridge Institute of Technology
+                11:00 AM onwards @ Cambridge Institute of Technology, KR Puram.
               </p>
               <p className="text-xs text-gray-500 mt-3 font-mono">
                 Few will be in the room. Make sure you are one of them.
