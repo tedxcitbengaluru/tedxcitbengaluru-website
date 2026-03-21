@@ -142,7 +142,7 @@ export default function TicketingPage() {
         canvas.height = img.height * scaleSize;
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
-        const compressedBase64 = canvas.toDataURL('qr/jpeg', 0.6);
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
         
         setFormData(prev => ({ 
           ...prev, 
@@ -206,7 +206,7 @@ export default function TicketingPage() {
           body: JSON.stringify({
             file: paymentScreenshotLink.split(',')[1], 
             fileName: formData.upiTransactionId || baseTicketId,
-            mimeType: 'qr/jpeg',
+            mimeType: 'image/jpeg',
           }),
         });
 
@@ -244,7 +244,9 @@ export default function TicketingPage() {
         toast.success('Clearance granted. Welcome to ARC 07.', { id: toastId });
         setStatus("success");
       } else {
-        toast.error('Database rejection. Please try again.', { id: toastId });
+        // Parse the custom error message from the backend
+        const errorData = await sheetResponse.json();
+        toast.error(errorData.error || 'Database rejection. Please try again.', { id: toastId });
         setStatus("idle");
       }
     } catch (error) {
@@ -295,6 +297,27 @@ export default function TicketingPage() {
             <h3 className="text-gray-400">
               Please fill out the form only after successfully completing your payment.
             </h3>
+
+            {/* === NEW: EVENT DATE & TIME TEASER === */}
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+              className="mt-6 p-5 rounded-xl bg-[#E62B1E]/5 border border-[#E62B1E]/30 text-center backdrop-blur-sm"
+            >
+              <p className="text-lg font-bold tracking-wide text-[#E62B1E] mb-1">
+                ARC 07 ignites on
+              </p>
+              <p className="text-2xl lg:text-3xl font-black text-white tracking-tighter">
+                27th March 2026
+              </p>
+              <p className="text-sm text-gray-300 mt-2">
+                11:00 AM onwards @ Cambridge Institute of Technology, KR Puram.
+              </p>
+              <p className="text-xs text-gray-500 mt-3 font-mono">
+                Few will be in the room. Make sure you are one of them.
+              </p>
+            </motion.div>
           </div>
 
           {status === "success" ? (
@@ -375,6 +398,30 @@ export default function TicketingPage() {
                   })}
                 </div>
               </div>
+
+              {/* === INSERTED GROUP ASSISTANCE MESSAGE === */}
+              {(ticketType === 'Group of 3' || ticketType === 'Group of 5') && (
+                <div className="bg-gradient-to-r from-[#E62B1E]/5 to-transparent border border-[#E62B1E]/20 rounded-xl p-6 text-center md:text-left">
+                  <p className="text-sm text-gray-300 leading-relaxed mb-4">
+                    <span className="font-semibold text-[#E62B1E]">Still forming your squad?</span><br />
+                    If you don't have a complete group of {ticketType === 'Group of 3' ? '3' : '5'} yet, feel free to reach out — we'll gladly help connect you with other participants.
+                  </p>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm">
+                    <div>
+                      <span className="text-gray-400">Faisal:</span>{' '}
+                      <a href="tel:9608953402" className="text-[#E62B1E] hover:underline font-mono">
+                        9608953402
+                      </a>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Shreya:</span>{' '}
+                      <a href="tel:9324477810" className="text-[#E62B1E] hover:underline font-mono">
+                        9324477810
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* --- DYNAMIC TEAM MEMBER INPUTS --- */}
               <div className="space-y-8">
