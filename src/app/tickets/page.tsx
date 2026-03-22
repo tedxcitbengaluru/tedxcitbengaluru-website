@@ -479,10 +479,10 @@ export default function TicketingPage() {
                         </div>
                         
                         <div className="relative group">
-                          <input type="email" required pattern="^[a-zA-Z0-9._%+\-]+@(gmail\.com|cambridge\.edu\.in)$" placeholder=" " value={member.email} onChange={(e) => handleTeamMemberChange(index, 'email', e.target.value)}
+                          <input type="email" required pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$" placeholder=" " value={member.email} onChange={(e) => handleTeamMemberChange(index, 'email', e.target.value)}
                             className="peer w-full bg-white/[0.03] border border-white/10 rounded-xl px-5 pt-7 pb-3 text-base font-medium text-white focus:border-[#E62B1E]/50 focus:bg-white/[0.05] focus:outline-none invalid:[&:not(:placeholder-shown)]:border-red-500/50 transition-all duration-300" />
                           <label className="absolute left-5 top-5 text-gray-500 text-xs uppercase tracking-widest transition-all duration-300 peer-focus:top-2 peer-focus:text-[9px] peer-focus:text-[#E62B1E] peer-invalid:peer-[&:not(:placeholder-shown)]:text-red-500 peer-not-placeholder-shown:top-2 peer-not-placeholder-shown:text-[9px] peer-not-placeholder-shown:text-gray-400 pointer-events-none">Email Address</label>
-                          <p className="absolute -bottom-5 left-2 text-[10px] text-red-500 font-medium opacity-0 peer-invalid:peer-[&:not(:placeholder-shown)]:opacity-100 transition-opacity leading-tight max-w-[95%]">Use a valid @gmail.com or @cambridge.edu.in</p>
+                          <p className="absolute -bottom-5 left-2 text-[10px] text-red-500 font-medium opacity-0 peer-invalid:peer-[&:not(:placeholder-shown)]:opacity-100 transition-opacity leading-tight max-w-[95%]">Please enter a valid email address</p>
                         </div>
 
                         <div className="relative group">
