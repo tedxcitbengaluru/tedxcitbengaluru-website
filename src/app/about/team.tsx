@@ -37,13 +37,13 @@ interface TeamsData {
 }
 
 // --- STATIC DATA ---
-const EVENT_TYPES = ["ARC", "Epoch", "Aether", "Zenith", "Elixir", "Thrive", "Iridescence"];
+const EVENT_TYPES = ["Arc", "Epoch", "Aether", "Zenith", "Elixir", "Thrive", "Iridescence"];
 
 // Placeholder for missing images
 const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231a1a1a'/%3E%3Cpath d='M50 30 C40 30 32 38 32 48 C32 58 40 66 50 66 C60 66 68 58 68 48 C68 38 60 30 50 30 Z M50 72 C35 72 22 80 22 90 L78 90 C78 80 65 72 50 72 Z' fill='%23333'/%3E%3C/svg%3E";
 
 const TEAMS_DATA: TeamsData = {
-    ARC: {
+    Arc: {
         organizers: [
             { name: "Aaron", role: "Organizer" },
             { name: "Faisal", role: "Co-Organizer" },
@@ -262,7 +262,7 @@ const TEAMS_DATA: TeamsData = {
 };
 
 export default function Team() {
-    const [selectedEvent, setSelectedEvent] = useState<string>("ARC"); 
+    const [selectedEvent, setSelectedEvent] = useState<string>("Arc"); 
     const [expandedTeam, setExpandedTeam] = useState<number | null>(null);
 
     // Get current event's data
@@ -271,7 +271,7 @@ export default function Team() {
     const currentEcpTeam = useMemo(() => TEAMS_DATA[selectedEvent]?.ecpTeam || null, [selectedEvent]);
 
     const shouldShowViewTeam = useMemo(() => {
-        return selectedEvent === "Epoch" || selectedEvent === "ARC";
+        return selectedEvent === "Epoch" || selectedEvent === "Arc";
     }, [selectedEvent]);
 
     const handleTeamLeadClick = useCallback((teamId: number) => {
@@ -294,7 +294,7 @@ export default function Team() {
         setExpandedTeam(null);
     }, []);
 
-    const isPerformanceMode = selectedEvent === "ARC";
+    const isPerformanceMode = selectedEvent === "Arc";
 
     return (
         <section className="relative w-full bg-black text-white">
