@@ -37,28 +37,70 @@ interface TeamsData {
 }
 
 // --- STATIC DATA ---
-const EVENT_TYPES = ["Upcoming", "Epoch", "Aether", "Zenith", "Elixir", "Thrive", "Iridescence"];
+const EVENT_TYPES = ["Arc", "Epoch", "Aether", "Zenith", "Elixir", "Thrive", "Iridescence"];
 
 // Placeholder for missing images
 const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231a1a1a'/%3E%3Cpath d='M50 30 C40 30 32 38 32 48 C32 58 40 66 50 66 C60 66 68 58 68 48 C68 38 60 30 50 30 Z M50 72 C35 72 22 80 22 90 L78 90 C78 80 65 72 50 72 Z' fill='%23333'/%3E%3C/svg%3E";
 
 const TEAMS_DATA: TeamsData = {
-    Upcoming: {
+    Arc: {
         organizers: [
-            { name: "Coming Soon", role: "Organizer" },
-            { name: "Coming Soon", role: "Co-Organizer" },
-            { name: "Coming Soon", role: "Lead Coordinator" },
+            { name: "S AARON ROHAN RAJ", role: "Organizer" },
+            { name: "FAISAL IMAM", role: "Co-Organizer" },
+            { name: "ANUSHKA TIWARI", role: "Lead Coordinator" },
         ],
         teamLeads: [
-            { id: 1, name: "Coming Soon", role: "Lead Creator", members: [] },
-            { id: 2, name: "Coming Soon", role: "Lead Curator", members: [] },
-            { id: 3, name: "Coming Soon", role: "Event Director", members: [] },
-            { id: 4, name: "Coming Soon", role: "Media Lead", members: [] },
-            { id: 5, name: "Coming Soon", role: "Sponsorship Lead", members: [] },
-            { id: 6, name: "Coming Soon", role: "Technical Lead", members: [] },
-            { id: 7, name: "Coming Soon", role: "Design Lead", members: [] },
+            { id: 1, name: "DILIP B", role: "Technical Lead", members: [
+                { name: "ANIK TIWARY", role: "Core Team" },
+                { name: "VIVEK UPADHAYAY", role: "Core Team" },
+                { name: "KRITHIK M", role: "Core Team" },
+                { name: "PUJA BHARTI", role: "Core Team" },
+            ] },
+            { id: 2, name: "ANARGHYA G", role: "Lead Curator", members: [
+                { name: "LAGINENI SREENITHAI", role: "Core Team" },
+                { name: "SHIVANI KAREDLA", role: "Core Team" },
+                { name: "NIKHIL KUMAR", role: "Core Team" },
+                { name: "HIMASHREE KOLISETTY", role: "Core Team" },
+                { name: "ANSHIKA SINGH", role: "Core Team" },
+                { name: "HUDA SEHER", role: "Core Team" },
+                { name: "SUDARSHAN HOSAMANI", role: "Core Team" },
+            ] },
+            { id: 3, name: "SHREYA UPADHYAY", role: "Event Director", members: [
+                { name: "AKSHAT CHAUHAN", role: "Core Team" },
+                { name: "ANKUR BHATTACHARYA", role: "Core Team" },
+                { name: "UTKARSH TIWARI", role: "Core Team" },
+                { name: "CATHERINE DEUSDEDIT KIPELEKA", role: "Core Team" },
+                { name: "VISHAL SHUKLA", role: "Core Team" },
+                { name: "INCHARA S NAIK", role: "Core Team" },
+                { name: "VICTOR DANIEL S", role: "Core Team" },
+                { name: "WAFIZA SYED", role: "Core Team" },
+                { name: "TEJAS MUTALIK", role: "Core Team" },
+                { name: "ADITYA RAUT", role: "Core Team" },
+                { name: "RAKSHITHA", role: "Core Team" },
+            ] },
+            { id: 4, name: "DEBASIS MAHARANA", role: "Media Lead", members: [
+                { name: "SHARAN TEJ", role: "Core Team" },
+                { name: "KALYAN V", role: "Core Team" },
+                { name: "CHETHANA G", role: "Core Team" },
+                { name: "DISHA V SAWANT", role: "Core Team" },
+                { name: "SUNNY HEBRON", role: "Core Team" },
+            ] },
+            { id: 7, name: "SHIVASH R SHETTY", role: "Design Lead", members: [
+                { name: "DAKSHA K GOWDA", role: "Core Team" },
+                { name: "SURYANSH PURWAR", role: "Core Team" },
+                { name: "VEERESH R DODAMANI", role: "Core Team" },
+                { name: "PRAMUGDHA GUPTA", role: "Core Team" },
+                { name: "MV MAAHI MANVITA", role: "Core Team" },
+                { name: "LINA JOHN KENNEDY", role: "Core Team" },
+            ] },
+            { id: 5, name: "SYED OWAIS", role: "Sponsorship Lead", members: [
+                { name: "KUNAL SENDWAL", role: "Core Team" },
+                { name: "KISHAN KEDAR P", role: "Core Team" },
+                { name: "KULADEEP M N", role: "Core Team" },
+                { name: "M MEGHANAA MYLAR", role: "Core Team" },
+            ] },
         ],
-        ecpTeam: { name: "Upcoming ECP Team", imageSrc: PLACEHOLDER_IMG }
+        ecpTeam: { name: "ARC ECP Team", imageSrc: "/team/Arc/ECP.jpeg" }
     },
     Epoch: {
         organizers: [
@@ -220,7 +262,7 @@ const TEAMS_DATA: TeamsData = {
 };
 
 export default function Team() {
-    const [selectedEvent, setSelectedEvent] = useState<string>("Upcoming"); 
+    const [selectedEvent, setSelectedEvent] = useState<string>("Arc"); 
     const [expandedTeam, setExpandedTeam] = useState<number | null>(null);
 
     // Get current event's data
@@ -229,7 +271,7 @@ export default function Team() {
     const currentEcpTeam = useMemo(() => TEAMS_DATA[selectedEvent]?.ecpTeam || null, [selectedEvent]);
 
     const shouldShowViewTeam = useMemo(() => {
-        return selectedEvent === "Epoch" || selectedEvent === "Upcoming";
+        return selectedEvent === "Epoch" || selectedEvent === "Arc";
     }, [selectedEvent]);
 
     const handleTeamLeadClick = useCallback((teamId: number) => {
@@ -252,7 +294,7 @@ export default function Team() {
         setExpandedTeam(null);
     }, []);
 
-    const isPerformanceMode = selectedEvent === "Upcoming";
+    const isPerformanceMode = selectedEvent === "Arc";
 
     return (
         <section className="relative w-full bg-black text-white">
@@ -462,3 +504,4 @@ export default function Team() {
         </section>
     )
 }
+
