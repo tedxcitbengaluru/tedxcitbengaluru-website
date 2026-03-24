@@ -1,410 +1,554 @@
 "use client";
-import React, { useRef, useState, useEffect, memo } from "react";
-import Link from "next/link";
+
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import Header from "@/components/layout/header";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+
+// ─── PALETTE & DATA ──────────────────
+const SPEAKER_IMAGES: Record<string, string> = {
+  "Ambika J": "https://res.cloudinary.com/dkbvknwcu/image/upload/v1774325866/Group_47779_jlm9ty.png", // Correct path - no "public/"
+  "Sukriti Dua": "https://res.cloudinary.com/dkbvknwcu/image/upload/v1774325865/Group_1000006087_kyzcvd.png",
+  "Lt. Gen C. Bansi Ponnappa": "https://res.cloudinary.com/dkbvknwcu/image/upload/v1774325867/Group_1000006090_jcliys.png",
+  "Vinod Naidu": "https://res.cloudinary.com/dkbvknwcu/image/upload/v1774325865/Group_47794_e8nc8j.png",
+  "Dr. Mayank D. Chauhan": "https://res.cloudinary.com/dkbvknwcu/image/upload/v1774325867/Group_1000006089_e8m9fb.png",
+};
+
+const ENTERTAINER_IMAGES: Record<string, string> = {
+  "P.S. Shravan Kumar": "https://res.cloudinary.com/dkbvknwcu/image/upload/v1774325608/Group_47798_ct32vg.png",
+  "The Last Scene": "https://res.cloudinary.com/dkbvknwcu/image/upload/v1774325368/Group_1000006081_eyvjh5.png",
+  "Sarah Sufi Sheikh": "https://res.cloudinary.com/dkbvknwcu/image/upload/v1774325600/Group_1000006082_cwguhd.png",
+  "Sabrina Mariah": "https://res.cloudinary.com/dkbvknwcu/image/upload/v1774325600/Group_1000006088_ymvbqk.png",
+};
 
 const SUB_THEMES = [
-  {
-    id: "genesis",
-    title: "GENESIS",
-    subtitle: "The Origin Point",
-    desc: "The moment an idea becomes intention, and intention becomes action. It isn't about success, but the spark—the point where the map is drawn.",
-  },
-  {
-    id: "vista",
-    title: "VISTA",
-    subtitle: "The Broad Horizon",
-    desc: "The journey takes shape through perspective. Progress is not only about moving forward, but about learning to perceive the path differently.",
-  },
-  {
-    id: "forge",
-    title: "FORGE",
-    subtitle: "The Crucible",
-    desc: "Growth built through effort, pressure, and persistence. Potential is tested and refined into strength, shaping resilience from resistance.",
-  },
-  {
-    id: "obscura",
-    title: "OBSCURA",
-    subtitle: "The Unknown Depths",
-    desc: "Clarity fades and uncertainty takes over. A space of introspection and confronting the unseen, preparing the spirit for deeper transformation.",
-  },
-  {
-    id: "kintsugi",
-    title: "KINTSUGI",
-    subtitle: "The Golden Repair",
-    desc: "The profound beauty in healing from life's fractures. Embracing wounds as badges of endurance, celebrating the beauty in imperfection.",
-  },
+  { id: "01", title: "GENESIS", subtitle: "The Origin Point", desc: "The moment an idea becomes intention — and intention becomes an unstoppable force of action." },
+  { id: "02", title: "VISTA", subtitle: "The Broad Horizon", desc: "The journey takes shape through perspective. Progress is learning to perceive what others cannot." },
+  { id: "03", title: "FORGE", subtitle: "The Crucible", desc: "True growth is never gentle. It is built through effort, sustained pressure, and quiet persistence." },
+  { id: "04", title: "OBSCURA", subtitle: "The Unknown Depths", desc: "Clarity fades. A necessary space of introspection — confronting the unseen within ourselves." },
+  { id: "05", title: "KINTSUGI", subtitle: "The Golden Repair", desc: "Embracing wounds as badges of endurance. Finding beauty precisely where things once broke apart." },
 ];
 
-// =========================================
-// ISOLATED TIMER COMPONENT (Performance Fix)
-// Prevents the massive 3D page from re-rendering every second
-// =========================================
-const CountdownTimer = memo(() => {
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+const SPEAKERS = [
+  { name: "Ambika J", title: "Director of AI, Finastra", tag: "Technology" },
+  { name: "Sukriti Dua", title: "Trauma Informed Psychologist", tag: "Psychology" },
+  { name: "Lt. Gen C. Bansi Ponnappa", title: "Former Adjutant General, Indian Army", tag: "Leadership" },
+  { name: "Vinod Naidu", title: "Founder, Nustart Ventures", tag: "Innovation" },
+  { name: "Dr. Mayank D. Chauhan", title: "Orthopedic & Sports Medicine", tag: "Science" },
+];
+
+const ENTERTAINERS = [
+  { name: "P.S. Shravan Kumar", title: "Mural Artist" },
+  { name: "The Last Scene", title: "Music Band" },
+  { name: "Sarah Sufi Sheikh", title: "Stand-up Comedian" },
+  { name: "Sabrina Mariah", title: "Singer" },
+];
+
+// ─── COUNTDOWN ─────────────────────────────────────────────
+const CountdownTimer = React.memo(() => {
+  const [t, setT] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
-    const targetDate = new Date("2026-03-27T11:00:00+05:30").getTime();
-    const updateTimer = () => {
-      const now = new Date().getTime();
-      const difference = targetDate - now;
-      if (difference > 0) {
-        setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((difference % (1000 * 60)) / 1000),
+    const target = new Date("2026-03-27T11:00:00+05:30").getTime();
+    const tick = () => {
+      const d = target - Date.now();
+      if (d > 0) {
+        setT({
+          days: Math.floor(d / 86400000),
+          hours: Math.floor((d % 86400000) / 3600000),
+          minutes: Math.floor((d % 3600000) / 60000),
+          seconds: Math.floor((d % 60000) / 1000),
         });
       }
     };
-    updateTimer();
-    const interval = setInterval(updateTimer, 1000);
-    return () => clearInterval(interval);
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
   }, []);
 
   return (
-    <div className="mt-16 md:mt-24 flex items-center justify-center gap-6 md:gap-12">
-      {Object.entries(timeLeft).map(([unit, value]) => (
-        <div key={unit} className="flex flex-col items-center justify-center">
-          <span className="text-4xl md:text-6xl font-light text-white tabular-nums tracking-tighter drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-            {value.toString().padStart(2, '0')}
-          </span>
-          <span className="text-[8px] md:text-[10px] font-bold tracking-[0.4em] uppercase text-cyan-200/60 mt-3">
-            {unit}
-          </span>
-        </div>
+    <div className="flex items-center gap-6 md:gap-12">
+      {Object.entries(t).map(([unit, val], i) => (
+        <React.Fragment key={unit}>
+          <div className="flex flex-col items-center gap-1.5">
+            <span
+              className="tabular-nums font-black leading-none"
+              style={{ fontSize: "clamp(38px,6vw,72px)", color: "#1C3D4F", letterSpacing: "-0.05em" }}
+            >
+              {String(val).padStart(2, "0")}
+            </span>
+            <span style={{ fontSize: 11, letterSpacing: "0.24em", color: "#6E8E9E", textTransform: "uppercase", fontWeight: 600 }}>
+              {unit}
+            </span>
+          </div>
+          {i < 3 && <span style={{ fontSize: "clamp(20px,3vw,36px)", color: "#A8C8D8", fontWeight: 300, marginTop: -6 }}>·</span>}
+        </React.Fragment>
       ))}
     </div>
   );
 });
+
 CountdownTimer.displayName = "CountdownTimer";
 
-export default function CinematicJourneyHero() {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // --- SCROLL PHYSICS (Hardware Accelerated) ---
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  });
-
-  const smoothScroll = useSpring(scrollYProgress, { damping: 30, stiffness: 60, mass: 1 });
-  const anchorLineHeight = useTransform(smoothScroll, [0, 0.9], ["0%", "100%"]);
-
-  // --- ENVIRONMENTAL FADES (The Submersion Effect) ---
-  const surfaceOpacity = useTransform(smoothScroll, [0, 0.4], [1, 0]);
-
-  // --- INTRO SCREEN FADE ---
-  const introOpacity = useTransform(smoothScroll, [0, 0.05], [1, 0]);
-  const introY = useTransform(smoothScroll, [0, 0.05], [0, -100]);
-  const introScale = useTransform(smoothScroll, [0, 0.05], [1, 1.05]);
+// ─── MAGNETIC BUTTON ───────────────────────────────────────
+const MagneticBtn = ({ children, href }: { children: React.ReactNode; href: string }) => {
+  const ref = useRef<HTMLAnchorElement>(null);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
 
   return (
-    <main ref={containerRef} className="relative w-full h-[700vh] bg-[#010305] text-white font-sans selection:bg-[#E62B1E] selection:text-white">
-      
-      {/* =========================================
-          NATIVE HEADER
-      ========================================= */}
-      <div className="fixed top-0 left-0 w-full z-[100] pointer-events-auto bg-black">
-        <Header />
-      </div>
-
-      {/* =========================================
-          THE STICKY VIEWPORT (The Living Canvas)
-      ========================================= */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center transform-gpu">
-        
-        {/* =========================================
-            BACKGROUND 1: THE ABYSSAL VOID
-        ========================================= */}
-        <div className="absolute inset-0 w-full h-full z-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#081a24] via-[#020608] to-[#000000] transform-gpu">
-          <div className="absolute inset-0 opacity-[0.05] mix-blend-screen bg-[url('https://grainy-gradients.vercel.app/noise.svg')] pointer-events-none"></div>
-          
-          <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
-            <div className="marine-snow layer-1"></div>
-            <div className="marine-snow layer-2"></div>
-            <div className="marine-snow layer-3"></div>
-          </div>
-        </div>
-
-        {/* =========================================
-            BACKGROUND 2: HYPER-REALISTIC SURFACE WATER
-        ========================================= */}
-        <motion.div 
-          style={{ opacity: surfaceOpacity }}
-          className="absolute inset-0 z-10 pointer-events-none will-change-opacity transform-gpu"
-        >
-          <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-            <div className="absolute top-[-10%] left-[10%] w-[30%] h-[150%] bg-gradient-to-b from-cyan-200/10 to-transparent blur-[60px] animate-sway-1 origin-top transform-gpu"></div>
-            <div className="absolute top-[-10%] left-[50%] w-[40%] h-[150%] bg-gradient-to-b from-blue-300/10 to-transparent blur-[80px] animate-sway-2 origin-top transform-gpu"></div>
-            <div className="absolute top-[-10%] left-[80%] w-[20%] h-[150%] bg-gradient-to-b from-teal-200/10 to-transparent blur-[50px] animate-sway-1 origin-top transform-gpu" style={{ animationDelay: '-3s' }}></div>
-          </div>
-
-          <div className="absolute top-0 left-0 w-full h-full opacity-40 mix-blend-color-dodge">
-            <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
-              <filter id="water-ripple">
-                <feTurbulence type="fractalNoise" baseFrequency="0.015 0.05" numOctaves="3" result="noise">
-                  <animate attributeName="baseFrequency" values="0.015 0.05; 0.02 0.07; 0.015 0.05" dur="15s" repeatCount="indefinite" />
-                </feTurbulence>
-                <feColorMatrix type="matrix" values="0 0 0 0 0.2   0 0 0 0 0.6   0 0 0 0 0.8   0 0 0 1 0" in="noise" />
-              </filter>
-              <rect width="100%" height="100%" filter="url(#water-ripple)" />
-            </svg>
-          </div>
-          
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0e3b52]/40 via-transparent to-transparent mix-blend-overlay"></div>
-        </motion.div>
-
-        {/* The Anchor Line */}
-        <motion.div 
-          style={{ height: anchorLineHeight }}
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[1px] bg-gradient-to-b from-cyan-300/50 via-white/20 to-white/0 z-10 pointer-events-none will-change-transform"
-        />
-
-        {/* THE DRIFTING WRAPPER (Text Content) */}
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center animate-drift pointer-events-none">
-          
-          {/* --- 0. THE INTRO SCREEN --- */}
-          <motion.div
-            className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-4 will-change-transform"
-            style={{ opacity: introOpacity, y: introY, scale: introScale }}
-          >
-            <div className="bg-white/10 border border-white/20 px-6 py-2.5 rounded-full mb-6 md:mb-10 backdrop-blur-md shadow-xl">
-              <p className="text-white font-mono text-[10px] md:text-xs tracking-[0.5em] uppercase font-bold animate-pulse drop-shadow-md">
-                A drift in the unknown
-              </p>
-            </div>
-            
-            {/* OPTIMIZATION: Local SVG replacement using Next/Image */}
-            <div className="relative w-[85vw] max-w-[350px] md:max-w-[600px] lg:max-w-[800px] aspect-[2/1] drop-shadow-[0_20px_60px_rgba(0,180,255,0.3)] mix-blend-screen">
-              <Image 
-                src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1773288076/ARC_Title_upx1mb.svg" 
-                alt="ARC: The Wayfarer's Map"
-                fill
-                priority
-                className="object-contain object-center"
-              />
-            </div>
-
-            {/* Isolated Timer Component */}
-            <CountdownTimer />
-            
-            <div className="mt-16 border border-white/10 bg-[#050505]/60 backdrop-blur-md px-8 md:px-12 py-5 md:py-6 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.8)] pointer-events-auto">
-              <p className="text-[9px] md:text-[11px] font-bold uppercase tracking-[0.4em] text-white text-center leading-relaxed">
-                27th March 2026 <span className="mx-3 text-[#E62B1E]">|</span> 11 AM<br/>
-                <span className="opacity-70 text-[8px] md:text-[9px] mt-2 block tracking-[0.5em]">Cambridge Institute of Technology</span>
-              </p>
-            </div>
-          </motion.div>
-
-          {/* --- 1-5. THE WAYPOINTS (The Descent) --- */}
-          {SUB_THEMES.map((theme, index) => (
-            <Waypoint 
-              key={theme.id} 
-              text={theme} 
-              index={index} 
-              scrollYProgress={smoothScroll} 
-              total={SUB_THEMES.length} 
-            />
-          ))}
-        </div>
-
-        {/* --- 6. THE TREASURE REVEAL (Poster & Final CTA) --- */}
-        <PosterReveal scrollYProgress={smoothScroll} />
-
-      </div>
-
-      {/* =========================================
-          GLOBAL STYLES & PHYSICS
-      ========================================= */}
-      <style dangerouslySetInnerHTML={{__html: `
-        /* The Helpless Drift (Simulates being on a boat without oars) */
-        @keyframes drift {
-          0% { transform: translateY(0px) rotate(0deg); }
-          33% { transform: translateY(-12px) rotate(0.5deg); }
-          66% { transform: translateY(8px) rotate(-0.5deg); }
-          100% { transform: translateY(0px) rotate(0deg); }
-        }
-        .animate-drift {
-          animation: drift 14s ease-in-out infinite;
-        }
-
-        /* God Rays Swaying underwater */
-        @keyframes sway {
-          0% { transform: rotate(15deg); opacity: 0.6; }
-          50% { transform: rotate(10deg); opacity: 0.8; }
-          100% { transform: rotate(15deg); opacity: 0.6; }
-        }
-        @keyframes sway-reverse {
-          0% { transform: rotate(-12deg); opacity: 0.5; }
-          50% { transform: rotate(-18deg); opacity: 0.9; }
-          100% { transform: rotate(-12deg); opacity: 0.5; }
-        }
-        .animate-sway-1 { animation: sway 12s ease-in-out infinite alternate; }
-        .animate-sway-2 { animation: sway-reverse 15s ease-in-out infinite alternate; }
-
-        /* CTA Button Shimmer */
-        @keyframes shimmer {
-          0% { transform: translateX(-150%) skewX(-15deg); }
-          100% { transform: translateX(150%) skewX(-15deg); }
-        }
-        .animate-shimmer {
-          animation: shimmer 3s infinite;
-        }
-
-        /* Parallax Marine Snow */
-        .marine-snow {
-          position: absolute;
-          width: 2px;
-          height: 2px;
-          background: transparent;
-          border-radius: 50%;
-        }
-        .layer-1 {
-          animation: driftUp 25s linear infinite;
-          box-shadow: 10vw 110vh 1px 0px rgba(255,255,255,0.4), 30vw 150vh 2px 1px rgba(255,255,255,0.2), 60vw 120vh 1px 0px rgba(255,255,255,0.3), 80vw 180vh 2px 0px rgba(255,255,255,0.2), 90vw 130vh 1px 1px rgba(255,255,255,0.4);
-        }
-        .layer-2 {
-          width: 3px; height: 3px;
-          animation: driftUp 35s linear infinite;
-          box-shadow: 15vw 120vh 2px 1px rgba(255,255,255,0.15), 45vw 160vh 1px 0px rgba(255,255,255,0.3), 75vw 110vh 2px 1px rgba(255,255,255,0.1), 20vw 190vh 1px 0px rgba(255,255,255,0.3);
-        }
-        .layer-3 {
-          width: 1px; height: 1px;
-          animation: driftUp 45s linear infinite;
-          box-shadow: 5vw 105vh 1px 0px rgba(255,255,255,0.2), 25vw 145vh 1px 0px rgba(255,255,255,0.3), 55vw 185vh 1px 0px rgba(255,255,255,0.15), 85vw 125vh 1px 0px rgba(255,255,255,0.4);
-        }
-        @keyframes driftUp {
-          0% { transform: translateY(0); }
-          100% { transform: translateY(-100vh); }
-        }
-      `}} />
-    </main>
+    <motion.a
+      ref={ref}
+      href={href}
+      onMouseMove={(e) => {
+        const r = ref.current!.getBoundingClientRect();
+        setPos({
+          x: (e.clientX - r.left - r.width / 2) * 0.28,
+          y: (e.clientY - r.top - r.height / 2) * 0.28,
+        });
+      }}
+      onMouseLeave={() => setPos({ x: 0, y: 0 })}
+      animate={{ x: pos.x, y: pos.y }}
+      transition={{ type: "spring", stiffness: 200, damping: 18 }}
+      className="group inline-flex items-center gap-3 cursor-pointer no-underline"
+      style={{
+        background: "#E62B1E",
+        color: "#fff",
+        padding: "16px 36px",
+        fontSize: 13,
+        fontWeight: 700,
+        letterSpacing: "0.2em",
+        textTransform: "uppercase",
+      }}
+    >
+      {children}
+      <svg
+        className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1.5"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M5 12h14M12 5l7 7-7 7" />
+      </svg>
+    </motion.a>
   );
-}
+};
 
-// -----------------------------------------------------------------
-// WAYPOINT COMPONENT
-// -----------------------------------------------------------------
-function Waypoint({ text, index, scrollYProgress, total }: { text: any, index: number, scrollYProgress: any, total: number }) {
-  const usableScroll = 0.70;
-  const segmentLength = usableScroll / total;
-  
-  const start = 0.08 + (index * segmentLength);
-  const end = start + segmentLength;
-  
-  const fadeInEnd = start + (segmentLength * 0.25);
-  const fadeOutStart = end - (segmentLength * 0.25);
+// ─── SECTION DIVIDER ───────────────────────────────────────
+const Divider = ({ label }: { label: string }) => (
+  <div className="w-full flex items-center gap-5 py-2" style={{ borderTop: "1px solid #A8C8D8" }}>
+    <span style={{ fontSize: 11, letterSpacing: "0.28em", color: "#6E8E9E", textTransform: "uppercase", fontWeight: 600, whiteSpace: "nowrap" }}>
+      {label}
+    </span>
+    <div className="flex-1" style={{ height: 1, background: "#D6E8EF" }} />
+  </div>
+);
 
-  const opacity = useTransform(
-    scrollYProgress, 
-    [start, fadeInEnd, fadeOutStart, end], 
-    [0, 1, 1, 0]
-  );
-  
-  const scale = useTransform(
-    scrollYProgress, 
-    [start, fadeInEnd, fadeOutStart, end], 
-    [0.95, 1, 1, 1.05]
-  );
-  
-  const y = useTransform(
-    scrollYProgress, 
-    [start, fadeInEnd, fadeOutStart, end], 
-    [80, 0, 0, -80]
-  );
+// ─── THEME ACCORDION ROW ───────────────────────────────────
+const ThemeRow = ({ theme, index }: { theme: (typeof SUB_THEMES)[0]; index: number }) => {
+  const [open, setOpen] = useState(false);
 
   return (
     <motion.div
-      style={{ opacity, scale, y }}
-      className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 md:px-12 pointer-events-none will-change-transform transform-gpu"
+      initial={{ opacity: 0, x: -20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.6, delay: index * 0.07, ease: [0.16, 1, 0.3, 1] }}
+      onClick={() => setOpen(!open)}
+      style={{ borderBottom: "1px solid #D6E8EF", cursor: "pointer" }}
+      className="group"
     >
-      <div className="max-w-4xl flex flex-col items-center">
-        <div className="flex flex-col items-center gap-3 mb-8 md:mb-12">
-          <div className="w-[1px] h-12 bg-gradient-to-b from-transparent to-white"></div>
-          <div className="bg-white/10 border border-white/20 px-5 py-2 rounded-full backdrop-blur-sm shadow-lg">
-            <p className="text-white font-mono tracking-[0.5em] text-[9px] md:text-[10px] uppercase font-bold drop-shadow-md">
-              Marker 0{index + 1}
-            </p>
+      <div className="flex items-center justify-between py-6 gap-4">
+        <div className="flex items-center gap-6 md:gap-10">
+          <span style={{ fontSize: 12, color: "#A8C8D8", fontWeight: 600, letterSpacing: "0.18em", fontFamily: "monospace", minWidth: 20 }}>
+            {theme.id}
+          </span>
+          <div>
+            <h3
+              className="transition-colors duration-300 group-hover:text-[#4A8FA8]"
+              style={{ fontSize: "clamp(24px,3.5vw,42px)", fontWeight: 800, color: "#1C3D4F", letterSpacing: "-0.03em", lineHeight: 1 }}
+            >
+              {theme.title}
+            </h3>
+            <p style={{ fontSize: 14, color: "#6E8E9E", marginTop: 4, fontStyle: "italic" }}>{theme.subtitle}</p>
           </div>
         </div>
-        
-        <h2 className="text-5xl sm:text-7xl md:text-8xl lg:text-[9rem] font-serif text-white tracking-tight leading-none mb-4 md:mb-6 mix-blend-screen drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)]">
-          {text.title}
-        </h2>
-        
-        <h3 className="text-lg sm:text-xl md:text-3xl text-white/70 font-serif italic tracking-[0.15em] mb-8 md:mb-12">
-          {text.subtitle}
+        <motion.div animate={{ rotate: open ? 45 : 0 }} transition={{ duration: 0.3 }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A8C8D8" strokeWidth="1.5" strokeLinecap="round">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+        </motion.div>
+      </div>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            style={{ overflow: "hidden" }}
+          >
+            <p style={{ fontSize: 15, color: "#4A8FA8", lineHeight: 1.8, paddingBottom: 24, paddingLeft: 52, maxWidth: 600 }}>
+              {theme.desc}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+};
+
+// ─── SPEAKER CARD ──────────────────────────────────────────
+const SpeakerCard = ({ person, index }: { person: (typeof SPEAKERS)[0]; index: number }) => {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.7, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: hovered ? "#1C3D4F" : "#D6E8EF",
+        border: "1px solid #A8C8D8",
+        transition: "background 0.5s cubic-bezier(0.16,1,0.3,1)",
+        cursor: "default",
+      }}
+      className="relative overflow-hidden flex flex-col w-full"
+    >
+      <div className="relative overflow-hidden" style={{ height: 280, background: "#A8C8D8" }}>
+        <div
+          className="absolute inset-0 transition-all duration-700 bg-cover bg-cover"
+          style={{
+            backgroundImage: `url(${SPEAKER_IMAGES[person.name]})`,
+            filter: hovered ? "grayscale(0%) brightness(0.5)" : "grayscale(20%) brightness(0.9) saturate(0.7)",
+            transform: hovered ? "scale(1.06)" : "scale(1)",
+          }}
+        />
+        <div
+          className="absolute inset-0 transition-opacity duration-500"
+          style={{
+            background: hovered
+              ? "linear-gradient(to bottom, rgba(28,61,79,0.3), rgba(28,61,79,0.8))"
+              : "linear-gradient(to bottom, transparent 40%, rgba(166,200,216,0.6))",
+          }}
+        />
+        <div
+          className="absolute top-4 left-4 z-10 transition-all duration-400"
+          style={{
+            background: hovered ? "#E62B1E" : "rgba(238,244,247,0.92)",
+            color: hovered ? "#fff" : "#4A8FA8",
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            padding: "5px 12px",
+          }}
+        >
+          {person.tag}
+        </div>
+      </div>
+      <div className="p-5 flex flex-col gap-1">
+        <span style={{ fontSize: 11, color: "#6E8E9E", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 600 }}>Speaker</span>
+        <h3 style={{ fontSize: 22, fontWeight: 700, color: hovered ? "#EEF4F7" : "#1C3D4F", letterSpacing: "-0.02em", lineHeight: 1.2, transition: "color 0.4s ease" }}>
+          {person.name}
         </h3>
-        
-        <p className="text-white/50 text-[11px] md:text-sm leading-loose md:leading-loose tracking-[0.25em] uppercase max-w-[85%] md:max-w-2xl mx-auto drop-shadow-xl">
-          {text.desc}
+        <p style={{ fontSize: 13, color: hovered ? "#6E8E9E" : "#4A8FA8", lineHeight: 1.5, marginTop: 2, transition: "color 0.4s ease" }}>
+          {person.title}
         </p>
       </div>
     </motion.div>
   );
-}
+};
 
-// -----------------------------------------------------------------
-// POSTER REVEAL & FINAL CTA (Cinematic UI/UX Update)
-// -----------------------------------------------------------------
-function PosterReveal({ scrollYProgress }: { scrollYProgress: any }) {
-  const revealStart = 0.82;
-  const revealEnd = 0.98;
-
-  const opacity = useTransform(scrollYProgress, [revealStart, revealEnd], [0, 1]);
-  const y = useTransform(scrollYProgress, [revealStart, revealEnd], [50, 0]);
+// ─── MARQUEE ───────────────────────────────────────────────
+const Marquee = () => {
+  const words = ["Genesis", "Vista", "Forge", "Obscura", "Kintsugi", "Arc", "27 March 2026", "The Wayfarer's Map", "Ideas Worth Spreading"];
 
   return (
-    <motion.div
-      style={{ opacity, y }}
-      className="absolute inset-0 z-50 pointer-events-none will-change-transform transform-gpu bg-[#010305]"
-    >
-      {/* 1. SEAMLESS BACKGROUND IMAGE */}
-      <div className="absolute inset-0 w-full h-full z-10">
-        <Image 
-          src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1773212881/1920x1080_v5fr79.png" 
-          alt="ARC The Wayfarer's Map" 
-          fill
-          sizes="100vw"
-          quality={90}
-          /* Changed from scale-down to cover for edge-to-edge immersion */
-          className="object-cover object-center" 
-        />
-        
-        {/* 2. REFINED VIGNETTE 
-            Only darkens the bottom 40% for button contrast, leaves the art untouched 
-        */}
-        <div className="absolute bottom-0 left-0 w-full h-[40%] bg-gradient-to-t from-[#010305] via-[#010305]/60 to-transparent"></div>
+    <div className="w-full overflow-hidden py-4" style={{ background: "#1C3D4F", borderTop: "1px solid #0D1E28", borderBottom: "1px solid #0D1E28" }}>
+      <motion.div className="flex gap-10 whitespace-nowrap" animate={{ x: ["0%", "-50%"] }} transition={{ duration: 24, repeat: Infinity, ease: "linear" }}>
+        {[...words, ...words].map((w, i) => (
+          <span
+            key={i}
+            style={{
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: "0.26em",
+              textTransform: "uppercase",
+              color: "rgba(214,232,239,0.5)",
+              flexShrink: 0,
+            }}
+          >
+            {w} <span style={{ color: "#E62B1E", marginLeft: 12 }}>—</span>
+          </span>
+        ))}
+      </motion.div>
+    </div>
+  );
+};
+
+// ─── MAIN PAGE ──────────────────────────────────────────────────
+export default function Page() {
+  const heroRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
+
+  const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.65], [1, 0]);
+
+  return (
+    <main style={{ background: "#EEF4F7", color: "#1C3D4F", overflowX: "hidden" }} className="relative font-sans">
+      <div className="fixed top-0 left-0 w-full z-50 pointer-events-auto">
+        <Header />
       </div>
 
-      {/* 3. CENTERED, SLEEK CTA BUTTON */}
-      <div className="absolute inset-0 flex flex-col items-center justify-end pb-16 md:pb-28 z-20 pointer-events-auto">
-        <Link
-          href="/tickets"
-          className="
-            group relative flex items-center justify-center gap-4
-            px-10 py-4 md:px-14 md:py-5
-            rounded-full
-            bg-white/5 backdrop-blur-md border border-white/10
-            text-white font-medium uppercase tracking-[0.3em] text-xs md:text-sm
-            transition-all duration-500 ease-out
-            hover:bg-[#E62B1E] hover:border-[#E62B1E] hover:shadow-[0_0_40px_rgba(230,43,30,0.4)]
-            overflow-hidden
-          "
+      {/* ── 1. HERO ─────────────────────────────────────────── */}
+      <section ref={heroRef} className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden" style={{ background: "#EEF4F7" }}>
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at center, transparent 20%, #EEF4F7 80%)" }} />
+          <div className="absolute bottom-0 left-0 right-0 h-40" style={{ background: "linear-gradient(to bottom, transparent, #EEF4F7)" }} />
+        </div>
+
+        <div
+          className="absolute inset-0 pointer-events-none z-0 opacity-[0.04]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+            backgroundRepeat: "repeat",
+            backgroundSize: "128px",
+          }}
+        />
+
+        <motion.div style={{ y: heroY, opacity: heroOpacity }} className="relative z-10 flex flex-col items-center text-center px-6 w-full max-w-6xl mt-12">
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }} className="flex items-center gap-3 mb-10">
+            <div style={{ width: 24, height: 1, background: "#E62B1E" }} />
+            <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.3em", color: "#6E8E9E", textTransform: "uppercase" }}>A Drift in the Unknown</span>
+            <div style={{ width: 24, height: 1, background: "#E62B1E" }} />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="relative w-full"
+            style={{ maxWidth: "min(680px, 88vw)", aspectRatio: "2.5/1", marginBottom: 64 }}
+          >
+            <Image
+              src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1773288076/ARC_Title_upx1mb.svg"
+              alt="ARC: The Wayfarer's Map"
+              fill
+              priority
+              className="object-contain"
+              style={{ filter: "saturate(0) brightness(0.15) contrast(1.2)" }}
+            />
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}>
+            <CountdownTimer />
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7, delay: 0.75 }} className="mt-10 flex items-center gap-4">
+            <div style={{ height: 1, width: 40, background: "#A8C8D8" }} />
+            <span style={{ fontSize: 12, letterSpacing: "0.28em", color: "#6E8E9E", textTransform: "uppercase", fontWeight: 600 }}>
+              27th March 2026 &nbsp;·&nbsp; 11 AM &nbsp;·&nbsp; Cambridge Institute of Technology
+            </span>
+            <div style={{ height: 1, width: 40, background: "#A8C8D8" }} />
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.9, ease: [0.16, 1, 0.3, 1] }} className="mt-12">
+            <MagneticBtn href="/tickets">Secure Your Seat</MagneticBtn>
+          </motion.div>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }} className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+          <span style={{ fontSize: 11, letterSpacing: "0.24em", color: "#6E8E9E", textTransform: "uppercase" }}>Scroll</span>
+          <motion.div
+            animate={{ y: [0, 7, 0] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+            style={{ width: 1, height: 28, background: "#A8C8D8" }}
+          />
+        </motion.div>
+      </section>
+
+      {/* ── MARQUEE ─────────────────────────────────────────── */}
+      <Marquee />
+
+      {/* ── 2. THEMES ───────────────────────────────────────── */}
+      <section className="w-full px-6 md:px-14 lg:px-20 pt-24 pb-8" style={{ maxWidth: 1280, margin: "0 auto" }}>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
+          <div>
+            <Divider label="Theme — 2026" />
+            <h2 className="mt-6" style={{ fontSize: "clamp(40px,6vw,80px)", fontWeight: 800, color: "#1C3D4F", letterSpacing: "-0.04em", lineHeight: 0.95 }}>
+              The<br />Waypoints.
+            </h2>
+          </div>
+          <p style={{ maxWidth: 340, fontSize: 15, color: "#6E8E9E", lineHeight: 1.75, borderLeft: "2px solid #4A8FA8", paddingLeft: 20 }}>
+            Five stages of transformation. The map is not the territory — it is the journey itself, lived one arc at a time.
+          </p>
+        </div>
+        <div style={{ borderTop: "1px solid #D6E8EF" }}>
+          {SUB_THEMES.map((t, i) => (
+            <ThemeRow key={t.id} theme={t} index={i} />
+          ))}
+        </div>
+      </section>
+
+      {/* ── 3. SPEAKERS ─────────────────────────────────────── */}
+      <section className="w-full px-6 md:px-14 lg:px-20 py-24" style={{ maxWidth: 1280, margin: "0 auto" }}>
+        <div className="mb-12">
+          <Divider label="Speakers — 2026" />
+          <h2 className="mt-6" style={{ fontSize: "clamp(36px,5.5vw,72px)", fontWeight: 800, color: "#1C3D4F", letterSpacing: "-0.04em", lineHeight: 0.95 }}>
+            The Voices.
+          </h2>
+        </div>
+
+        {/* First 3 Speakers */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px mb-px" style={{ background: "#A8C8D8" }}>
+          {SPEAKERS.slice(0, 3).map((s, i) => (
+            <SpeakerCard key={i} person={s} index={i} />
+          ))}
+        </div>
+
+        {/* Last 2 Speakers - Centered */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-px" style={{ background: "#A8C8D8", maxWidth: "66.666%", margin: "0 auto" }}>
+          {SPEAKERS.slice(3).map((s, i) => (
+            <SpeakerCard key={i + 3} person={s} index={i + 3} />
+          ))}
+        </div>
+      </section>
+
+      {/* ── 4. ENTERTAINERS ─────────────────────────────────── */}
+      <section style={{ background: "#1C3D4F" }} className="w-full px-6 md:px-14 lg:px-20 py-24">
+        <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+          <div className="mb-12">
+            <div className="w-full flex items-center gap-5 py-2" style={{ borderTop: "1px solid rgba(168,200,216,0.2)" }}>
+              <span style={{ fontSize: 11, letterSpacing: "0.28em", color: "rgba(168,200,216,0.4)", textTransform: "uppercase", fontWeight: 600, whiteSpace: "nowrap" }}>
+                Performers — 2026
+              </span>
+              <div className="flex-1" style={{ height: 1, background: "rgba(168,200,216,0.12)" }} />
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mt-6">
+              <h2 style={{ fontSize: "clamp(36px,5.5vw,72px)", fontWeight: 800, color: "#EEF4F7", letterSpacing: "-0.04em", lineHeight: 0.95 }}>
+                The Artists.
+              </h2>
+              <span style={{ color: "rgba(168,200,216,0.4)", fontSize: 13, fontWeight: 600, letterSpacing: "0.18em", textTransform: "uppercase" }}>
+                4 Acts
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px" style={{ background: "rgba(168,200,216,0.1)" }}>
+            {ENTERTAINERS.map((a, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.6, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                className="group relative overflow-hidden flex flex-col"
+                style={{ background: "#1C3D4F", minHeight: 300 }}
+              >
+                {/* Background Gradient */}
+                <div
+                  className="absolute inset-0 transition-opacity duration-700 opacity-20 group-hover:opacity-40"
+                  style={{ background: "linear-gradient(135deg, #4A8FA8 0%, #0D1E28 100%)" }}
+                />
+
+                {/* Entertainer Image */}
+                <div
+                  className="absolute inset-0 bg-cover bg-bottom transition-all duration-700"
+                  style={{
+                    backgroundImage: `url(${ENTERTAINER_IMAGES[a.name]})`,
+                    filter: "grayscale(100%) brightness(0.6)",
+                  }}
+                />
+
+                {/* Hover Image Layer */}
+                <div
+                  className="absolute inset-0 bg-cover bg-bottom opacity-0 group-hover:opacity-100 transition-all duration-700"
+                  style={{
+                    backgroundImage: `url(${ENTERTAINER_IMAGES[a.name]})`,
+                  }}
+                />
+
+                {/* Info Overlay */}
+                <div className="relative z-10 mt-auto p-6 bg-gradient-to-t from-[#0D1E28] to-transparent">
+                  <div className="transition-all duration-400 group-hover:w-8" style={{ width: 20, height: 2, background: "#E62B1E", marginBottom: 12 }} />
+                  <h3 style={{ fontSize: 20, fontWeight: 700, color: "#EEF4F7", letterSpacing: "-0.02em" }}>{a.name}</h3>
+                  <p style={{ fontSize: 12, color: "rgba(168,200,216,0.55)", textTransform: "uppercase", letterSpacing: "0.14em", marginTop: 4 }}>
+                    {a.title}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 5. FINAL CTA ────────────────────────────────────── */}
+      <section className="relative w-full overflow-hidden flex flex-col">
+        <motion.div
+          initial={{ opacity: 0, scale: 1.04 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.6, ease: "easeOut" }}
+          className="relative w-full"
+          style={{ aspectRatio: "16/9" }}
         >
-          {/* Subtle sweep animation inside button */}
-          <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:animate-shimmer pointer-events-none"></div>
-          
-          <span className="relative whitespace-nowrap drop-shadow-md">Secure Passage</span>
-          
-          <svg className="relative w-4 h-4 transition-transform duration-500 group-hover:translate-x-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
-        </Link>
-      </div>
-    </motion.div>
+          <Image
+            src="https://res.cloudinary.com/dkbvknwcu/image/upload/v1773212881/1920x1080_v5fr79.png"
+            alt="ARC Poster"
+            fill
+            className="object-cover object-center"
+          />
+          <div
+            className="absolute bottom-0 left-0 right-0"
+            style={{ height: "28%", background: "linear-gradient(to bottom, transparent, #0D1E28)" }}
+          />
+        </motion.div>
+
+        <div className="w-full flex flex-col items-center text-center px-6 pt-12 pb-16" style={{ background: "#0D1E28" }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-col items-center"
+          >
+            <motion.a
+              href="/tickets"
+              className="group inline-flex items-center gap-3 cursor-pointer no-underline"
+              style={{ background: "#fff", color: "#0D1E28", padding: "16px 40px", fontSize: 13, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase" }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            >
+              Secure Your Seat
+              <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </motion.a>
+
+            <div style={{ width: "100%", maxWidth: 520, height: 1, background: "rgba(168,200,216,0.1)", margin: "32px 0 24px" }} />
+
+            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6">
+              {["27 March 2026", "11 AM Onwards", "Cambridge Institute of Technology"].map((item, i, arr) => (
+                <React.Fragment key={item}>
+                  <span style={{ fontSize: 13, letterSpacing: "0.2em", color: "rgba(168,200,216,0.5)", textTransform: "uppercase", fontWeight: 600 }}>
+                    {item}
+                  </span>
+                  {i < arr.length - 1 && (
+                    <span style={{ color: "rgba(168,200,216,0.2)", fontSize: 16, lineHeight: 1 }} className="hidden sm:inline">·</span>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+    </main>
   );
 }
