@@ -33,7 +33,7 @@ const SPEAKERS = [
     name: "Ambika J", 
     title: "Director of AI, Finastra", 
     tag: "Technology",
-    desc: "AN EXECUTIVE MBA GRADUATE FROM IIM BANGALORE, SHE BRINGS 25+ YEARS OF EXPERIENCE IN TECH, LEADING 300+ PRODUCT RELEASES AND CONTRIBUTING TO ORGANIZATIONS LIKE YAHOO AND AS A SOLUTION ARCHITECT AT FINASTRA. CURRENTLY SERVING AS"
+    desc: "AN EXECUTIVE MBA GRADUATE FROM IIM BANGALORE, SHE BRINGS 25+ YEARS OF EXPERIENCE IN TECH, LEADING 300+ PRODUCT RELEASES AND CONTRIBUTING TO ORGANIZATIONS LIKE YAHOO AND AS A SOLUTION ARCHITECT AT FINASTRA. CURRENTLY SERVING AS THE DIRECTOR OF AI, FINASTRA BENGALURU."
   },
   { 
     name: "Sukriti Dua", 
@@ -51,7 +51,7 @@ const SPEAKERS = [
     name: "Vinod Naidu", 
     title: "Founder, Nustart Ventures", 
     tag: "Innovation",
-    desc: "Is a seasoned force in sports management and media, with over 25 years of shaping some of India’s most influential sporting narratives. From building powerful brand alliances to managing iconic athletes like Sachin Tendulkar, his journey reflects the unseen strategy behind the spotlight. He has also been instrumental in shaping sponsorships, media rights, and the business of sport across major platforms, including the Indian Premier League (IPL)."
+    desc: "Vinod is a seasoned force in sports management and media, with over 25 years of shaping some of India’s most influential sporting narratives. From building powerful brand alliances to managing iconic athletes like Sachin Tendulkar, his journey reflects the unseen strategy behind the spotlight. He has also been instrumental in shaping sponsorships, media rights, and the business of sport across major platforms, including the Indian Premier League (IPL)."
   },
   { 
     name: "Dr. Mayank D. Chauhan", 
@@ -109,21 +109,44 @@ const CountdownTimer = React.memo(() => {
   }, []);
 
   return (
-    <div className="flex items-center gap-6 md:gap-12">
+    <div className="flex items-center justify-center gap-4 md:gap-8 lg:gap-12">
       {Object.entries(t).map(([unit, val], i) => (
         <React.Fragment key={unit}>
           <div className="flex flex-col items-center gap-1.5">
             <span
               className="tabular-nums font-black leading-none"
-              style={{ fontSize: "clamp(38px,6vw,72px)", color: "#1C3D4F", letterSpacing: "-0.05em" }}
+              style={{ 
+                fontSize: "clamp(32px, 8vw, 72px)", 
+                color: "#1C3D4F", 
+                letterSpacing: "-0.05em" 
+              }}
             >
               {String(val).padStart(2, "0")}
             </span>
-            <span style={{ fontSize: 11, letterSpacing: "0.24em", color: "#6E8E9E", textTransform: "uppercase", fontWeight: 600 }}>
+            <span 
+              style={{ 
+                fontSize: "clamp(9px, 2.2vw, 11px)", 
+                letterSpacing: "0.24em", 
+                color: "#6E8E9E", 
+                textTransform: "uppercase", 
+                fontWeight: 600 
+              }}
+            >
               {unit}
             </span>
           </div>
-          {i < 3 && <span style={{ fontSize: "clamp(20px,3vw,36px)", color: "#A8C8D8", fontWeight: 300, marginTop: -6 }}>·</span>}
+          {i < 3 && (
+            <span 
+              style={{ 
+                fontSize: "clamp(18px, 4.5vw, 36px)", 
+                color: "#A8C8D8", 
+                fontWeight: 300, 
+                marginTop: -4 
+              }}
+            >
+              ·
+            </span>
+          )}
         </React.Fragment>
       ))}
     </div>
@@ -305,7 +328,6 @@ const SpeakerCard = ({ person, index }: { person: (typeof SPEAKERS)[number]; ind
             padding: "5px 12px",
           }}
         >
-          {/* {person.tag} */}
         </div>
       </div>
 
@@ -356,7 +378,6 @@ const EntertainerCard = ({ person, index }: { person: (typeof ENTERTAINERS)[numb
         }}
       />
       
-      {/* Dark overlay specifically for text readability when hovered */}
       <div 
         className={`absolute inset-0 bg-[#0D1E28]/70 transition-opacity duration-500 ${hovered ? 'opacity-100' : 'opacity-0'}`}
       />
@@ -368,7 +389,6 @@ const EntertainerCard = ({ person, index }: { person: (typeof ENTERTAINERS)[numb
           {person.title}
         </p>
         
-        {/* Expandable Description Area */}
         <div 
           className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
             hovered ? 'max-h-60 mt-4 opacity-100' : 'max-h-0 mt-0 opacity-0'
