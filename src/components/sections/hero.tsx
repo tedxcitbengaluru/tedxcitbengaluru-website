@@ -29,18 +29,59 @@ const SUB_THEMES = [
 ];
 
 const SPEAKERS = [
-  { name: "Ambika J", title: "Director of AI, Finastra", tag: "Technology" },
-  { name: "Sukriti Dua", title: "Trauma Informed Psychologist", tag: "Psychology" },
-  { name: "Lt. Gen C. Bansi Ponnappa", title: "Former Adjutant General, Indian Army", tag: "Leadership" },
-  { name: "Vinod Naidu", title: "Founder, Nustart Ventures", tag: "Innovation" },
-  { name: "Dr. Mayank D. Chauhan", title: "Orthopedic & Sports Medicine", tag: "Science" },
+  { 
+    name: "Ambika J", 
+    title: "Director of AI, Finastra", 
+    tag: "Technology",
+    desc: "AN EXECUTIVE MBA GRADUATE FROM IIM BANGALORE, SHE BRINGS 25+ YEARS OF EXPERIENCE IN TECH, LEADING 300+ PRODUCT RELEASES AND CONTRIBUTING TO ORGANIZATIONS LIKE YAHOO AND AS A SOLUTION ARCHITECT AT FINASTRA. CURRENTLY SERVING AS"
+  },
+  { 
+    name: "Sukriti Dua", 
+    title: "Trauma Informed Psychologist", 
+    tag: "Psychology",
+    desc: 'A trauma informed psychologist with 9+ years of experience, she brings mind-body work to the forefront as a dance movement therapy facilitator, leading "Mentally Yours" by supporting individuals, couples, and groups; along with training and supervising mental health practitioners.'
+  },
+  { 
+    name: "Lt. Gen C. Bansi Ponnappa", 
+    title: "Former Adjutant General, Indian Army", 
+    tag: "Leadership",
+    desc: "A former Adjutant General and Deputy Chief of the Indian Army, he brings nearly four decades of service across key operational and strategic roles, including counterinsurgency operations and United Nations missions. Having commanded at every level, he has played key leadership roles during the Galwan crisis, along the LoC in J&K, counter terrorism operations including Manipur. He has been awarded the Param Vishisht Seva Medal (PVSM) amongst other awards."
+  },
+  { 
+    name: "Vinod Naidu", 
+    title: "Founder, Nustart Ventures", 
+    tag: "Innovation",
+    desc: "Is a seasoned force in sports management and media, with over 25 years of shaping some of India’s most influential sporting narratives. From building powerful brand alliances to managing iconic athletes like Sachin Tendulkar, his journey reflects the unseen strategy behind the spotlight. He has also been instrumental in shaping sponsorships, media rights, and the business of sport across major platforms, including the Indian Premier League (IPL)."
+  },
+  { 
+    name: "Dr. Mayank D. Chauhan", 
+    title: "Orthopedic & Sports Medicine", 
+    tag: "Science",
+    desc: "Twenty-two years ago, Dr. Mayank D. Chauhan lived through a slipped disc. The setbacks, the doubts, the confusion, and the desperate attempts to get back to life. That journey transformed his dream of becoming a surgeon into becoming someone who could treat it with conservative methods. That experience became his purpose. He went on to study Osteopathy, Sports Medicine, Chiropractic Medicine, and Manual Therapy, and today as a Gold Medalist, MPT (Orthopedics & Sports Medicine), he helps patients navigate the same road he once walked, back to the life they love."
+  },
 ];
 
 const ENTERTAINERS = [
-  { name: "P.S. Shravan Kumar", title: "Mural Artist" },
-  { name: "The Last Scene", title: "Music Band" },
-  { name: "Sarah Sufi Sheikh", title: "Stand-up Comedian" },
-  { name: "Sabrina Mariah", title: "Singer" },
+  { 
+    name: "P.S. Shravan Kumar", 
+    title: "Mural Artist",
+    desc: "He holds a Doctorate in Fine Arts with an accomplished career with an outstanding 1,600 awards. He isn't just an ordinary wall artist and entrepreneur; his work transforms the ordinary spaces into powerful visual narratives, beautifully blending creativity, culture and storytelling through wall art across India and the UAE."
+  },
+  { 
+    name: "The Last Scene", 
+    title: "Music Band",
+    desc: "They don't just play music; they transform raw sound into an electrifying journey of creation and mending. Hailing from MSRIT, this powerhouse squad collectively blends rhythms with boundless energy to redefine live performances, where every tune is a celebration of culture, connection and creativity."
+  },
+  { 
+    name: "Sarah Sufi Sheikh", 
+    title: "Stand-up Comedian",
+    desc: "This Bangalore-based comedian blends sharp observations with playful storytelling across India's top lineups including Late Night Sexy Jokes, Ladies Log and Queer Rated Comedy with thrilling performances across Bangalore, Mumbai and Goa. She just has one question for the audience: If given infinite time and money, would you attend her stand-up shows?"
+  },
+  { 
+    name: "Sabrina Mariah", 
+    title: "Singer",
+    desc: "A Trainer, Coach and Growth Mindset Evangelist. That's what she is known for, helping people find the right words and communicate with ease. But today, she's doing the opposite. She believes life needs three things: good conversations, good energy and good music and she's bringing all three by letting the music do the talking."
+  },
 ];
 
 // ─── COUNTDOWN ─────────────────────────────────────────────
@@ -213,13 +254,14 @@ const SpeakerCard = ({ person, index }: { person: (typeof SPEAKERS)[number]; ind
       transition={{ duration: 0.7, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={() => setHovered(!hovered)}
       style={{
         background: hovered ? "#1C3D4F" : "#D6E8EF",
         border: "1px solid #A8C8D8",
         transition: "background 0.5s cubic-bezier(0.16,1,0.3,1)",
-        cursor: "default",
+        cursor: "pointer",
       }}
-      className="relative overflow-hidden flex flex-col w-full"
+      className="relative overflow-hidden flex flex-col w-full group"
     >
       <div className="relative overflow-hidden" style={{ height: 280, background: "#A8C8D8" }}>
         <div
@@ -238,11 +280,24 @@ const SpeakerCard = ({ person, index }: { person: (typeof SPEAKERS)[number]; ind
               : "linear-gradient(to bottom, transparent 40%, rgba(166,200,216,0.6))",
           }}
         />
+        
+        {/* Description Overlay */}
+        <div 
+          className={`absolute inset-0 p-6 flex flex-col justify-center items-center text-center transition-all duration-500 z-20 ${
+            hovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+          }`}
+          style={{ background: "rgba(28, 61, 79, 0.85)", backdropFilter: "blur(4px)" }}
+        >
+          <p className="text-white text-xs sm:text-sm leading-relaxed overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            {person.desc}
+          </p>
+        </div>
+
         <div
-          className="absolute top-4 left-4 z-10 transition-all duration-400"
+          className={`absolute top-4 left-4 z-30 transition-all duration-400 ${hovered ? 'opacity-0' : 'opacity-100'}`}
           style={{
-            background: hovered ? "#E62B1E" : "rgba(238,244,247,0.92)",
-            color: hovered ? "#fff" : "#4A8FA8",
+            background: "rgba(238,244,247,0.92)",
+            color: "#4A8FA8",
             fontSize: 10,
             fontWeight: 700,
             letterSpacing: "0.2em",
@@ -262,6 +317,67 @@ const SpeakerCard = ({ person, index }: { person: (typeof SPEAKERS)[number]; ind
         <p style={{ fontSize: 13, color: hovered ? "#6E8E9E" : "#4A8FA8", lineHeight: 1.5, transition: "color 0.4s ease" }}>
           {person.title}
         </p>
+      </div>
+    </motion.div>
+  );
+};
+
+// ─── ENTERTAINER CARD ──────────────────────────────────────
+const EntertainerCard = ({ person, index }: { person: (typeof ENTERTAINERS)[number]; index: number }) => {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.6, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={() => setHovered(!hovered)}
+      className="group relative overflow-hidden flex flex-col cursor-pointer"
+      style={{ background: "#1C3D4F", minHeight: 300 }}
+    >
+      <div
+        className="absolute inset-0 transition-opacity duration-700 opacity-20 group-hover:opacity-40"
+        style={{ background: "linear-gradient(135deg, #4A8FA8 0%, #0D1E28 100%)" }}
+      />
+      <div
+        className="absolute inset-0 bg-cover bg-bottom transition-all duration-700"
+        style={{
+          backgroundImage: `url(${ENTERTAINER_IMAGES[person.name]})`,
+          filter: "grayscale(100%) brightness(0.6)",
+        }}
+      />
+      <div
+        className="absolute inset-0 bg-cover bg-bottom opacity-0 group-hover:opacity-100 transition-all duration-700"
+        style={{
+          backgroundImage: `url(${ENTERTAINER_IMAGES[person.name]})`,
+        }}
+      />
+      
+      {/* Dark overlay specifically for text readability when hovered */}
+      <div 
+        className={`absolute inset-0 bg-[#0D1E28]/70 transition-opacity duration-500 ${hovered ? 'opacity-100' : 'opacity-0'}`}
+      />
+
+      <div className="relative z-10 mt-auto p-6 bg-gradient-to-t from-[#0D1E28] via-[#0D1E28]/80 to-transparent">
+        <div className="transition-all duration-400 group-hover:w-8" style={{ width: 20, height: 2, background: "#E62B1E", marginBottom: 12 }} />
+        <h3 style={{ fontSize: 20, fontWeight: 700, color: "#EEF4F7", letterSpacing: "-0.02em" }}>{person.name}</h3>
+        <p style={{ fontSize: 12, color: "rgba(168,200,216,0.55)", textTransform: "uppercase", letterSpacing: "0.14em", marginTop: 4 }}>
+          {person.title}
+        </p>
+        
+        {/* Expandable Description Area */}
+        <div 
+          className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            hovered ? 'max-h-60 mt-4 opacity-100' : 'max-h-0 mt-0 opacity-0'
+          }`}
+        >
+          <p className="text-[11px] sm:text-xs text-white/90 leading-relaxed overflow-y-auto" style={{ maxHeight: '160px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            {person.desc}
+          </p>
+        </div>
       </div>
     </motion.div>
   );
@@ -443,40 +559,7 @@ export default function Page() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px" style={{ background: "rgba(168,200,216,0.1)" }}>
             {ENTERTAINERS.map((a, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.6, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                className="group relative overflow-hidden flex flex-col"
-                style={{ background: "#1C3D4F", minHeight: 300 }}
-              >
-                <div
-                  className="absolute inset-0 transition-opacity duration-700 opacity-20 group-hover:opacity-40"
-                  style={{ background: "linear-gradient(135deg, #4A8FA8 0%, #0D1E28 100%)" }}
-                />
-                <div
-                  className="absolute inset-0 bg-cover bg-bottom transition-all duration-700"
-                  style={{
-                    backgroundImage: `url(${ENTERTAINER_IMAGES[a.name]})`,
-                    filter: "grayscale(100%) brightness(0.6)",
-                  }}
-                />
-                <div
-                  className="absolute inset-0 bg-cover bg-bottom opacity-0 group-hover:opacity-100 transition-all duration-700"
-                  style={{
-                    backgroundImage: `url(${ENTERTAINER_IMAGES[a.name]})`,
-                  }}
-                />
-                <div className="relative z-10 mt-auto p-6 bg-gradient-to-t from-[#0D1E28] to-transparent">
-                  <div className="transition-all duration-400 group-hover:w-8" style={{ width: 20, height: 2, background: "#E62B1E", marginBottom: 12 }} />
-                  <h3 style={{ fontSize: 20, fontWeight: 700, color: "#EEF4F7", letterSpacing: "-0.02em" }}>{a.name}</h3>
-                  <p style={{ fontSize: 12, color: "rgba(168,200,216,0.55)", textTransform: "uppercase", letterSpacing: "0.14em", marginTop: 4 }}>
-                    {a.title}
-                  </p>
-                </div>
-              </motion.div>
+              <EntertainerCard key={i} person={a} index={i} />
             ))}
           </div>
         </div>
@@ -517,20 +600,6 @@ export default function Page() {
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col items-center"
           >
-            {/* <motion.a
-              href="/tickets"
-              className="group inline-flex items-center gap-3 cursor-pointer no-underline"
-              style={{ background: "#fff", color: "#0D1E28", padding: "16px 40px", fontSize: 13, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase" }}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            >
-              Secure Your Seat
-              <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </motion.a> */}
-
             <div style={{ width: "100%", maxWidth: 520, height: 1, background: "rgba(168,200,216,0.1)", margin: "32px 0 24px" }} />
           </motion.div>
         </div>
