@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
@@ -7,11 +6,11 @@ import Header from "@/components/layout/header";
 
 // ─── PALETTE & DATA ──────────────────
 const SPEAKER_IMAGES: Record<string, string> = {
-  "Ambika J": "https://res.cloudinary.com/dkbvknwcu/image/upload/v1774325866/Group_47779_jlm9ty.png", // Correct path - no "public/"
-  "Sukriti Dua": "https://res.cloudinary.com/dkbvknwcu/image/upload/v1774325865/Group_1000006087_kyzcvd.png",
-  "Lt. Gen C. Bansi Ponnappa": "https://res.cloudinary.com/dkbvknwcu/image/upload/v1774325867/Group_1000006090_jcliys.png",
-  "Vinod Naidu": "https://res.cloudinary.com/dkbvknwcu/image/upload/v1774325865/Group_47794_e8nc8j.png",
-  "Dr. Mayank D. Chauhan": "https://res.cloudinary.com/dkbvknwcu/image/upload/v1774325867/Group_1000006089_e8m9fb.png",
+  "Ambika J": "https://res.cloudinary.com/dkbvknwcu/image/upload/v1774334022/Group_47779_lzuluq.png",
+  "Sukriti Dua": "https://res.cloudinary.com/dkbvknwcu/image/upload/v1774335358/Group_1000006087_axelic.png",
+  "Lt. Gen C. Bansi Ponnappa": "https://res.cloudinary.com/dkbvknwcu/image/upload/v1774334023/Group_1000006090_m80s5o.png",
+  "Vinod Naidu": "https://res.cloudinary.com/dkbvknwcu/image/upload/v1774334022/Group_47794_tibpdm.png",
+  "Dr. Mayank D. Chauhan": "https://res.cloudinary.com/dkbvknwcu/image/upload/v1774334023/Group_1000006089_kzsaws.png",
 };
 
 const ENTERTAINER_IMAGES: Record<string, string> = {
@@ -50,6 +49,7 @@ const CountdownTimer = React.memo(() => {
 
   useEffect(() => {
     const target = new Date("2026-03-27T11:00:00+05:30").getTime();
+
     const tick = () => {
       const d = target - Date.now();
       if (d > 0) {
@@ -61,6 +61,7 @@ const CountdownTimer = React.memo(() => {
         });
       }
     };
+
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
@@ -147,7 +148,7 @@ const Divider = ({ label }: { label: string }) => (
 );
 
 // ─── THEME ACCORDION ROW ───────────────────────────────────
-const ThemeRow = ({ theme, index }: { theme: (typeof SUB_THEMES)[0]; index: number }) => {
+const ThemeRow = ({ theme, index }: { theme: (typeof SUB_THEMES)[number]; index: number }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -201,7 +202,7 @@ const ThemeRow = ({ theme, index }: { theme: (typeof SUB_THEMES)[0]; index: numb
 };
 
 // ─── SPEAKER CARD ──────────────────────────────────────────
-const SpeakerCard = ({ person, index }: { person: (typeof SPEAKERS)[0]; index: number }) => {
+const SpeakerCard = ({ person, index }: { person: (typeof SPEAKERS)[number]; index: number }) => {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -222,7 +223,7 @@ const SpeakerCard = ({ person, index }: { person: (typeof SPEAKERS)[0]; index: n
     >
       <div className="relative overflow-hidden" style={{ height: 280, background: "#A8C8D8" }}>
         <div
-          className="absolute inset-0 transition-all duration-700 bg-cover bg-cover"
+          className="absolute inset-0 transition-all duration-700 bg-cover"
           style={{
             backgroundImage: `url(${SPEAKER_IMAGES[person.name]})`,
             filter: hovered ? "grayscale(0%) brightness(0.5)" : "grayscale(20%) brightness(0.9) saturate(0.7)",
@@ -249,15 +250,16 @@ const SpeakerCard = ({ person, index }: { person: (typeof SPEAKERS)[0]; index: n
             padding: "5px 12px",
           }}
         >
-          {person.tag}
+          {/* {person.tag} */}
         </div>
       </div>
-      <div className="p-5 flex flex-col gap-1">
+
+      <div className="px-5 py-3 flex flex-col gap-0.5">
         <span style={{ fontSize: 11, color: "#6E8E9E", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 600 }}>Speaker</span>
         <h3 style={{ fontSize: 22, fontWeight: 700, color: hovered ? "#EEF4F7" : "#1C3D4F", letterSpacing: "-0.02em", lineHeight: 1.2, transition: "color 0.4s ease" }}>
           {person.name}
         </h3>
-        <p style={{ fontSize: 13, color: hovered ? "#6E8E9E" : "#4A8FA8", lineHeight: 1.5, marginTop: 2, transition: "color 0.4s ease" }}>
+        <p style={{ fontSize: 13, color: hovered ? "#6E8E9E" : "#4A8FA8", lineHeight: 1.5, transition: "color 0.4s ease" }}>
           {person.title}
         </p>
       </div>
@@ -301,16 +303,16 @@ export default function Page() {
   const heroOpacity = useTransform(scrollYProgress, [0, 0.65], [1, 0]);
 
   return (
-    <main style={{ background: "#EEF4F7", color: "#1C3D4F", overflowX: "hidden" }} className="relative font-sans">
+    <main style={{ background: "#E0F2FE", color: "#1C3D4F", overflowX: "hidden" }} className="relative font-sans">
       <div className="fixed top-0 left-0 w-full z-50 pointer-events-auto">
         <Header />
       </div>
 
       {/* ── 1. HERO ─────────────────────────────────────────── */}
-      <section ref={heroRef} className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden" style={{ background: "#EEF4F7" }}>
+      <section ref={heroRef} className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden" style={{ background: "#E0F2FE" }}>
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at center, transparent 20%, #EEF4F7 80%)" }} />
-          <div className="absolute bottom-0 left-0 right-0 h-40" style={{ background: "linear-gradient(to bottom, transparent, #EEF4F7)" }} />
+          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at center, transparent 20%, #E0F2FE 80%)" }} />
+          <div className="absolute bottom-0 left-0 right-0 h-40" style={{ background: "linear-gradient(to bottom, transparent, #E0F2FE)" }} />
         </div>
 
         <div
@@ -366,7 +368,7 @@ export default function Page() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }} className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
           <span style={{ fontSize: 11, letterSpacing: "0.24em", color: "#6E8E9E", textTransform: "uppercase" }}>Scroll</span>
           <motion.div
-            animate={{ y: [0, 7, 0] }}
+            animate={{ y: [0, 12, 0] }}
             transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
             style={{ width: 1, height: 28, background: "#A8C8D8" }}
           />
@@ -389,6 +391,7 @@ export default function Page() {
             Five stages of transformation. The map is not the territory — it is the journey itself, lived one arc at a time.
           </p>
         </div>
+
         <div style={{ borderTop: "1px solid #D6E8EF" }}>
           {SUB_THEMES.map((t, i) => (
             <ThemeRow key={t.id} theme={t} index={i} />
@@ -405,15 +408,13 @@ export default function Page() {
           </h2>
         </div>
 
-        {/* First 3 Speakers */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px mb-px" style={{ background: "#A8C8D8" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
           {SPEAKERS.slice(0, 3).map((s, i) => (
             <SpeakerCard key={i} person={s} index={i} />
           ))}
         </div>
 
-        {/* Last 2 Speakers - Centered */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-px" style={{ background: "#A8C8D8", maxWidth: "66.666%", margin: "0 auto" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:w-2/3 mx-auto">
           {SPEAKERS.slice(3).map((s, i) => (
             <SpeakerCard key={i + 3} person={s} index={i + 3} />
           ))}
@@ -451,13 +452,10 @@ export default function Page() {
                 className="group relative overflow-hidden flex flex-col"
                 style={{ background: "#1C3D4F", minHeight: 300 }}
               >
-                {/* Background Gradient */}
                 <div
                   className="absolute inset-0 transition-opacity duration-700 opacity-20 group-hover:opacity-40"
                   style={{ background: "linear-gradient(135deg, #4A8FA8 0%, #0D1E28 100%)" }}
                 />
-
-                {/* Entertainer Image */}
                 <div
                   className="absolute inset-0 bg-cover bg-bottom transition-all duration-700"
                   style={{
@@ -465,16 +463,12 @@ export default function Page() {
                     filter: "grayscale(100%) brightness(0.6)",
                   }}
                 />
-
-                {/* Hover Image Layer */}
                 <div
                   className="absolute inset-0 bg-cover bg-bottom opacity-0 group-hover:opacity-100 transition-all duration-700"
                   style={{
                     backgroundImage: `url(${ENTERTAINER_IMAGES[a.name]})`,
                   }}
                 />
-
-                {/* Info Overlay */}
                 <div className="relative z-10 mt-auto p-6 bg-gradient-to-t from-[#0D1E28] to-transparent">
                   <div className="transition-all duration-400 group-hover:w-8" style={{ width: 20, height: 2, background: "#E62B1E", marginBottom: 12 }} />
                   <h3 style={{ fontSize: 20, fontWeight: 700, color: "#EEF4F7", letterSpacing: "-0.02em" }}>{a.name}</h3>
@@ -490,6 +484,11 @@ export default function Page() {
 
       {/* ── 5. FINAL CTA ────────────────────────────────────── */}
       <section className="relative w-full overflow-hidden flex flex-col">
+        <div
+          className="absolute top-0 left-0 w-full h-32 sm:h-48 z-10 pointer-events-none"
+          style={{ background: "linear-gradient(to bottom, #1C3D4F, transparent)" }}
+        />
+
         <motion.div
           initial={{ opacity: 0, scale: 1.04 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -518,7 +517,7 @@ export default function Page() {
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col items-center"
           >
-            <motion.a
+            {/* <motion.a
               href="/tickets"
               className="group inline-flex items-center gap-3 cursor-pointer no-underline"
               style={{ background: "#fff", color: "#0D1E28", padding: "16px 40px", fontSize: 13, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase" }}
@@ -530,22 +529,9 @@ export default function Page() {
               <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
-            </motion.a>
+            </motion.a> */}
 
             <div style={{ width: "100%", maxWidth: 520, height: 1, background: "rgba(168,200,216,0.1)", margin: "32px 0 24px" }} />
-
-            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6">
-              {["27 March 2026", "11 AM Onwards", "Cambridge Institute of Technology"].map((item, i, arr) => (
-                <React.Fragment key={item}>
-                  <span style={{ fontSize: 13, letterSpacing: "0.2em", color: "rgba(168,200,216,0.5)", textTransform: "uppercase", fontWeight: 600 }}>
-                    {item}
-                  </span>
-                  {i < arr.length - 1 && (
-                    <span style={{ color: "rgba(168,200,216,0.2)", fontSize: 16, lineHeight: 1 }} className="hidden sm:inline">·</span>
-                  )}
-                </React.Fragment>
-              ))}
-            </div>
           </motion.div>
         </div>
       </section>
