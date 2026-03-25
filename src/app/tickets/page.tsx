@@ -333,9 +333,9 @@ export default function TicketingPage() {
                   {[
                     { id: 'Early Bird', title: 'Early Bird', price: '₹399', desc: 'Sold Out', highlight: false, locked: true },
                     { id: 'Solo Access', title: 'Solo Access', price: '₹599', desc: 'Alumni, Faculty, & Other Orgs', highlight: true, locked: false },
-                    { id: 'Group of 3', title: 'Squad (Group of 3)', price: '₹1497', math: '₹599 × 3', oldPrice: '₹1797', save: '₹300', desc: 'Discounted Group Price', highlight: true, locked: false },
-                    { id: 'Group of 5', title: 'Legion (Group of 5)', price: '₹2245', math: '₹599 × 5', oldPrice: '₹2995', save: '₹750', desc: 'Discounted Legion Price', highlight: true, locked: false },
-                    { id: 'Group of 8', title: 'Battalion (Group of 8)', price: '₹3352', math: '₹599 × 8', oldPrice: '₹4792', save: '₹1440', desc: 'Discounted Battalion Price', highlight: true, locked: false },
+                    { id: 'Group of 3', title: 'Squad (Group of 3)', price: '₹1497', perhead: '499 per head', math: '₹599 × 3', oldPrice: '₹1797', save: '₹300', desc: 'Discounted Group Price', highlight: true, locked: false },
+                    { id: 'Group of 5', title: 'Legion (Group of 5)', price: '₹2245', perhead: '449 per head', math: '₹599 × 5', oldPrice: '₹2995', save: '₹750', desc: 'Discounted Legion Price', highlight: true, locked: false },
+                    { id: 'Group of 8', title: 'Battalion (Group of 8)', price: '₹3352', perhead: '419 per head', math: '₹599 × 8', oldPrice: '₹4792', save: '₹1440', desc: 'Discounted Battalion Price', highlight: true, locked: false },
                   ].map((tier) => {
                     const isSelected = ticketType === tier.id;
 
@@ -365,9 +365,17 @@ export default function TicketingPage() {
                                 {tier.highlight && <span className="text-[9px] bg-[#E62B1E] text-white px-2 py-0.5 rounded-full uppercase tracking-widest animate-pulse whitespace-nowrap">Live</span>}
                                 {tier.locked && <span className="text-[9px] bg-gray-800 text-gray-300 px-2 py-0.5 rounded-full uppercase tracking-widest whitespace-nowrap">Locked</span>}
                               </h3>
-                              <span className={`text-xl font-black shrink-0 transition-colors ${isSelected ? 'text-[#E62B1E]' : 'text-white'}`}>
-                                {tier.price}
-                              </span>
+                              <div className="text-right">
+  <span className={`text-xl font-black block ${isSelected ? 'text-[#E62B1E]' : 'text-white'}`}>
+    {tier.price}
+  </span>
+
+  {tier.perhead && (
+    <span className="text-[11px] text-green-400 font-medium tracking-wide">
+      {tier.perhead}
+    </span>
+  )}
+</div>
                             </div>
                             <p className={`text-xs mt-1 transition-colors ${tier.highlight ? 'text-[#E62B1E]/80 font-medium' : 'text-gray-500'}`}>
                               {tier.desc}
@@ -778,7 +786,7 @@ export default function TicketingPage() {
                     <div className="w-16 h-3 rounded-full bg-[#050505] shadow-inner absolute top-4 z-10" />
                     
                     <div className="absolute top-4 right-4 text-[10px] font-black tracking-[0.2em] bg-black/70 px-3 py-0.5 rounded border border-[#E62B1E]/50 text-[#E62B1E]">
-                      {ticketType === 'Group of 8' ? 'BATTALION • LIMITED' : ticketType.toUpperCase()}
+                      {ticketType === 'Group of 8' ? 'Group of 8 ' : ticketType.toUpperCase()}
                     </div>
 
                     <div className="absolute -right-6 -top-6 text-8xl font-black text-white/10 select-none tracking-[-4px]">ARC</div>
