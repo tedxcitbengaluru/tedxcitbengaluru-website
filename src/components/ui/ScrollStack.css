@@ -1,0 +1,33 @@
+/* src/components/ui/ScrollStack.css */
+.scroll-stack-scroller {
+    width: 100%;
+    position: relative;
+    /* Removed fixed height and overflow to allow window scroll to take over */
+  }
+  
+  .scroll-stack-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    /* This padding determines when the stacking starts/ends visually */
+    padding-top: 10vh; 
+    padding-bottom: 20vh; 
+  }
+  
+  .scroll-stack-card {
+    position: relative;
+    width: 90%; /* Mobile friendly default */
+    max-width: 800px; /* Desktop max width */
+    height: 300px; /* Default height */
+    margin: 0 auto;
+    will-change: transform;
+  }
+  
+  /* Responsive adjustments for the card height if needed */
+  @media (min-width: 768px) {
+    .scroll-stack-card {
+      height: 400px; 
+    }
+  }
